@@ -5,25 +5,31 @@ import { useEffect, useState } from 'react';
 import { FlatList, PlatformColor, Pressable, StyleSheet, Text } from 'react-native';
 
 export type Section = {
-    tiles: Tile[];
+    fetchData: (page: number, params: any, signal: AbortSignal) => Promise<{ numPages: number, results: any[] }>,
+    limit?: number,
     title: string;
     viewAll: Href;
 };
 
 type Props = {
-    searchFunction: (text: string, signal: AbortSignal) => Promise<Tile[]>;
+    buildTile: (item: any) => Tile,
+    searchData: (page: number, params: any, signal: AbortSignal) => Promise<{ numPages: number, results: any[] }>;
     searchOn: string;
     sections: Section[];
-    title: string;
 };
 
-export default function Index({ searchFunction, searchOn, sections, title }: Props) {
+export default function Index({ buildTile, searchData, searchOn, sections }: Props) {
 
     const navigation = useNavigation();
     const router = useRouter();
-    const [ isLoading, setIsLoading ] = useState<boolean>(false);
-    const [ searchResults, setSearchResults ] = useState<Tile[]>([]);
     const [ searchText, setSearchText ] = useState<string>('');
+    const [ searchParams, setSearchParams ] = useState<any>({});
+
+    useEffect(() => {
+        setSearchParams({
+            text: searchText,
+        });
+    }, [searchText]);
 
     useEffect(() => {
         navigation.setOptions({
@@ -31,10 +37,9 @@ export default function Index({ searchFunction, searchOn, sections, title }: Pro
             headerLeft: () => logo,
             headerRight: () => settings,
             headerSearchBarOptions: {
-                onChangeText: (event: any) => search(event.nativeEvent.text),
+                onChangeText: (event: any) => setSearchText(event.nativeEvent.text),
                 placeholder: `Search on ${searchOn}`,
             },
-            title: title,
         });
     }, [navigation]);
 
@@ -48,35 +53,8 @@ export default function Index({ searchFunction, searchOn, sections, title }: Pro
         </Pressable>
     );
 
-    let controller: AbortController;
-    const search = (text: string) => {
-        if (controller) {
-            controller.abort();
-        }
-        controller = new AbortController();
-        setSearchText(text);
-        if (text.length) {
-            setIsLoading(true);
-            searchFunction(text, controller.signal)
-            .then((results) => {
-                setSearchResults(results);
-            })
-            .catch((error) => {
-                if (error.name !== 'AbortError') {
-                    console.error(error);
-                    setSearchResults([]);
-                }
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
-        } else {
-            setSearchResults([]);
-        }
-    };
-
     const searchView = (
-        <TileList data={searchResults} isLoading={isLoading} />
+        <TileList buildTile={buildTile} fetchData={searchData} params={searchParams} />
     );
 
     const homeView = (
@@ -84,7 +62,7 @@ export default function Index({ searchFunction, searchOn, sections, title }: Pro
             contentInsetAdjustmentBehavior="automatic"
             data={sections}
             renderItem={({ item }: { item: Section }) => (
-                <TileList data={item.tiles} header={{ title: item.title, link: item.viewAll }} />
+                <TileList buildTile={buildTile} fetchData={item.fetchData} header={{ title: item.title, link: item.viewAll }} limit={item.limit} />
             )}
         />
     );

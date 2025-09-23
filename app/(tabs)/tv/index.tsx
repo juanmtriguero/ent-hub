@@ -1,19 +1,14 @@
-import Index from '@/components/Index';
-import { View } from 'react-native';
+import Index, { Section } from '@/components/Index';
+import { searchMovies } from '@/integration/tmdb';
+import { getMovieTile } from '@/util/movies';
+
+const sections: Section[] = [];
 
 export default function TVIndex() {
 
-    const homeView = (
-        <View />
-    );
-
-    const searchFunction = (text: string, signal: AbortSignal) => {
-        // TODO: search on TV
-        return Promise.resolve([]);
-    };
-
     return (
-        <Index homeView={homeView} searchFunction={searchFunction} searchOn="TV" title="TV" />
+        // FIXME: create methods for TV
+        <Index buildTile={getMovieTile} searchData={searchMovies} searchOn="TV" sections={sections} />
     );
 
 }

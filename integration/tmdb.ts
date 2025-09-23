@@ -24,21 +24,21 @@ async function get(path: string, params: URLSearchParams, signal?: AbortSignal):
     }
 }
 
-export async function searchMovies(text: string, page: number, signal: AbortSignal): Promise<any[]> {
+export async function searchMovies(page: number, params: any, signal: AbortSignal): Promise<{ numPages: number, results: any[] }> {
     const searchParams = new URLSearchParams({
         language: 'es-ES',
         page: page.toString(),
-        query: text,
+        query: params.text,
     });
-    const { results }: { results: any[] } = await get(PATH_SEARCH_MOVIE, searchParams, signal);
-    return results;
+    const { results, total_pages }: { results: any[], total_pages: number } = await get(PATH_SEARCH_MOVIE, searchParams, signal);
+    return { numPages: total_pages, results };
 }
 
-export async function getPopularMovies(): Promise<any[]> {
+export async function getPopularMovies(page: number): Promise<{ numPages: number, results: any[] }> {
     const searchParams = new URLSearchParams({
         language: 'es-ES',
-        page: '1',
+        page: page.toString(),
     });
-    const { results }: { results: any[] } = await get(PATH_MOVIE_POPULAR, searchParams);
-    return results;
+    const { results, total_pages }: { results: any[], total_pages: number } = await get(PATH_MOVIE_POPULAR, searchParams);
+    return { numPages: total_pages, results };
 }

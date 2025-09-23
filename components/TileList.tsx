@@ -1,5 +1,6 @@
 import { Image } from 'expo-image';
 import { Href, Link, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, PlatformColor, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 export type Tile = {
@@ -10,12 +11,11 @@ export type Tile = {
 };
 
 type Props = {
-    data: Tile[],
-    isLoading?: boolean,
-    header?: {
-        title: string,
-        link: Href,
-    },
+    buildTile: (item: any) => Tile,
+    fetchData: (page: number, params: any, signal: AbortSignal) => Promise<{ numPages: number, results: any[] }>,
+    header?: { title: string, link: Href },
+    limit?: number,
+    params?: any,
 };
 
 const { width } = useWindowDimensions();
@@ -23,9 +23,57 @@ const numberOfColumns = Math.floor(width / 180);
 const tileWidth = (width - 10 - (numberOfColumns * 10)) / numberOfColumns;
 const posterHeight = tileWidth * 1.5;
 
-export default function TileList({ data, isLoading = false, header }: Props) {
+export default function TileList({ buildTile, fetchData, header, limit, params }: Props) {
 
     const router = useRouter();
+    const [ isLoading, setIsLoading ] = useState<boolean>(false);
+    const [ numPages, setNumPages ] = useState<number>(0);
+    const [ page, setPage ] = useState<number>(1);
+    const [ tiles, setTiles ] = useState<Tile[]>([]);
+
+    let controller = new AbortController();
+
+    const getTiles = (): Promise<Tile[]> => {
+        setIsLoading(true);
+        return fetchData(page, params, controller.signal)
+        .then(({ numPages, results }) => {
+            setNumPages(numPages);
+            return results.map(buildTile);
+        })
+        .catch(error => {
+            if (error.name !== 'AbortError') {
+                console.error(error);
+            }
+            return [];
+        })
+        .finally(() => {
+            setIsLoading(false);
+        });
+    }
+
+    const limitTiles = (tiles: Tile[]): Tile[] => {
+        if (limit) {
+            return tiles.slice(0, limit);
+        }
+        return tiles;
+    }
+
+    useEffect(() => {
+        controller.abort();
+        controller = new AbortController();
+        getTiles().then(newTiles => {
+            setTiles(limitTiles(newTiles));
+        });
+        setPage(1);
+    }, [params]);
+
+    useEffect(() => {
+        if (page > 1) {
+            getTiles().then(newTiles => {
+                setTiles(limitTiles([ ...tiles, ...newTiles ]));
+            });
+        }
+    }, [page]);
 
     const renderTile = ({ item }: { item: Tile }) => {
         const navigateToDetail = () => {
@@ -69,17 +117,24 @@ export default function TileList({ data, isLoading = false, header }: Props) {
         ) : null;
     };
 
+    const nextPage = () => {
+        if (page < numPages && (!limit || tiles.length < limit)) {
+            setPage(page + 1);
+        }
+    };
+
     return (
         <FlatList
             columnWrapperStyle={styles.columnWrapper}
             contentInsetAdjustmentBehavior="automatic"
-            data={data}
+            data={tiles}
             key={numberOfColumns}
             ListEmptyComponent={renderNoData}
             ListFooterComponent={renderFooter}
             ListHeaderComponent={renderHeader}
             numColumns={numberOfColumns}
             renderItem={renderTile}
+            onEndReached={nextPage}
             style={styles.list}
         />
     );
