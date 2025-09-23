@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
-import { Href, useRouter } from 'expo-router';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Href, Link, useRouter } from 'expo-router';
+import { ActivityIndicator, FlatList, PlatformColor, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 export type Tile = {
     detail: Href,
@@ -11,7 +11,11 @@ export type Tile = {
 
 type Props = {
     data: Tile[],
-    isLoading: boolean,
+    isLoading?: boolean,
+    header?: {
+        title: string,
+        link: Href,
+    },
 };
 
 const { width } = useWindowDimensions();
@@ -19,7 +23,7 @@ const numberOfColumns = Math.floor(width / 180);
 const tileWidth = (width - 10 - (numberOfColumns * 10)) / numberOfColumns;
 const posterHeight = tileWidth * 1.5;
 
-export default function TileList({ data, isLoading }: Props) {
+export default function TileList({ data, isLoading = false, header }: Props) {
 
     const router = useRouter();
 
@@ -38,7 +42,7 @@ export default function TileList({ data, isLoading }: Props) {
         );
     };
 
-    const noData = () => {
+    const renderNoData = () => {
         return isLoading ? null : (
             <View style={styles.centered}>
                 <Text>No results found</Text>
@@ -46,10 +50,21 @@ export default function TileList({ data, isLoading }: Props) {
         );
     };
 
-    const footer = () => {
+    const renderFooter = () => {
         return isLoading ? (
             <View style={styles.centered}>
                 <ActivityIndicator />
+            </View>
+        ) : null;
+    };
+
+    const renderHeader = () => {
+        return header ? (
+            <View style={styles.header}>
+                <Text style={styles.headerTitle}>{header.title}</Text>
+                <Link href={header.link}>
+                    <Text style={styles.headerLink}>View all &gt;</Text>
+                </Link>
             </View>
         ) : null;
     };
@@ -60,8 +75,9 @@ export default function TileList({ data, isLoading }: Props) {
             contentInsetAdjustmentBehavior="automatic"
             data={data}
             key={numberOfColumns}
-            ListEmptyComponent={noData}
-            ListFooterComponent={footer}
+            ListEmptyComponent={renderNoData}
+            ListFooterComponent={renderFooter}
+            ListHeaderComponent={renderHeader}
             numColumns={numberOfColumns}
             renderItem={renderTile}
             style={styles.list}
@@ -79,6 +95,21 @@ const styles = StyleSheet.create({
         alignItems: 'stretch',
         justifyContent: 'flex-start',
         marginVertical: 5,
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        margin: 10,
+        marginBottom: 5,
+    },
+    headerTitle: {
+        fontWeight: 'bold',
+        fontSize: 20,
+    },
+    headerLink: {
+        fontSize: 16,
+        color: PlatformColor('systemBlue'),
     },
     list: {
         margin: 5,

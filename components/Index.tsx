@@ -1,17 +1,23 @@
 import TileList, { Tile } from '@/components/TileList';
-import { useNavigation, useRouter } from 'expo-router';
+import { Href, useNavigation, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { useEffect, useState } from 'react';
-import { PlatformColor, Pressable, StyleSheet, Text } from 'react-native';
+import { FlatList, PlatformColor, Pressable, StyleSheet, Text } from 'react-native';
+
+export type Section = {
+    tiles: Tile[];
+    title: string;
+    viewAll: Href;
+};
 
 type Props = {
-    homeView: React.ReactNode;
     searchFunction: (text: string, signal: AbortSignal) => Promise<Tile[]>;
     searchOn: string;
+    sections: Section[];
     title: string;
 };
 
-export default function Index({ homeView, searchFunction, searchOn, title }: Props) {
+export default function Index({ searchFunction, searchOn, sections, title }: Props) {
 
     const navigation = useNavigation();
     const router = useRouter();
@@ -71,6 +77,16 @@ export default function Index({ homeView, searchFunction, searchOn, title }: Pro
 
     const searchView = (
         <TileList data={searchResults} isLoading={isLoading} />
+    );
+
+    const homeView = (
+        <FlatList
+            contentInsetAdjustmentBehavior="automatic"
+            data={sections}
+            renderItem={({ item }: { item: Section }) => (
+                <TileList data={item.tiles} header={{ title: item.title, link: item.viewAll }} />
+            )}
+        />
     );
 
     return searchText.length ? searchView : homeView;
