@@ -1,16 +1,11 @@
-import { Icon, Label, NativeTabs } from 'expo-router/unstable-native-tabs';
+import { Stack } from 'expo-router';
 
 export default function Layout() {
     return (
-        <NativeTabs>
-            <NativeTabs.Trigger name="movies">
-                <Label>Movies</Label>
-                <Icon sf="movieclapper" />
-            </NativeTabs.Trigger>
-            <NativeTabs.Trigger name="tv">
-                <Label>TV</Label>
-                <Icon sf="tv" />
-            </NativeTabs.Trigger>
-        </NativeTabs>
+        <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="settings" options={{ presentation: 'modal' }} />
+        </Stack>
     );
 }
