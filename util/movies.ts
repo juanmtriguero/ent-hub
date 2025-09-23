@@ -1,5 +1,5 @@
-import { POSTER_URL } from "@/integration/tmdb";
-import { Tile } from "@/components/TileList";
+import { POSTER_URL } from '@/integration/tmdb';
+import { Tile } from '@/components/TileList';
 
 export const getMovieTile = (movie: any): Tile => ({
     posterUrl: POSTER_URL + movie.poster_path,

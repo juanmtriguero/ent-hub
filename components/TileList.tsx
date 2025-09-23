@@ -3,6 +3,8 @@ import { Href, Link, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, PlatformColor, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
+const posterPlaceholder = require('../assets/images/poster.png');
+
 export type Tile = {
     detail: Href,
     posterUrl: string,
@@ -81,7 +83,7 @@ export default function TileList({ buildTile, fetchData, header, limit, params }
         };
         return (
             <Pressable onPress={navigateToDetail} style={styles.tile}>
-                <Image source={item.posterUrl} style={styles.poster} contentFit="cover" />
+                <Image source={item.posterUrl} style={styles.poster} contentFit="cover" placeholder={posterPlaceholder} placeholderContentFit="cover" />
                 <View style={styles.titleContainer}>
                     <Text numberOfLines={2} style={styles.title}>{item.title + '\n'}</Text>
                     <Text>{item.releaseYear}</Text>
