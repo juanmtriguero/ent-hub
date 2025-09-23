@@ -3,13 +3,7 @@ const PATH_SEARCH_MOVIE = 'search/movie';
 
 export const POSTER_URL = 'https://image.tmdb.org/t/p/w342/';
 
-let controller: AbortController;
-
 async function get(path: string, params: URLSearchParams, signal: AbortSignal): Promise<any> {
-    if (controller) {
-        controller.abort();
-    }
-    controller = new AbortController();
     const response = await fetch(`${BASE_URL}${path}?${params}`, {
         method: 'GET',
         headers: {
