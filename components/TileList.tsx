@@ -3,7 +3,7 @@ import { Href, Link, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, PlatformColor, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
-const posterPlaceholder = require('../assets/images/poster.png');
+const posterPlaceholder = require('@/assets/images/poster.png');
 
 export type Tile = {
     detail: Href,

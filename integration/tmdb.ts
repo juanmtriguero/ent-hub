@@ -1,24 +1,38 @@
+import { ApiKey, getApiKey, invalidApiKey } from '@/integration/apikeys';
+
 const BASE_URL = 'https://api.themoviedb.org/3/';
+const PATH_AUTHENTICATE = 'authentication';
 const PATH_SEARCH_MOVIE = 'search/movie';
 const PATH_MOVIE_POPULAR = 'movie/popular';
 
 export const POSTER_URL = 'https://image.tmdb.org/t/p/w342/';
 
+async function getHeaders(): Promise<HeadersInit> {
+    return {
+        Accept: 'application/json',
+        Authorization: `Bearer ${await getApiKey(ApiKey.TheMovieDB)}`
+    };
+}
+
+export async function authenticate(): Promise<boolean> {
+    const response = await fetch(`${BASE_URL}${PATH_AUTHENTICATE}`, {
+        method: 'GET',
+        headers: await getHeaders(),
+    });
+    return response.ok;
+}
+
 async function get(path: string, params: URLSearchParams, signal?: AbortSignal): Promise<any> {
     const response = await fetch(`${BASE_URL}${path}?${params}`, {
         method: 'GET',
-        headers: {
-            Accept: 'application/json',
-            // FIXME: move to DB
-            Authorization: `Bearer ${process.env.EXPO_PUBLIC_TMDB_API_KEY}`
-        },
+        headers: await getHeaders(),
         signal: signal,
     });
     if (response.ok) {
         return response.json();
     } else {
         if (response.status === 401) {
-            alert('The API key for TMDB is invalid, please update it on the settings');
+            invalidApiKey(ApiKey.TheMovieDB);
         }
         throw new Error(`[${response.status}] ${response.statusText}`);
     }
