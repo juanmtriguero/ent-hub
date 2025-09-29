@@ -1,4 +1,5 @@
 import { Api, getApiKey, setApiKey } from '@/integration/main';
+import { SettingsState } from '@/util/state';
 import { Image } from 'expo-image';
 import { Link } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
@@ -7,13 +8,12 @@ import { Alert, Button, PlatformColor, StyleSheet, Switch, Text, TextInput, View
 
 type Props = {
     api: Api;
-    enabled: boolean;
+    state: SettingsState;
     title: string;
 };
 
-export default function Setting({ api, enabled, title }: Props) {
+export default function Setting({ api, title, state }: Props) {
 
-    const [ isEnabled, setIsEnabled ] = useState(enabled);
     const [ key, setKey ] = useState('');
     const [ isValidApiKey, setIsValidApiKey ] = useState(false);
 
@@ -54,9 +54,9 @@ export default function Setting({ api, enabled, title }: Props) {
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.title}>{title}</Text>
-                <Switch onValueChange={() => setIsEnabled(value => !value)} value={isEnabled} />
+                <Switch onValueChange={state.toggleEnabled} value={state.enabled} />
             </View>
-            {isEnabled ? (
+            {state.enabled ? (
                 <View style={styles.body}>
                     <View style={styles.logoContainer}>
                         <Image source={api.logo} style={styles.logo} contentFit="contain" />
