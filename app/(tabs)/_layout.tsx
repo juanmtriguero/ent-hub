@@ -1,4 +1,5 @@
 import { useBooksSettings, useComicsSettings, useGamesSettings, useMoviesAndTVSettings } from '@/util/state';
+import { Redirect } from 'expo-router';
 import { Icon, Label, NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabsLayout() {
@@ -6,6 +7,9 @@ export default function TabsLayout() {
     const booksEnabled = useBooksSettings(state => state.enabled);
     const gamesEnabled = useGamesSettings(state => state.enabled);
     const comicsEnabled = useComicsSettings(state => state.enabled);
+    if (!moviesAndTVEnabled && !booksEnabled && !gamesEnabled && !comicsEnabled) {
+        return <Redirect href="/" />;
+    }
     return (
         <NativeTabs>
             <NativeTabs.Trigger name="movies" hidden={!moviesAndTVEnabled}>

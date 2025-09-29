@@ -9,7 +9,6 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 export default function Settings() {
 
     return (
-        // TODO: Prevent last service from being disabled or redirect to index
         <ScrollView>
             <View style={styles.container}>
                 <Setting title="Movies and TV" state={useMoviesAndTVSettings()} api={tmdb} />
