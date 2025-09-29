@@ -1,4 +1,4 @@
-import { ApiKey, getApiKey, invalidApiKey } from '@/integration/apikeys';
+import { Api, ApiKey, getApiKey, invalidApiKey } from '@/integration/main';
 
 const BASE_URL = 'https://api.themoviedb.org/3/';
 const PATH_AUTHENTICATE = 'authentication';
@@ -14,7 +14,7 @@ async function getHeaders(): Promise<HeadersInit> {
     };
 }
 
-export async function authenticate(): Promise<boolean> {
+async function authenticate(): Promise<boolean> {
     const response = await fetch(`${BASE_URL}${PATH_AUTHENTICATE}`, {
         method: 'GET',
         headers: await getHeaders(),
@@ -32,7 +32,7 @@ async function get(path: string, params: URLSearchParams, signal?: AbortSignal):
         return response.json();
     } else {
         if (response.status === 401) {
-            invalidApiKey(ApiKey.TheMovieDB);
+            invalidApiKey(tmdb.name);
         }
         throw new Error(`[${response.status}] ${response.statusText}`);
     }
@@ -56,3 +56,11 @@ export async function getPopularMovies(page: number): Promise<{ numPages: number
     const { results, total_pages }: { results: any[], total_pages: number } = await get(PATH_MOVIE_POPULAR, searchParams);
     return { numPages: total_pages, results };
 }
+
+export const tmdb: Api = {
+    key: ApiKey.TheMovieDB,
+    logo: require('@/assets/logos/tmdb.png'),
+    name: 'The Movie Database',
+    url: 'https://www.themoviedb.org/settings/api',
+    validateKey: authenticate,
+};

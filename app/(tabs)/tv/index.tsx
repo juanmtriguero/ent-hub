@@ -7,7 +7,7 @@ const sections: Section[] = [];
 export default function TVIndex() {
 
     return (
-        // FIXME: create methods for TV
+        // TODO: create methods for TV
         <Index buildTile={getMovieTile} searchData={searchMovies} searchOn="TV" sections={sections} />
     );
 

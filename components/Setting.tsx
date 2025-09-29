@@ -1,4 +1,4 @@
-import { ApiKey, apiKeys, getApiKey, setApiKey } from '@/integration/apikeys';
+import { Api, getApiKey, setApiKey } from '@/integration/main';
 import { Image } from 'expo-image';
 import { Link } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
@@ -6,21 +6,19 @@ import { useEffect, useState } from 'react';
 import { Alert, Button, PlatformColor, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 
 type Props = {
-    apiKey: ApiKey;
+    api: Api;
     enabled: boolean;
     title: string;
 };
 
-export default function Setting({ apiKey, enabled, title }: Props) {
-
-    const apiKeyProps = apiKeys[apiKey];
+export default function Setting({ api, enabled, title }: Props) {
 
     const [ isEnabled, setIsEnabled ] = useState(enabled);
     const [ key, setKey ] = useState('');
     const [ isValidApiKey, setIsValidApiKey ] = useState(false);
 
     useEffect(() => {
-        getApiKey(apiKey).then(key => {
+        getApiKey(api.key).then(key => {
             if (key) {
                 setKey(key);
             }
@@ -34,8 +32,8 @@ export default function Setting({ apiKey, enabled, title }: Props) {
     }, [key]);
 
     const validateApiKey = () => {
-        setApiKey(apiKey, key).then(() => {
-            return apiKeyProps.validate();
+        setApiKey(api.key, key).then(() => {
+            return api.validateKey();
         })
         .then(isValid => {
             setIsValidApiKey(isValid);
@@ -61,10 +59,10 @@ export default function Setting({ apiKey, enabled, title }: Props) {
             {isEnabled ? (
                 <View style={styles.body}>
                     <View style={styles.logoContainer}>
-                        <Image source={apiKeyProps.logo} style={styles.logo} contentFit="contain" />
+                        <Image source={api.logo} style={styles.logo} contentFit="contain" />
                         <View>
                             <Text>Powered by</Text>
-                            <Text style={styles.name}>{apiKeyProps.name}</Text>
+                            <Text style={styles.name}>{api.name}</Text>
                         </View>
                     </View>
                     <View style={styles.inputContainer}>
@@ -72,7 +70,7 @@ export default function Setting({ apiKey, enabled, title }: Props) {
                         <Button title="Validate" onPress={validateApiKey} disabled={!key.length || isValidApiKey} />
                     </View>
                     <View style={styles.linkContainer}>
-                        <Link href={apiKeyProps.url} style={styles.link}>Get an API key </Link>
+                        <Link href={api.url} style={styles.link}>Get an API key </Link>
                         <SymbolView name="arrow.up.right.square" size={16} />
                     </View>
                 </View>
@@ -133,7 +131,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     title: {
-        fontSize: 16,
+        fontSize: 20,
         fontWeight: 'bold',
     },
 });
