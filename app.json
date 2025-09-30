@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "ent-tracker",
-    "slug": "ent-tracker",
+    "name": "ent-hub",
+    "slug": "ent-hub",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "enttracker",
+    "scheme": "enthub",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
