@@ -3,9 +3,12 @@ import { Api, ApiKey, getApiKey, invalidApiKey } from '@/integration/main';
 const BASE_URL = 'https://api.themoviedb.org/3/';
 const PATH_AUTHENTICATE = 'authentication';
 const PATH_SEARCH_MOVIE = 'search/movie';
+const PATH_MOVIE_DETAILS = 'movie/';
 const PATH_MOVIE_POPULAR = 'movie/popular';
 
-export const POSTER_URL = 'https://image.tmdb.org/t/p/w342/';
+export const IMAGE_URL = 'https://image.tmdb.org/t/p/';
+export const POSTER_SIZE = 'w342';
+export const BACKDROP_SIZE = 'w780';
 
 async function getHeaders(): Promise<HeadersInit> {
     return {
@@ -55,6 +58,13 @@ export async function getPopularMovies(page: number): Promise<{ numPages: number
     });
     const { results, total_pages }: { results: any[], total_pages: number } = await get(PATH_MOVIE_POPULAR, searchParams);
     return { numPages: total_pages, results };
+}
+
+export async function getMovie(id: string): Promise<any> {
+    const params = new URLSearchParams({
+        language: 'es-ES',
+    });
+    return await get(PATH_MOVIE_DETAILS + id, params);
 }
 
 export const tmdb: Api = {

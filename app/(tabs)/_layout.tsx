@@ -11,7 +11,7 @@ export default function TabsLayout() {
         return <Redirect href="/" />;
     }
     return (
-        <NativeTabs>
+        <NativeTabs disableTransparentOnScrollEdge>
             <NativeTabs.Trigger name="movies" hidden={!moviesAndTVEnabled}>
                 <Label>Movies</Label>
                 <Icon sf="movieclapper" />

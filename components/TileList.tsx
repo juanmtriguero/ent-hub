@@ -20,11 +20,6 @@ type Props = {
     params?: any,
 };
 
-const { width } = useWindowDimensions();
-const numberOfColumns = Math.floor(width / 180);
-const tileWidth = (width - 10 - (numberOfColumns * 10)) / numberOfColumns;
-const posterHeight = tileWidth * 1.5;
-
 export default function TileList({ buildTile, fetchData, header, limit, params }: Props) {
 
     const router = useRouter();
@@ -32,6 +27,9 @@ export default function TileList({ buildTile, fetchData, header, limit, params }
     const [ numPages, setNumPages ] = useState<number>(0);
     const [ page, setPage ] = useState<number>(1);
     const [ tiles, setTiles ] = useState<Tile[]>([]);
+    const { width } = useWindowDimensions();
+    const numberOfColumns = Math.floor(width / 180);
+    const styles = getStyles((width - 10 - (numberOfColumns * 10)) / numberOfColumns);
 
     let controller = new AbortController();
 
@@ -143,7 +141,7 @@ export default function TileList({ buildTile, fetchData, header, limit, params }
 
 }
 
-const styles = StyleSheet.create({
+const getStyles = (tileWidth: number) => StyleSheet.create({
     centered: {
         alignItems: 'center',
         marginTop: 40,
@@ -173,7 +171,7 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
     },
     poster: {
-        height: posterHeight,
+        height: tileWidth * 1.5,
     },
     tile: {
         width: tileWidth,
