@@ -80,6 +80,7 @@ export default function Screen({ buildScreen, fetchData, id }: Props) {
 const getStyles = (width: number, height: number) => StyleSheet.create({
     backdrop: {
         height: width / 1.75,
+        backgroundColor: PlatformColor('systemGray3'),
     },
     centered: {
         flex: 1,
