@@ -1,6 +1,7 @@
 import { Tile } from '@/components/TileList';
 import { Screen } from '@/components/Screen';
 import { BACKDROP_SIZE, IMAGE_URL, POSTER_SIZE } from '@/integration/tmdb';
+import { PlatformColor } from 'react-native';
 
 const getPosterUrl = (posterPath: string): string => `${IMAGE_URL}${POSTER_SIZE}${posterPath}`;
 const getBackdropUrl = (backdropPath: string): string => `${IMAGE_URL}${BACKDROP_SIZE}${backdropPath}`;
@@ -26,3 +27,8 @@ export const getMovieScreen = (movie: any): Screen => ({
     releaseYear: getReleaseYear(movie.release_date),
     title: movie.title,
 });
+
+export const movieStatusOptions = [
+    { label: 'Want to watch', value: 'pending', icon: 'bookmark', color: PlatformColor('systemOrange') },
+    { label: 'Watched', value: 'watched', icon: 'checkmark', color: PlatformColor('systemGreen') },
+];

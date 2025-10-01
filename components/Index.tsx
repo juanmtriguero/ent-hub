@@ -16,9 +16,10 @@ type Props = {
     searchData: (page: number, params: any, signal: AbortSignal) => Promise<{ numPages: number, results: any[] }>;
     searchOn: string;
     sections: Section[];
+    statusOptions: any[];
 };
 
-export default function Index({ buildTile, searchData, searchOn, sections }: Props) {
+export default function Index({ buildTile, searchData, searchOn, sections, statusOptions }: Props) {
 
     const navigation = useNavigation();
     const router = useRouter();
@@ -54,7 +55,7 @@ export default function Index({ buildTile, searchData, searchOn, sections }: Pro
     );
 
     const searchView = (
-        <TileList buildTile={buildTile} fetchData={searchData} params={searchParams} />
+        <TileList buildTile={buildTile} fetchData={searchData} params={searchParams} statusOptions={statusOptions} />
     );
 
     const homeView = (
@@ -62,7 +63,7 @@ export default function Index({ buildTile, searchData, searchOn, sections }: Pro
             contentInsetAdjustmentBehavior="automatic"
             data={sections}
             renderItem={({ item }: { item: Section }) => (
-                <TileList buildTile={buildTile} fetchData={item.fetchData} header={{ title: item.title, link: item.viewAll }} limit={item.limit} />
+                <TileList buildTile={buildTile} fetchData={item.fetchData} header={{ title: item.title, link: item.viewAll }} limit={item.limit} statusOptions={statusOptions} />
             )}
         />
     );

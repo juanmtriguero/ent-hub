@@ -1,6 +1,7 @@
 import { Image } from 'expo-image';
+import { SymbolView } from 'expo-symbols';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, PlatformColor, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, Alert, AlertButton, PlatformColor, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 const posterPlaceholder = require('@/assets/images/poster.png');
 
@@ -18,14 +19,18 @@ type Props = {
     buildScreen: (item: any) => Screen,
     fetchData: (id: string) => Promise<any>,
     id: string,
+    statusOptions: any[],
 };
 
-export default function Screen({ buildScreen, fetchData, id }: Props) {
+export default function Screen({ buildScreen, fetchData, id, statusOptions }: Props) {
 
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
     const [ screen, setScreen ] = useState<Screen | null>(null);
     const { height, width } = useWindowDimensions();
     const styles = getStyles(width, height);
+
+    // FIXME: Store and retrieve
+    const [ status, setStatus ] = useState<string | null>(null);
 
     useEffect(() => {
         setIsLoading(true);
@@ -58,12 +63,32 @@ export default function Screen({ buildScreen, fetchData, id }: Props) {
         );
     }
 
+    const selectedStatus = status ? statusOptions.find(option => option.value === status) : 
+        { label: 'Not saved', value: null, icon: 'nosign', color: PlatformColor('systemGray') };
+
+    const selectStatus = () => {
+        const buttons: AlertButton[] = [ { text: 'Cancel', style: 'cancel' } ];
+        if (status) {
+            buttons.push({ text: 'Remove', onPress: () => setStatus(null), style: 'destructive' });
+        }
+        statusOptions.forEach(option => {
+            if (option.value !== status) {
+                buttons.push({ text: option.label, onPress: () => setStatus(option.value) });
+            }
+        });
+        Alert.alert('Status', '', buttons);
+    };
+
     return (
         <ScrollView>
             <Image source={screen.backdropUrl} style={styles.backdrop} contentFit="cover" />
             <View style={styles.posterContainer}>
                 <Image source={screen.posterUrl} style={styles.poster} contentFit="cover" placeholder={posterPlaceholder} placeholderContentFit="cover" />
             </View>
+            <Pressable style={{ ...styles.statusButton, backgroundColor: selectedStatus.color }} onPress={selectStatus}>
+                <SymbolView name={selectedStatus.icon} size={16} tintColor="white" />
+                <Text style={styles.status}>{selectedStatus.label}</Text>
+            </Pressable>
             <View style={styles.content}>
                 <Text style={styles.title}>{screen.title}</Text>
                 <Text style={styles.subtitle}>{screen.originalTitle} ({screen.releaseYear})</Text>
@@ -79,7 +104,7 @@ export default function Screen({ buildScreen, fetchData, id }: Props) {
 
 const getStyles = (width: number, height: number) => StyleSheet.create({
     backdrop: {
-        height: width / 1.75,
+        height: width * 0.6,
         backgroundColor: PlatformColor('systemGray3'),
     },
     centered: {
@@ -96,7 +121,7 @@ const getStyles = (width: number, height: number) => StyleSheet.create({
         flexDirection: 'column',
         gap: 10,
         marginHorizontal: 20,
-        marginTop: 10,
+        marginTop: 5,
         marginBottom: width / 2,
         top: width / 5,
     },
@@ -104,21 +129,37 @@ const getStyles = (width: number, height: number) => StyleSheet.create({
         fontSize: 16,
     },
     poster: {
-        height: width / 2,
+        height: width * 0.6,
     },
     posterContainer: {
-        width: width / 3,
+        width: width * 0.4,
         borderRadius: 15,
         borderWidth: 5,
         borderColor: PlatformColor('systemGroupedBackground'),
         overflow: 'hidden',
         position: 'absolute',
-        top: width / 4,
+        top: width * 0.15,
         left: 20,
     },
     subtitle: {
         fontSize: 20,
         color: PlatformColor('secondaryLabel'),
+    },
+    statusButton: {
+        position: 'absolute',
+        top: width * 0.6,
+        right: 10,
+        margin: 10,
+        padding: 10,
+        borderRadius: 5,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 5,
+    },
+    status: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 16,
     },
     tag: {
         borderWidth: 1,

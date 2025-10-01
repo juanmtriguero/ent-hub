@@ -1,5 +1,6 @@
 import { Image } from 'expo-image';
 import { Href, Link, useRouter } from 'expo-router';
+import { SymbolView } from 'expo-symbols';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, PlatformColor, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
@@ -18,9 +19,10 @@ type Props = {
     header?: { title: string, link: Href },
     limit?: number,
     params?: any,
+    statusOptions: any[],
 };
 
-export default function TileList({ buildTile, fetchData, header, limit, params }: Props) {
+export default function TileList({ buildTile, fetchData, header, limit, params, statusOptions }: Props) {
 
     const router = useRouter();
     const [ isLoading, setIsLoading ] = useState<boolean>(false);
@@ -75,6 +77,21 @@ export default function TileList({ buildTile, fetchData, header, limit, params }
         }
     }, [page]);
 
+    // FIXME: Retrieve
+    const status = null;
+
+    const statusIcon = () => {
+        const currentStatus = statusOptions.find(option => option.value === status);
+        if (currentStatus) {
+            return (
+                <View style={{ ...styles.status, backgroundColor: currentStatus.color }}>
+                    <SymbolView name={currentStatus.icon} tintColor="white" size={ width / 20 } />
+                </View>
+            );
+        }
+        return null;
+    };
+
     const renderTile = ({ item }: { item: Tile }) => {
         const navigateToDetail = () => {
             router.navigate(item.detail);
@@ -82,6 +99,7 @@ export default function TileList({ buildTile, fetchData, header, limit, params }
         return (
             <Pressable onPress={navigateToDetail} style={styles.tile}>
                 <Image source={item.posterUrl} style={styles.poster} contentFit="cover" placeholder={posterPlaceholder} placeholderContentFit="cover" />
+                {statusIcon()}
                 <View style={styles.titleContainer}>
                     <Text numberOfLines={2} style={styles.title}>{item.title + '\n'}</Text>
                     <Text>{item.releaseYear}</Text>
@@ -172,6 +190,15 @@ const getStyles = (tileWidth: number) => StyleSheet.create({
     },
     poster: {
         height: tileWidth * 1.5,
+    },
+    status: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        padding: 10,
+        borderWidth: 2,
+        borderColor: 'white',
+        borderRadius: 100,
     },
     tile: {
         width: tileWidth,
