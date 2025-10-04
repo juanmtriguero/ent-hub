@@ -3,25 +3,20 @@ import { comicVine } from '@/integration/comicVine';
 import { giantBomb } from '@/integration/giantBomb';
 import { google } from '@/integration/google';
 import { tmdb } from '@/integration/tmdb';
-import { useBooksSettings, useComicsSettings, useGamesSettings, useMoviesAndTVSettings } from '@/util/state';
+import { useBooksSettings, useComicsSettings, useGeneralSettings, useGamesSettings, useMoviesAndTVSettings } from '@/util/state';
 import { Redirect } from 'expo-router';
-import { useEffect, useState } from 'react';
 import { Button, PlatformColor, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Index() {
 
+    const generalSettings = useGeneralSettings();
     const moviesAndTVSettings = useMoviesAndTVSettings();
     const booksSettings = useBooksSettings();
     const gamesSettings = useGamesSettings();
     const comicsSettings = useComicsSettings();
-    const [ redirect, setRedirect ] = useState<boolean>(true);
 
-    useEffect(() => {
-        setRedirect(false);
-    }, []);
-
-    if (redirect) {
+    if (generalSettings.ready) {
         if (moviesAndTVSettings.enabled) {
             return <Redirect href="/(tabs)/movies" />;
         }
@@ -54,7 +49,7 @@ export default function Index() {
                     <Setting title="Comics" state={comicsSettings} api={comicVine} />
                 </View>
                 <View style={styles.footer}>
-                    <Button title="I am ready" onPress={() => setRedirect(true)} disabled={!moviesAndTVSettings.enabled && !booksSettings.enabled && !gamesSettings.enabled && !comicsSettings.enabled} />
+                    <Button title="I am ready" onPress={() => generalSettings.setReady(true)} disabled={!moviesAndTVSettings.enabled && !booksSettings.enabled && !gamesSettings.enabled && !comicsSettings.enabled} />
                 </View>
             </ScrollView>
         </SafeAreaView>
