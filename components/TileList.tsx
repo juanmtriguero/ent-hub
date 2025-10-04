@@ -206,9 +206,7 @@ const getStyles = (tileWidth: number) => StyleSheet.create({
         top: 10,
         right: 10,
         padding: 10,
-        borderWidth: 2,
-        borderColor: 'white',
-        borderRadius: 100,
+        borderRadius: '100%',
     },
     tile: {
         width: tileWidth,
