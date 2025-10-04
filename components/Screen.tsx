@@ -1,9 +1,16 @@
 import { Image } from 'expo-image';
-import { SymbolView } from 'expo-symbols';
+import { SFSymbol, SymbolView } from 'expo-symbols';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, AlertButton, PlatformColor, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, Alert, AlertButton, OpaqueColorValue, PlatformColor, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 const posterPlaceholder = require('@/assets/images/poster.png');
+
+export type Status = {
+    color: OpaqueColorValue,
+    icon: SFSymbol,
+    label: string,
+    value: string,
+};
 
 export type Screen = {
     backdropUrl: string,
@@ -18,29 +25,34 @@ export type Screen = {
 type Props = {
     buildScreen: (item: any) => Screen,
     fetchData: (id: string) => Promise<any>,
+    getStatus: (id: string) => Promise<string | null>,
     id: string,
-    statusOptions: any[],
+    statusOptions: Status[],
+    updateStatus: (id: string, status: string | null) => Promise<void>,
 };
 
-export default function Screen({ buildScreen, fetchData, id, statusOptions }: Props) {
+export default function Screen({ buildScreen, fetchData, getStatus, id, statusOptions, updateStatus }: Props) {
 
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
     const [ screen, setScreen ] = useState<Screen | null>(null);
+    const [ status, setStatus ] = useState<string | null>(null);
     const { height, width } = useWindowDimensions();
     const styles = getStyles(width, height);
 
-    // FIXME: Store and retrieve
-    const [ status, setStatus ] = useState<string | null>(null);
-
     useEffect(() => {
         setIsLoading(true);
-        fetchData(id)
-        .then(data => {
+        Promise.all([
+            fetchData(id),
+            getStatus(id),
+        ])
+        .then(([ data, status ]) => {
             setScreen(buildScreen(data));
+            setStatus(status);
         })
         .catch(error => {
             console.error(error);
             setScreen(null);
+            setStatus(null);
         })
         .finally(() => {
             setIsLoading(false);
@@ -63,17 +75,28 @@ export default function Screen({ buildScreen, fetchData, id, statusOptions }: Pr
         );
     }
 
-    const selectedStatus = status ? statusOptions.find(option => option.value === status) : 
-        { label: 'Not saved', value: null, icon: 'nosign', color: PlatformColor('systemGray') };
+    const selectedStatus: Status = (status ? statusOptions.find(option => option.value === status) : null) ??
+        { label: 'Not saved', value: '', icon: 'nosign', color: PlatformColor('systemGray') };
+
+    const changeStatus = (status: string | null) => {
+        updateStatus(id, status)
+        .then(() => {
+            setStatus(status);
+        })
+        .catch(error => {
+            console.error(error);
+            Alert.alert('Error', 'Your selection was not saved, please try again');
+        });
+    }
 
     const selectStatus = () => {
         const buttons: AlertButton[] = [ { text: 'Cancel', style: 'cancel' } ];
         if (status) {
-            buttons.push({ text: 'Remove', onPress: () => setStatus(null), style: 'destructive' });
+            buttons.push({ text: 'Remove', onPress: () => changeStatus(null), style: 'destructive' });
         }
         statusOptions.forEach(option => {
             if (option.value !== status) {
-                buttons.push({ text: option.label, onPress: () => setStatus(option.value) });
+                buttons.push({ text: option.label, onPress: () => changeStatus(option.value) });
             }
         });
         Alert.alert('Status', '', buttons);

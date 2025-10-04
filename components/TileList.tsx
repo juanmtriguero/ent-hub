@@ -1,34 +1,37 @@
+import { Status } from '@/components/Screen';
 import { Image } from 'expo-image';
-import { Href, Link, useRouter } from 'expo-router';
+import { Href, Link, useFocusEffect, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, PlatformColor, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 const posterPlaceholder = require('@/assets/images/poster.png');
 
 export type Tile = {
     detail: Href,
+    id: string,
     posterUrl: string,
     releaseYear: string,
     title: string,
 };
 
 type Props = {
+    getStatuses: (ids: string[]) => Promise<Map<string, Status>>,
     buildTile: (item: any) => Tile,
     fetchData: (page: number, params: any, signal: AbortSignal) => Promise<{ numPages: number, results: any[] }>,
     header?: { title: string, link: Href },
     limit?: number,
     params?: any,
-    statusOptions: any[],
 };
 
-export default function TileList({ buildTile, fetchData, header, limit, params, statusOptions }: Props) {
+export default function TileList({ getStatuses, buildTile, fetchData, header, limit, params }: Props) {
 
     const router = useRouter();
     const [ isLoading, setIsLoading ] = useState<boolean>(false);
     const [ numPages, setNumPages ] = useState<number>(0);
     const [ page, setPage ] = useState<number>(1);
     const [ tiles, setTiles ] = useState<Tile[]>([]);
+    const [ statuses, setStatuses ] = useState<Map<string, Status>>(new Map());
     const { width } = useWindowDimensions();
     const numberOfColumns = Math.floor(width / 180);
     const styles = getStyles((width - 10 - (numberOfColumns * 10)) / numberOfColumns);
@@ -51,14 +54,14 @@ export default function TileList({ buildTile, fetchData, header, limit, params, 
         .finally(() => {
             setIsLoading(false);
         });
-    }
+    };
 
     const limitTiles = (tiles: Tile[]): Tile[] => {
         if (limit) {
             return tiles.slice(0, limit);
         }
         return tiles;
-    }
+    };
 
     useEffect(() => {
         controller.abort();
@@ -77,15 +80,22 @@ export default function TileList({ buildTile, fetchData, header, limit, params, 
         }
     }, [page]);
 
-    // FIXME: Retrieve
-    const status = null;
+    useFocusEffect(useCallback(() => {
+        getStatuses(tiles.map(tile => tile.id))
+        .then(statuses => {
+            setStatuses(statuses);
+        })
+        .catch(error => {
+            console.error(error);
+        });
+    }, [tiles]));
 
-    const statusIcon = () => {
-        const currentStatus = statusOptions.find(option => option.value === status);
-        if (currentStatus) {
+    const statusIcon = (id: string) => {
+        const status = statuses.get(id);
+        if (status) {
             return (
-                <View style={{ ...styles.status, backgroundColor: currentStatus.color }}>
-                    <SymbolView name={currentStatus.icon} tintColor="white" size={ width / 20 } />
+                <View style={{ ...styles.status, backgroundColor: status.color }}>
+                    <SymbolView name={status.icon} tintColor="white" size={ width / 20 } />
                 </View>
             );
         }
@@ -99,7 +109,7 @@ export default function TileList({ buildTile, fetchData, header, limit, params, 
         return (
             <Pressable onPress={navigateToDetail} style={styles.tile}>
                 <Image source={item.posterUrl} style={styles.poster} contentFit="cover" placeholder={posterPlaceholder} placeholderContentFit="cover" />
-                {statusIcon()}
+                {statusIcon(item.id)}
                 <View style={styles.titleContainer}>
                     <Text numberOfLines={2} style={styles.title}>{item.title + '\n'}</Text>
                     <Text>{item.releaseYear}</Text>

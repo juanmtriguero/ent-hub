@@ -1,3 +1,4 @@
+import { Status } from '@/components/Screen';
 import TileList, { Tile } from '@/components/TileList';
 import { Href, useNavigation, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
@@ -12,14 +13,14 @@ export type Section = {
 };
 
 type Props = {
+    getStatuses: (ids: string[]) => Promise<Map<string, Status>>,
     buildTile: (item: any) => Tile,
     searchData: (page: number, params: any, signal: AbortSignal) => Promise<{ numPages: number, results: any[] }>;
     searchOn: string;
     sections: Section[];
-    statusOptions: any[];
 };
 
-export default function Index({ buildTile, searchData, searchOn, sections, statusOptions }: Props) {
+export default function Index({ getStatuses, buildTile, searchData, searchOn, sections }: Props) {
 
     const navigation = useNavigation();
     const router = useRouter();
@@ -55,7 +56,7 @@ export default function Index({ buildTile, searchData, searchOn, sections, statu
     );
 
     const searchView = (
-        <TileList buildTile={buildTile} fetchData={searchData} params={searchParams} statusOptions={statusOptions} />
+        <TileList getStatuses={getStatuses} buildTile={buildTile} fetchData={searchData} params={searchParams} />
     );
 
     const homeView = (
@@ -63,7 +64,7 @@ export default function Index({ buildTile, searchData, searchOn, sections, statu
             contentInsetAdjustmentBehavior="automatic"
             data={sections}
             renderItem={({ item }: { item: Section }) => (
-                <TileList buildTile={buildTile} fetchData={item.fetchData} header={{ title: item.title, link: item.viewAll }} limit={item.limit} statusOptions={statusOptions} />
+                <TileList getStatuses={getStatuses} buildTile={buildTile} fetchData={item.fetchData} header={{ title: item.title, link: item.viewAll }} limit={item.limit} />
             )}
         />
     );

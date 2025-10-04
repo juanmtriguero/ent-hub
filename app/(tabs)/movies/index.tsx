@@ -1,6 +1,6 @@
 import Index, { Section } from '@/components/Index';
 import { getPopularMovies, searchMovies } from '@/integration/tmdb';
-import { getMovieTile, movieStatusOptions } from '@/util/movies';
+import { getMovieStatuses, getMovieTile } from '@/util/movies';
 
 const sections: Section[] = [
     {
@@ -14,7 +14,7 @@ const sections: Section[] = [
 export default function MoviesIndex() {
 
     return (
-        <Index buildTile={getMovieTile} searchData={searchMovies} searchOn="movies" sections={sections} statusOptions={movieStatusOptions} />
+        <Index getStatuses={getMovieStatuses} buildTile={getMovieTile} searchData={searchMovies} searchOn="movies" sections={sections} />
     );
 
 }

@@ -1,11 +1,11 @@
 import TileList from '@/components/TileList';
 import { getPopularMovies } from '@/integration/tmdb';
-import { getMovieTile, movieStatusOptions } from '@/util/movies';
+import { getMovieStatuses, getMovieTile } from '@/util/movies';
 
 export default function MoviesPopular() {
 
     return (
-        <TileList buildTile={getMovieTile} fetchData={getPopularMovies} statusOptions={movieStatusOptions} />
+        <TileList getStatuses={getMovieStatuses} buildTile={getMovieTile} fetchData={getPopularMovies} />
     );
 
 }
