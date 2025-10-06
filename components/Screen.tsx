@@ -15,6 +15,7 @@ export type Status = {
 export type Screen = {
     backdropUrl: string,
     description: string,
+    details: string,
     genres: string[],
     originalTitle: string,
     posterUrl: string,
@@ -23,6 +24,7 @@ export type Screen = {
 };
 
 type Props = {
+    additionalContent: React.ReactNode,
     buildScreen: (item: any) => Screen,
     fetchData: (id: string) => Promise<any>,
     getStatus: (id: string) => Promise<string | null>,
@@ -31,7 +33,7 @@ type Props = {
     updateStatus: (id: string, status: string | null) => Promise<void>,
 };
 
-export default function Screen({ buildScreen, fetchData, getStatus, id, statusOptions, updateStatus }: Props) {
+export default function Screen({ additionalContent, buildScreen, fetchData, getStatus, id, statusOptions, updateStatus }: Props) {
 
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
     const [ screen, setScreen ] = useState<Screen | null>(null);
@@ -116,9 +118,11 @@ export default function Screen({ buildScreen, fetchData, getStatus, id, statusOp
                 <Text style={styles.title}>{screen.title}</Text>
                 <Text style={styles.subtitle}>{screen.originalTitle} ({screen.releaseYear})</Text>
                 <Text style={styles.description}>{screen.description}</Text>
+                <Text style={styles.details}>{screen.details}</Text>
                 <View style={styles.tags}>
                     {screen.genres.map((genre) => <Text key={genre} style={styles.tag}>{genre}</Text>)}
                 </View>
+                {additionalContent}
             </View>
         </ScrollView>
     );
@@ -150,6 +154,9 @@ const getStyles = (width: number, height: number) => StyleSheet.create({
     },
     description: {
         fontSize: 16,
+    },
+    details: {
+        fontWeight: 'bold',
     },
     poster: {
         height: width * 0.6,
@@ -189,6 +196,7 @@ const getStyles = (width: number, height: number) => StyleSheet.create({
         borderColor: 'lightgray',
         borderRadius: 5,
         padding: 5,
+        backgroundColor: 'white',
     },
     tags: {
         flexDirection: 'row',

@@ -1,6 +1,8 @@
 import { Screen, Status } from '@/components/Screen';
 import { Tile } from '@/components/TileList';
 import { BACKDROP_SIZE, IMAGE_URL, POSTER_SIZE } from '@/integration/tmdb';
+import { formatDuration, intervalToDuration } from 'date-fns';
+import { es } from 'date-fns/locale';
 import * as SQLite from 'expo-sqlite';
 import { PlatformColor } from 'react-native';
 
@@ -8,6 +10,7 @@ const getPosterUrl = (posterPath: string): string => `${IMAGE_URL}${POSTER_SIZE}
 const getBackdropUrl = (backdropPath: string): string => `${IMAGE_URL}${BACKDROP_SIZE}${backdropPath}`;
 const getReleaseYear = (releaseDate: string): string => new Date(releaseDate).getFullYear().toString();
 const getGenres = (genres: any[]): string[] => genres.map((genre: any) => genre.name);
+const getDuration = (minutes: number): string => formatDuration(intervalToDuration({ start: 0, end: minutes * 60000 }), { locale: es });
 
 export const getMovieTile = (movie: any): Tile => ({
     detail: {
@@ -23,6 +26,7 @@ export const getMovieTile = (movie: any): Tile => ({
 export const getMovieScreen = (movie: any): Screen => ({
     backdropUrl: getBackdropUrl(movie.backdrop_path),
     description: movie.overview,
+    details: getDuration(movie.runtime),
     genres: getGenres(movie.genres),
     originalTitle: movie.original_title,
     posterUrl: getPosterUrl(movie.poster_path),

@@ -5,10 +5,12 @@ const PATH_AUTHENTICATE = 'authentication';
 const PATH_SEARCH_MOVIE = 'search/movie';
 const PATH_MOVIE_DETAILS = 'movie/';
 const PATH_MOVIE_POPULAR = 'movie/popular';
+const PATH_WATCH_PROVIDERS = '/watch/providers';
 
 export const IMAGE_URL = 'https://image.tmdb.org/t/p/';
 export const POSTER_SIZE = 'w342';
 export const BACKDROP_SIZE = 'w780';
+export const LOGO_SIZE = 'w92';
 
 async function getHeaders(): Promise<HeadersInit> {
     return {
@@ -25,7 +27,7 @@ async function authenticate(): Promise<boolean> {
     return response.ok;
 }
 
-async function get(path: string, params: URLSearchParams, signal?: AbortSignal): Promise<any> {
+async function get(path: string, params?: URLSearchParams, signal?: AbortSignal): Promise<any> {
     const response = await fetch(`${BASE_URL}${path}?${params}`, {
         method: 'GET',
         headers: await getHeaders(),
@@ -65,6 +67,11 @@ export async function getMovie(id: string): Promise<any> {
         language: 'es-ES',
     });
     return await get(PATH_MOVIE_DETAILS + id, params);
+}
+
+export async function getMovieWatchProviders(id: string): Promise<any> {
+    const { results } = await get(PATH_MOVIE_DETAILS + id + PATH_WATCH_PROVIDERS);
+    return results.ES;
 }
 
 export const tmdb: Api = {
