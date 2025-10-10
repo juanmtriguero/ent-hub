@@ -1,10 +1,11 @@
-import { Stack } from 'expo-router';
+import { Movie, MovieGenre, MovieProvider } from '@/models/movies';
 import { RealmProvider } from '@realm/react';
-import { Movie } from '@/schema/movies';
+import { Stack } from 'expo-router';
 
 export default function MoviesLayout() {
     return (
-        <RealmProvider schema={[ Movie ]}>
+        // FIXME: remove deleteRealmIfMigrationNeeded after development
+        <RealmProvider schema={[ Movie, MovieGenre, MovieProvider ]} deleteRealmIfMigrationNeeded>
             <Stack>
                 <Stack.Screen name="index" options={{ title: 'Movies' }} />
                 <Stack.Screen name="popular" options={{ title: 'Popular Movies' }} />

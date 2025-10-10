@@ -1,3 +1,4 @@
+import { Item, SavedItem } from '@/models/interfaces';
 import { Realm, useQuery, useRealm } from '@realm/react';
 import { Image } from 'expo-image';
 import { SFSymbol, SymbolView } from 'expo-symbols';
@@ -13,33 +14,21 @@ export type Status = {
     value: string,
 };
 
-export type Screen = {
-    additionalInfo: any,
-    backdropUrl: string,
-    description: string,
-    details: string,
-    genres: { id: string, name: string }[],
-    originalTitle: string,
-    posterUrl: string,
-    releaseYear: string,
-    title: string,
-};
-
 type Props = {
-    additionalContent: (additionalInfo: any) => React.ReactNode,
-    buildScreen: (item: any) => Screen,
+    additionalContent: (item: Item & any) => React.ReactNode,
+    buildItem: (data: any) => Item,
     fetchData: (id: string) => Promise<any>,
     id: string,
-    schema: Realm.ObjectClass<{ id: string, status: string } & Realm.Object>,
+    schema: Realm.ObjectClass<SavedItem & Realm.Object>,
     statusOptions: Status[],
 };
 
-export default function Screen({ additionalContent, buildScreen, fetchData, id, schema, statusOptions }: Props) {
+export default function Screen({ additionalContent, buildItem, fetchData, id, schema, statusOptions }: Props) {
 
-    const item = useQuery(schema).filtered('id == $0', id)[0];
+    const savedItem = useQuery(schema).filtered('id == $0', id)[0];
     const realm = useRealm();
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
-    const [ screen, setScreen ] = useState<Screen | null>(null);
+    const [ item, setItem ] = useState<Item | null>(null);
     const { height, width } = useWindowDimensions();
     const styles = getStyles(width, height);
 
@@ -47,11 +36,11 @@ export default function Screen({ additionalContent, buildScreen, fetchData, id, 
         setIsLoading(true);
         fetchData(id)
         .then(data => {
-            setScreen(buildScreen(data));
+            setItem(buildItem(data));
         })
         .catch(error => {
             console.error(error);
-            setScreen(null);
+            setItem(null);
         })
         .finally(() => {
             setIsLoading(false);
@@ -66,7 +55,7 @@ export default function Screen({ additionalContent, buildScreen, fetchData, id, 
         );
     }
 
-    if (!screen) {
+    if (!item) {
         return (
             <View style={styles.centered}>
                 <Text style={styles.centeredText}>There was an error loading the details, please try again later</Text>
@@ -74,30 +63,31 @@ export default function Screen({ additionalContent, buildScreen, fetchData, id, 
         );
     }
 
-    const selectedStatus: Status = statusOptions.find(option => option.value === item?.status) ??
+    const selectedStatus: Status = statusOptions.find(option => option.value === savedItem?.status) ??
         { label: 'Not saved', value: '', icon: 'nosign', color: PlatformColor('systemGray') };
 
     const changeStatus = (status: string | null) => {
         realm.write(() => {
             if (status) {
-                if (item) {
-                    item.status = status;
+                if (savedItem) {
+                    savedItem.status = status;
+                    savedItem.timestamp = Date.now();
                 } else {
-                    realm.create(schema, { id, status });
+                    realm.create(schema, { ...item, status, timestamp: Date.now() }, Realm.UpdateMode.Modified);
                 }
             } else {
-                realm.delete(item);
+                realm.delete(savedItem);
             }
         });
     };
 
     const selectStatus = () => {
         const buttons: AlertButton[] = [ { text: 'Cancel', style: 'cancel' } ];
-        if (item?.status) {
+        if (savedItem?.status) {
             buttons.push({ text: 'Remove', onPress: () => changeStatus(null), style: 'destructive' });
         }
         statusOptions.forEach(option => {
-            if (option.value !== item?.status) {
+            if (option.value !== savedItem?.status) {
                 buttons.push({ text: option.label, onPress: () => changeStatus(option.value) });
             }
         });
@@ -106,23 +96,23 @@ export default function Screen({ additionalContent, buildScreen, fetchData, id, 
 
     return (
         <ScrollView>
-            <Image source={screen.backdropUrl} style={styles.backdrop} contentFit="cover" />
+            <Image source={item.backdropUrl} style={styles.backdrop} contentFit="cover" />
             <View style={styles.posterContainer}>
-                <Image source={screen.posterUrl} style={styles.poster} contentFit="cover" placeholder={posterPlaceholder} placeholderContentFit="cover" />
+                <Image source={item.posterUrl} style={styles.poster} contentFit="cover" placeholder={posterPlaceholder} placeholderContentFit="cover" />
             </View>
             <Pressable style={{ ...styles.statusButton, backgroundColor: selectedStatus.color }} onPress={selectStatus}>
                 <SymbolView name={selectedStatus.icon} size={16} tintColor="white" />
                 <Text style={styles.status}>{selectedStatus.label}</Text>
             </Pressable>
             <View style={styles.content}>
-                <Text style={styles.title}>{screen.title}</Text>
-                <Text style={styles.subtitle}>{screen.originalTitle} ({screen.releaseYear})</Text>
-                <Text style={styles.description}>{screen.description}</Text>
-                <Text style={styles.details}>{screen.details}</Text>
+                <Text style={styles.title}>{item.title}</Text>
+                <Text style={styles.subtitle}>{item.originalTitle} ({item.releaseYear})</Text>
+                <Text style={styles.description}>{item.description}</Text>
+                <Text style={styles.details}>{item.details}</Text>
                 <View style={styles.tags}>
-                    {screen.genres.map((genre) => <Text key={genre.id} style={styles.tag}>{genre.name}</Text>)}
+                    {item.genres.map((genre) => <Text key={genre.id} style={styles.tag}>{genre.name}</Text>)}
                 </View>
-                {additionalContent(screen.additionalInfo)}
+                {additionalContent(item)}
             </View>
         </ScrollView>
     );

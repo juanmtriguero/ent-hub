@@ -1,6 +1,6 @@
 import TileList from '@/components/TileList';
 import { getPopularMovies } from '@/integration/tmdb';
-import { Movie } from '@/schema/movies';
+import { Movie } from '@/models/movies';
 import { getMovieTile, movieStatusOptions } from '@/util/movies';
 
 export default function MoviesPopular() {

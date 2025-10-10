@@ -1,7 +1,7 @@
 import Screen from '@/components/Screen';
 import { getMovie } from '@/integration/tmdb';
-import { Movie } from '@/schema/movies';
-import { getMovieScreen, movieStatusOptions, WatchProvider, WatchProviders } from '@/util/movies';
+import { Movie, MovieProvider } from '@/models/movies';
+import { buildMovie, movieStatusOptions } from '@/util/movies';
 import { Image } from 'expo-image';
 import { useLocalSearchParams } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
@@ -10,7 +10,7 @@ export default function MovieScreen() {
 
     const { movie } = useLocalSearchParams<{ movie: string }>();
 
-    const renderWatchProviderSection = (title: string, providers?: WatchProvider[]) => {
+    const renderWatchProviderSection = (title: string, providers?: MovieProvider[]) => {
         if (providers?.length) {
             const renderWatchProviders = providers.map(({ id, logoUrl }) => (
                 <Image key={id} source={logoUrl} style={styles.watchProviderLogo} />
@@ -27,18 +27,18 @@ export default function MovieScreen() {
         return null;
     };
 
-    const additionalContent = ({ watchProviders }: { watchProviders: WatchProviders }) => Object.keys(watchProviders).length ? (
+    const additionalContent = (item: Movie) => (item.flatrate?.length || item.ads?.length || item.rent?.length || item.buy?.length) ? (
         <View style={styles.watchProviderContainer}>
             <Text style={styles.watchProviderTitle}>Where to watch</Text>
-            {renderWatchProviderSection('Streaming', watchProviders.flatrate)}
-            {renderWatchProviderSection('Free (with ads)', watchProviders.ads)}
-            {renderWatchProviderSection('Rent', watchProviders.rent)}
-            {renderWatchProviderSection('Buy', watchProviders.buy)}
+            {renderWatchProviderSection('Streaming', item.flatrate)}
+            {renderWatchProviderSection('Free (with ads)', item.ads)}
+            {renderWatchProviderSection('Rent', item.rent)}
+            {renderWatchProviderSection('Buy', item.buy)}
         </View>
     ) : null;
 
     return (
-        <Screen additionalContent={additionalContent} buildScreen={getMovieScreen} fetchData={getMovie} id={movie} schema={Movie} statusOptions={movieStatusOptions} />
+        <Screen additionalContent={additionalContent} buildItem={buildMovie} fetchData={getMovie} id={movie} schema={Movie} statusOptions={movieStatusOptions} />
     );
 
 }
