@@ -1,3 +1,4 @@
+import { Realm, useQuery, useRealm } from '@realm/react';
 import { Image } from 'expo-image';
 import { SFSymbol, SymbolView } from 'expo-symbols';
 import { useEffect, useState } from 'react';
@@ -13,10 +14,11 @@ export type Status = {
 };
 
 export type Screen = {
+    additionalInfo: any,
     backdropUrl: string,
     description: string,
     details: string,
-    genres: string[],
+    genres: { id: string, name: string }[],
     originalTitle: string,
     posterUrl: string,
     releaseYear: string,
@@ -24,37 +26,32 @@ export type Screen = {
 };
 
 type Props = {
-    additionalContent: React.ReactNode,
+    additionalContent: (additionalInfo: any) => React.ReactNode,
     buildScreen: (item: any) => Screen,
     fetchData: (id: string) => Promise<any>,
-    getStatus: (id: string) => Promise<string | null>,
     id: string,
+    schema: Realm.ObjectClass<{ id: string, status: string } & Realm.Object>,
     statusOptions: Status[],
-    updateStatus: (id: string, status: string | null) => Promise<void>,
 };
 
-export default function Screen({ additionalContent, buildScreen, fetchData, getStatus, id, statusOptions, updateStatus }: Props) {
+export default function Screen({ additionalContent, buildScreen, fetchData, id, schema, statusOptions }: Props) {
 
+    const item = useQuery(schema).filtered('id == $0', id)[0];
+    const realm = useRealm();
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
     const [ screen, setScreen ] = useState<Screen | null>(null);
-    const [ status, setStatus ] = useState<string | null>(null);
     const { height, width } = useWindowDimensions();
     const styles = getStyles(width, height);
 
     useEffect(() => {
         setIsLoading(true);
-        Promise.all([
-            fetchData(id),
-            getStatus(id),
-        ])
-        .then(([ data, status ]) => {
+        fetchData(id)
+        .then(data => {
             setScreen(buildScreen(data));
-            setStatus(status);
         })
         .catch(error => {
             console.error(error);
             setScreen(null);
-            setStatus(null);
         })
         .finally(() => {
             setIsLoading(false);
@@ -77,27 +74,30 @@ export default function Screen({ additionalContent, buildScreen, fetchData, getS
         );
     }
 
-    const selectedStatus: Status = (status ? statusOptions.find(option => option.value === status) : null) ??
+    const selectedStatus: Status = statusOptions.find(option => option.value === item?.status) ??
         { label: 'Not saved', value: '', icon: 'nosign', color: PlatformColor('systemGray') };
 
     const changeStatus = (status: string | null) => {
-        updateStatus(id, status)
-        .then(() => {
-            setStatus(status);
-        })
-        .catch(error => {
-            console.error(error);
-            Alert.alert('Error', 'Your selection was not saved, please try again');
+        realm.write(() => {
+            if (status) {
+                if (item) {
+                    item.status = status;
+                } else {
+                    realm.create(schema, { id, status });
+                }
+            } else {
+                realm.delete(item);
+            }
         });
-    }
+    };
 
     const selectStatus = () => {
         const buttons: AlertButton[] = [ { text: 'Cancel', style: 'cancel' } ];
-        if (status) {
+        if (item?.status) {
             buttons.push({ text: 'Remove', onPress: () => changeStatus(null), style: 'destructive' });
         }
         statusOptions.forEach(option => {
-            if (option.value !== status) {
+            if (option.value !== item?.status) {
                 buttons.push({ text: option.label, onPress: () => changeStatus(option.value) });
             }
         });
@@ -120,9 +120,9 @@ export default function Screen({ additionalContent, buildScreen, fetchData, getS
                 <Text style={styles.description}>{screen.description}</Text>
                 <Text style={styles.details}>{screen.details}</Text>
                 <View style={styles.tags}>
-                    {screen.genres.map((genre) => <Text key={genre} style={styles.tag}>{genre}</Text>)}
+                    {screen.genres.map((genre) => <Text key={genre.id} style={styles.tag}>{genre.name}</Text>)}
                 </View>
-                {additionalContent}
+                {additionalContent(screen.additionalInfo)}
             </View>
         </ScrollView>
     );

@@ -13,14 +13,15 @@ export type Section = {
 };
 
 type Props = {
-    getStatuses: (ids: string[]) => Promise<Map<string, Status>>,
-    buildTile: (item: any) => Tile,
+    buildTile: (item: any) => Tile;
+    schema: Realm.ObjectClass<{ id: string, status: string } & Realm.Object>;
     searchData: (page: number, params: any, signal: AbortSignal) => Promise<{ numPages: number, results: any[] }>;
     searchOn: string;
     sections: Section[];
+    statusOptions: Status[];
 };
 
-export default function Index({ getStatuses, buildTile, searchData, searchOn, sections }: Props) {
+export default function Index({ buildTile, schema, searchData, searchOn, sections, statusOptions }: Props) {
 
     const navigation = useNavigation();
     const router = useRouter();
@@ -56,7 +57,7 @@ export default function Index({ getStatuses, buildTile, searchData, searchOn, se
     );
 
     const searchView = (
-        <TileList getStatuses={getStatuses} buildTile={buildTile} fetchData={searchData} params={searchParams} />
+        <TileList schema={schema} statusOptions={statusOptions} buildTile={buildTile} fetchData={searchData} params={searchParams} />
     );
 
     const homeView = (
@@ -64,7 +65,7 @@ export default function Index({ getStatuses, buildTile, searchData, searchOn, se
             contentInsetAdjustmentBehavior="automatic"
             data={sections}
             renderItem={({ item }: { item: Section }) => (
-                <TileList getStatuses={getStatuses} buildTile={buildTile} fetchData={item.fetchData} header={{ title: item.title, link: item.viewAll }} limit={item.limit} />
+                <TileList schema={schema} statusOptions={statusOptions} buildTile={buildTile} fetchData={item.fetchData} header={{ title: item.title, link: item.viewAll }} limit={item.limit} />
             )}
         />
     );

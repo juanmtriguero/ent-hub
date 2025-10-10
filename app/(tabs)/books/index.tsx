@@ -1,6 +1,7 @@
 import Index, { Section } from '@/components/Index';
 import { searchMovies } from '@/integration/tmdb';
-import { getMovieStatuses, getMovieTile } from '@/util/movies';
+import { Movie } from '@/schema/movies';
+import { getMovieTile, movieStatusOptions } from '@/util/movies';
 
 const sections: Section[] = [];
 
@@ -8,7 +9,7 @@ export default function BooksIndex() {
 
     return (
         // TODO: create methods for Books
-        <Index getStatuses={getMovieStatuses} buildTile={getMovieTile} searchData={searchMovies} searchOn="books" sections={sections} />
+        <Index buildTile={getMovieTile} schema={Movie} searchData={searchMovies} searchOn="books" sections={sections} statusOptions={movieStatusOptions} />
     );
 
 }

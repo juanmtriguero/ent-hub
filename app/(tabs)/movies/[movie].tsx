@@ -1,32 +1,19 @@
 import Screen from '@/components/Screen';
-import { getMovie, getMovieWatchProviders, IMAGE_URL, LOGO_SIZE } from '@/integration/tmdb';
-import { getMovieScreen, getMovieStatus, movieStatusOptions, updateMovieStatus } from '@/util/movies';
+import { getMovie } from '@/integration/tmdb';
+import { Movie } from '@/schema/movies';
+import { getMovieScreen, movieStatusOptions, WatchProvider, WatchProviders } from '@/util/movies';
 import { Image } from 'expo-image';
 import { useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 export default function MovieScreen() {
 
     const { movie } = useLocalSearchParams<{ movie: string }>();
-    const [ watchProviders, setWatchProviders ] = useState<any>({});
 
-    useEffect(() => {
-        getMovieWatchProviders(movie)
-        .then(watchProviders => {
-            if (watchProviders) {
-                setWatchProviders(watchProviders);
-            }
-        })
-        .catch(error => {
-            console.error(error);
-        });
-    }, [movie]);
-
-    const renderWatchProviderSection = (title: string, providers: { logo_path: string, provider_id: string, provider_name: string }[]) => {
+    const renderWatchProviderSection = (title: string, providers?: WatchProvider[]) => {
         if (providers?.length) {
-            const renderWatchProviders = providers.map(({ logo_path, provider_id, provider_name }) => (
-                <Image key={provider_id} source={`${IMAGE_URL}${LOGO_SIZE}/${logo_path}`} style={styles.watchProviderLogo} />
+            const renderWatchProviders = providers.map(({ id, logoUrl }) => (
+                <Image key={id} source={logoUrl} style={styles.watchProviderLogo} />
             ));
             return (
                 <View key={title} style={styles.watchProviderSection}>
@@ -40,7 +27,7 @@ export default function MovieScreen() {
         return null;
     };
 
-    const additionalContent = Object.keys(watchProviders).length ? (
+    const additionalContent = ({ watchProviders }: { watchProviders: WatchProviders }) => Object.keys(watchProviders).length ? (
         <View style={styles.watchProviderContainer}>
             <Text style={styles.watchProviderTitle}>Where to watch</Text>
             {renderWatchProviderSection('Streaming', watchProviders.flatrate)}
@@ -51,7 +38,7 @@ export default function MovieScreen() {
     ) : null;
 
     return (
-        <Screen additionalContent={additionalContent} buildScreen={getMovieScreen} fetchData={getMovie} getStatus={getMovieStatus} id={movie} statusOptions={movieStatusOptions} updateStatus={updateMovieStatus} />
+        <Screen additionalContent={additionalContent} buildScreen={getMovieScreen} fetchData={getMovie} id={movie} schema={Movie} statusOptions={movieStatusOptions} />
     );
 
 }

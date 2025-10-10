@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createMovieTables } from '@/util/movies';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -20,15 +19,13 @@ export type SettingsState = {
     toggleEnabled: () => void;
 };
 
-const useSettings = (name: string, createTables: () => Promise<void>) => {
+const useSettings = (name: string) => {
     return create<SettingsState>()(persist((set, get) => ({
         enabled: false,
-        toggleEnabled: async () => {
+        toggleEnabled: () => {
             try {
                 const enabled = get().enabled;
-                if (!enabled) {
-                    await createTables();
-                } else {
+                if (enabled) {
                     const totalEnabled = [
                         useMoviesAndTVSettings.getState().enabled,
                         useBooksSettings.getState().enabled,
@@ -54,8 +51,7 @@ const useSettings = (name: string, createTables: () => Promise<void>) => {
     }), { name: name, storage: storage }));
 };
 
-// TODO: Create tables for books, games, and comics
-export const useMoviesAndTVSettings = useSettings('moviesAndTVSettings', createMovieTables);
-export const useBooksSettings = useSettings('booksSettings', () => Promise.resolve());
-export const useGamesSettings = useSettings('gamesSettings', () => Promise.resolve());
-export const useComicsSettings = useSettings('comicsSettings', () => Promise.resolve());
+export const useMoviesAndTVSettings = useSettings('moviesAndTVSettings');
+export const useBooksSettings = useSettings('booksSettings');
+export const useGamesSettings = useSettings('gamesSettings');
+export const useComicsSettings = useSettings('comicsSettings');
