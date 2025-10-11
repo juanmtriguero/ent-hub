@@ -37,10 +37,15 @@ export default function Screen({ additionalContent, buildItem, fetchData, id, sc
         fetchData(id)
         .then(data => {
             setItem(buildItem(data));
+            if (savedItem) {
+                realm.write(() => {
+                    Object.assign(savedItem, item);
+                });
+            }
         })
         .catch(error => {
             console.error(error);
-            setItem(null);
+            setItem(savedItem);
         })
         .finally(() => {
             setIsLoading(false);
