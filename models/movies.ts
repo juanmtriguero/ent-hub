@@ -19,6 +19,7 @@ export class MovieProvider extends Realm.Object implements WatchProvider {
     id!: string;
     logoUrl!: string;
     name!: string;
+    priority?: number;
 
     static schema = {
         name: 'MovieProvider',
@@ -27,6 +28,7 @@ export class MovieProvider extends Realm.Object implements WatchProvider {
             id: 'string',
             logoUrl: 'string',
             name: 'string',
+            priority: 'int?',
         },
     };
 }

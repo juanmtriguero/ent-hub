@@ -24,4 +24,5 @@ export interface WatchProvider {
     id: string;
     logoUrl: string;
     name: string;
+    priority?: number;
 }

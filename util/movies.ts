@@ -50,6 +50,18 @@ export const buildMovie = (movie: any): Item => ({
     ...getWatchProviders(movie['watch/providers'].results.ES),
 });
 
+export const getMovieGenre = (genre: any): Genre => ({
+    id: `${genre.id}`,
+    name: genre.name,
+});
+
+export const getMovieProvider = (provider: any): WatchProvider => ({
+    id: `${provider.provider_id}`,
+    logoUrl: `${IMAGE_URL}${LOGO_SIZE}${provider.logo_path}`,
+    name: provider.provider_name,
+    priority: provider.display_priorities.ES ?? provider.display_priority,
+});
+
 export const movieStatusOptions: Status[] = [
     { label: 'Want to watch', value: 'pending', icon: 'bookmark', color: PlatformColor('systemOrange') },
     { label: 'Watched', value: 'watched', icon: 'checkmark', color: PlatformColor('systemGreen') },

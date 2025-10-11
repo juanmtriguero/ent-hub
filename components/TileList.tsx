@@ -107,7 +107,7 @@ export default function TileList({ tiles, statusOptions, isLoading, getStatus, n
 const getStyles = (tileWidth: number) => StyleSheet.create({
     centered: {
         alignItems: 'center',
-        marginTop: 40,
+        marginVertical: 40,
     },
     columnWrapper: {
         alignItems: 'stretch',
