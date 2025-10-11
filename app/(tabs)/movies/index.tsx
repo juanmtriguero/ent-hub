@@ -7,21 +7,21 @@ const sections: (FetchSection | QuerySection)[] = [
     {
         fetchData: getPopularMovies,
         limit: 4,
-        title: 'Popular Movies',
+        title: 'Popular movies',
         viewAll: { pathname: '/movies/popular' },
     },
     {
         query: 'status == $0',
         queryParams: [ 'pending' ],
         getDetail: getMovieDetail,
-        title: 'Want to watch',
+        title: 'My watchlist',
         viewAll: { pathname: '/movies/pending' },
     },
     {
         query: 'status == $0',
         queryParams: [ 'watched' ],
         getDetail: getMovieDetail,
-        title: 'Watched Movies',
+        title: 'Recently watched',
         viewAll: { pathname: '/movies/watched' },
     },
 ];

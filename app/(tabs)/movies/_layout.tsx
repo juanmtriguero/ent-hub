@@ -8,9 +8,9 @@ export default function MoviesLayout() {
         <RealmProvider schema={[ Movie, MovieGenre, MovieProvider ]} deleteRealmIfMigrationNeeded>
             <Stack>
                 <Stack.Screen name="index" options={{ title: 'Movies' }} />
-                <Stack.Screen name="popular" options={{ title: 'Popular Movies' }} />
-                <Stack.Screen name="pending" options={{ title: 'Want to watch' }} />
-                <Stack.Screen name="watched" options={{ title: 'Watched Movies' }} />
+                <Stack.Screen name="popular" options={{ title: 'Popular movies' }} />
+                <Stack.Screen name="pending" options={{ title: 'My watchlist' }} />
+                <Stack.Screen name="watched" options={{ title: 'Recently watched' }} />
                 <Stack.Screen name="[movie]" options={{ title: '' }} />
             </Stack>
         </RealmProvider>
