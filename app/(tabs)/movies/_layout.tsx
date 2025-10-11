@@ -9,6 +9,8 @@ export default function MoviesLayout() {
             <Stack>
                 <Stack.Screen name="index" options={{ title: 'Movies' }} />
                 <Stack.Screen name="popular" options={{ title: 'Popular Movies' }} />
+                <Stack.Screen name="pending" options={{ title: 'Want to watch' }} />
+                <Stack.Screen name="watched" options={{ title: 'Watched Movies' }} />
                 <Stack.Screen name="[movie]" options={{ title: '' }} />
             </Stack>
         </RealmProvider>

@@ -1,9 +1,7 @@
 import { Status } from '@/components/Screen';
-import { Realm, useQuery } from '@realm/react';
 import { Image } from 'expo-image';
 import { Href, Link, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
-import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, PlatformColor, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 const posterPlaceholder = require('@/assets/images/poster.png');
@@ -11,85 +9,30 @@ const posterPlaceholder = require('@/assets/images/poster.png');
 export type Tile = {
     detail: Href,
     id: string,
-    posterUrl: string,
+    posterUrl?: string,
     releaseYear: string,
     title: string,
+    status?: string,
 };
 
 type Props = {
-    buildTile: (item: any) => Tile,
-    fetchData: (page: number, params: any, signal: AbortSignal) => Promise<{ numPages: number, results: any[] }>,
-    schema: Realm.ObjectClass<{ id: string, status: string } & Realm.Object>,
+    tiles: Tile[],
     statusOptions: Status[],
+    isLoading: boolean,
+    getStatus: (item: Tile) => string | undefined,
+    nextPage?: () => void,
     header?: { title: string, link: Href },
-    limit?: number,
-    params?: any,
 };
 
-export default function TileList({ buildTile, fetchData, schema, statusOptions, header, limit, params }: Props) {
+export default function TileList({ tiles, statusOptions, isLoading, getStatus, nextPage, header }: Props) {
 
     const router = useRouter();
-    const [ isLoading, setIsLoading ] = useState<boolean>(false);
-    const [ numPages, setNumPages ] = useState<number>(0);
-    const [ page, setPage ] = useState<number>(1);
-    const [ tiles, setTiles ] = useState<Tile[]>([]);
     const { width } = useWindowDimensions();
     const numberOfColumns = Math.floor(width / 180);
     const styles = getStyles((width - 10 - (numberOfColumns * 10)) / numberOfColumns);
 
-    let controller = new AbortController();
-
-    const getTiles = (): Promise<Tile[]> => {
-        setIsLoading(true);
-        return fetchData(page, params, controller.signal)
-        .then(({ numPages, results }) => {
-            setNumPages(numPages);
-            return results.map(buildTile);
-        })
-        .catch(error => {
-            if (error.name !== 'AbortError') {
-                console.error(error);
-            }
-            return [];
-        })
-        .finally(() => {
-            setIsLoading(false);
-        });
-    };
-
-    const limitTiles = (tiles: Tile[]): Tile[] => {
-        if (limit) {
-            return tiles.slice(0, limit);
-        }
-        return tiles;
-    };
-
-    useEffect(() => {
-        controller.abort();
-        controller = new AbortController();
-        getTiles().then(newTiles => {
-            setTiles(limitTiles(newTiles));
-        });
-        setPage(1);
-    }, [params]);
-
-    useEffect(() => {
-        if (page > 1) {
-            getTiles().then(newTiles => {
-                setTiles(limitTiles([ ...tiles, ...newTiles ]));
-            });
-        }
-    }, [page]);
-
-    const statuses = useQuery({
-        type: schema,
-        query: (collection) => {
-            return collection.filtered('id IN $0', tiles.map(tile => tile.id));
-        }
-    }, [tiles]);
-
-    const statusIcon = (id: string) => {
-        const status = statusOptions.find(option => option.value === statuses.filtered('id == $0', id)[0]?.status);
+    const statusIcon = (item: Tile) => {
+        const status = statusOptions.find(option => option.value === getStatus(item));
         if (status) {
             return (
                 <View style={{ ...styles.status, backgroundColor: status.color }}>
@@ -107,7 +50,7 @@ export default function TileList({ buildTile, fetchData, schema, statusOptions, 
         return (
             <Pressable onPress={navigateToDetail} style={styles.tile}>
                 <Image source={item.posterUrl} style={styles.poster} contentFit="cover" placeholder={posterPlaceholder} placeholderContentFit="cover" />
-                {statusIcon(item.id)}
+                {statusIcon(item)}
                 <View style={styles.titleContainer}>
                     <Text numberOfLines={2} style={styles.title}>{item.title + '\n'}</Text>
                     <Text>{item.releaseYear}</Text>
@@ -141,12 +84,6 @@ export default function TileList({ buildTile, fetchData, schema, statusOptions, 
                 </Link>
             </View>
         ) : null;
-    };
-
-    const nextPage = () => {
-        if (page < numPages && (!limit || tiles.length < limit)) {
-            setPage(page + 1);
-        }
     };
 
     return (

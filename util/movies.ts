@@ -4,9 +4,10 @@ import { BACKDROP_SIZE, IMAGE_URL, LOGO_SIZE, POSTER_SIZE } from '@/integration/
 import { Genre, Item, WatchProvider } from '@/models/interfaces';
 import { formatDuration, intervalToDuration } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { Href } from 'expo-router';
 import { PlatformColor } from 'react-native';
 
-const getPosterUrl = (posterPath: string): string => `${IMAGE_URL}${POSTER_SIZE}${posterPath}`;
+const getPosterUrl = (posterPath: string): string | undefined => posterPath ? `${IMAGE_URL}${POSTER_SIZE}${posterPath}` : undefined;
 const getBackdropUrl = (backdropPath: string): string => `${IMAGE_URL}${BACKDROP_SIZE}${backdropPath}`;
 const getReleaseYear = (releaseDate: string): string => new Date(releaseDate).getFullYear().toString();
 const getDuration = (minutes: number): string => formatDuration(intervalToDuration({ start: 0, end: minutes * 60000 }), { locale: es });
@@ -23,11 +24,13 @@ const getWatchProviders = (watchProviders?: { [key: string]: any[] }): any => ({
     buy: watchProviders?.buy?.map(getWatchProvider) ?? [],
 });
 
+export const getMovieDetail = (id: string): Href => ({
+    pathname: '/movies/[movie]',
+    params: { movie: id },
+});
+
 export const getMovieTile = (movie: any): Tile => ({
-    detail: {
-        pathname: '/movies/[movie]',
-        params: { movie: movie.id },
-    },
+    detail: getMovieDetail(movie.id),
     id: `${movie.id}`,
     posterUrl: getPosterUrl(movie.poster_path),
     releaseYear: getReleaseYear(movie.release_date),

@@ -1,23 +1,36 @@
+import FetchList from '@/components/FetchList';
+import QueryList from '@/components/QueryList';
 import { Status } from '@/components/Screen';
-import TileList, { Tile } from '@/components/TileList';
+import { Tile } from '@/components/TileList';
+import { SavedItem } from '@/models/interfaces';
+import { Realm } from '@realm/react';
 import { Href, useNavigation, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { useEffect, useState } from 'react';
-import { FlatList, PlatformColor, Pressable, StyleSheet, Text } from 'react-native';
+import { FlatList, PlatformColor, Pressable, StyleSheet, Text, View } from 'react-native';
 
-export type Section = {
-    fetchData: (page: number, params: any, signal: AbortSignal) => Promise<{ numPages: number, results: any[] }>,
-    limit?: number,
+type Section = {
     title: string;
     viewAll: Href;
+    limit?: number;
 };
+
+export type FetchSection = {
+    fetchData: (page: number, params: any, signal: AbortSignal) => Promise<{ numPages: number, results: any[] }>;
+} & Section;
+
+export type QuerySection = {
+    query: string;
+    queryParams: any[];
+    getDetail: (id: string) => Href;
+} & Section;
 
 type Props = {
     buildTile: (item: any) => Tile;
-    schema: Realm.ObjectClass<{ id: string, status: string } & Realm.Object>;
+    schema: Realm.ObjectClass<SavedItem & Realm.Object>,
     searchData: (page: number, params: any, signal: AbortSignal) => Promise<{ numPages: number, results: any[] }>;
     searchOn: string;
-    sections: Section[];
+    sections: (FetchSection | QuerySection)[];
     statusOptions: Status[];
 };
 
@@ -57,17 +70,29 @@ export default function Index({ buildTile, schema, searchData, searchOn, section
     );
 
     const searchView = (
-        <TileList schema={schema} statusOptions={statusOptions} buildTile={buildTile} fetchData={searchData} params={searchParams} />
+        <FetchList schema={schema} statusOptions={statusOptions} buildTile={buildTile} fetchData={searchData} params={searchParams} />
     );
 
+    const isFetchSection = (section: FetchSection | QuerySection): section is FetchSection => 'fetchData' in section;
+
     const homeView = (
-        <FlatList
-            contentInsetAdjustmentBehavior="automatic"
-            data={sections}
-            renderItem={({ item }: { item: Section }) => (
-                <TileList schema={schema} statusOptions={statusOptions} buildTile={buildTile} fetchData={item.fetchData} header={{ title: item.title, link: item.viewAll }} limit={item.limit} />
-            )}
-        />
+        <View>
+            <FlatList
+                contentInsetAdjustmentBehavior="automatic"
+                data={sections}
+                renderItem={({ item }: { item: FetchSection | QuerySection }) => {
+                    const header = { title: item.title, link: item.viewAll };
+                    if (isFetchSection(item)) {
+                        return (
+                            <FetchList buildTile={buildTile} fetchData={item.fetchData} schema={schema} statusOptions={statusOptions} header={header} limit={item.limit} />
+                        );
+                    }
+                    return (
+                        <QueryList query={item.query} queryParams={item.queryParams} getDetail={item.getDetail} schema={schema} statusOptions={statusOptions} header={header} limit={item.limit} />
+                    );
+                }}
+            />
+        </View>
     );
 
     return searchText.length ? searchView : homeView;
