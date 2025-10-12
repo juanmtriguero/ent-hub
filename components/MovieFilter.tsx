@@ -8,7 +8,7 @@ import { Image } from 'expo-image';
 import { useEffect, useState } from 'react';
 import { FlatList, PlatformColor, Pressable, StyleSheet, View, Text } from 'react-native';
 
-enum MovieFilterType {
+export enum MovieFilterType {
     Ads = 'ads',
     Flatrate = 'flatrate',
     Rent = 'rent',
@@ -27,7 +27,7 @@ type Props = {
 
 export default function MovieFilter({ onChange }: Props) {
 
-    const savedProviders = useQuery(MovieProvider);
+    const savedProviders = useQuery(MovieProvider).sorted('priority', true);
     const realm = useRealm();
     const [ providers, setProviders ] = useState<WatchProvider[]>([]);
     const [ selectedTypes, setSelectedTypes ] = useState<MovieFilterType[]>([]);
@@ -37,7 +37,7 @@ export default function MovieFilter({ onChange }: Props) {
     useEffect(() => {
         getMovieProviders()
         .then(data => {
-            setProviders(data.map(getMovieProvider));
+            setProviders(data.map(getMovieProvider).sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0)));
             realm.write(() => {
                 providers.forEach(provider => {
                     realm.create(MovieProvider, { ...provider }, Realm.UpdateMode.Modified);
