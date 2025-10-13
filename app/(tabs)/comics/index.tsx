@@ -1,15 +1,9 @@
-import Index, { Section } from '@/components/Index';
-import { searchMovies } from '@/integration/tmdb';
-import { Movie } from '@/models/movies';
-import { getMovieTile, movieStatusOptions } from '@/util/movies';
-
-const sections: Section[] = [];
+import { View } from 'react-native';
 
 export default function ComicsIndex() {
 
     return (
-        // TODO: create methods for Comics
-        <Index buildTile={getMovieTile} schema={Movie} searchData={searchMovies} searchOn="comics" sections={sections} statusOptions={movieStatusOptions} />
+        <View />
     );
 
 }

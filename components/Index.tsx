@@ -1,6 +1,7 @@
 import FetchList from '@/components/FetchList';
 import QueryList from '@/components/QueryList';
 import { Status } from '@/components/Screen';
+import Stats from '@/components/Stats';
 import { Tile } from '@/components/TileList';
 import { SavedItem } from '@/models/interfaces';
 import { Realm } from '@realm/react';
@@ -79,8 +80,13 @@ export default function Index({ buildTile, schema, searchData, searchOn, section
         <View>
             <FlatList
                 contentInsetAdjustmentBehavior="automatic"
-                data={sections}
-                renderItem={({ item }: { item: FetchSection | QuerySection }) => {
+                data={[ ...sections, 'stats' ]}
+                renderItem={({ item }: { item: FetchSection | QuerySection | 'stats' }) => {
+                    if (item === 'stats') {
+                        return (
+                            <Stats schema={schema} statusOptions={statusOptions} />
+                        );
+                    }
                     const header = { title: item.title, link: item.viewAll };
                     if (isFetchSection(item)) {
                         return (
