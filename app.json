@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "enthub",
-    "slug": "enthub",
+    "name": "EntHub",
+    "slug": "ent-hub",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "enthub",
+    "scheme": "ent-hub",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.enthub"
+      "bundleIdentifier": "com.enthub.ent-hub"
     },
     "android": {
       "adaptiveIcon": {
