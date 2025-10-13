@@ -1,7 +1,7 @@
-import MovieFilter, { MovieFilterParams } from '@/components/MovieFilter';
+import MovieFilter, { MovieFilterParams, buildMovieQuery } from '@/components/MovieFilter';
 import QueryList from '@/components/QueryList';
 import { Movie } from '@/models/movies';
-import { buildMovieQuery, getMovieDetail, movieStatusOptions } from '@/util/movies';
+import { getMovieDetail, movieStatusOptions } from '@/util/movies';
 import { useEffect, useState } from 'react';
 import { FlatList, View } from 'react-native';
 

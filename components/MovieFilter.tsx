@@ -8,7 +8,7 @@ import { Image } from 'expo-image';
 import { useEffect, useState } from 'react';
 import { FlatList, PlatformColor, Pressable, StyleSheet, View, Text } from 'react-native';
 
-export enum MovieFilterType {
+enum MovieFilterType {
     Ads = 'ads',
     Flatrate = 'flatrate',
     Rent = 'rent',
@@ -20,6 +20,31 @@ export type MovieFilterParams = {
     providers?: string[],
     genres?: string[],
 };
+
+export const buildMovieQuery = (filter: MovieFilterParams): { query: string[], queryParams: any[] } => {
+    const query: string[] = [];
+    const queryParams: any[] = [];
+    if (filter.providers?.length) {
+        const orQuery: string[] = [];
+        const types = filter.types?.length ? filter.types : Object.values(MovieFilterType);
+        filter.providers.forEach(provider => {
+            types.forEach(type => {
+                orQuery.push(`${type}.id == $${queryParams.length}`);
+            });
+            queryParams.push(provider);
+        });
+        query.push(`(${orQuery.join(' OR ')})`);
+    } else if (filter.types?.length) {
+        query.push(`(${filter.types.map(type => `${type}.@count > 0`).join(' OR ')})`);
+    }
+    if (filter.genres?.length) {
+        filter.genres.forEach(genre => {
+            query.push(`genres.id == $${queryParams.length}`);
+            queryParams.push(genre);
+        });
+    }
+    return { query, queryParams };
+}
 
 type Props = {
     onChange: (filter: MovieFilterParams) => void,

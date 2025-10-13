@@ -1,4 +1,3 @@
-import { MovieFilterParams, MovieFilterType } from '@/components/MovieFilter';
 import { Status } from '@/components/Screen';
 import { Tile } from '@/components/TileList';
 import { BACKDROP_SIZE, IMAGE_URL, LOGO_SIZE, POSTER_SIZE } from '@/integration/tmdb';
@@ -62,31 +61,6 @@ export const getMovieProvider = (provider: any): WatchProvider => ({
     name: provider.provider_name,
     priority: provider.display_priorities.ES ?? provider.display_priority,
 });
-
-export const buildMovieQuery = (filter: MovieFilterParams): { query: string[], queryParams: any[] } => {
-    const query: string[] = [];
-    const queryParams: any[] = [];
-    if (filter.providers?.length) {
-        const orQuery: string[] = [];
-        const types = filter.types?.length ? filter.types : Object.values(MovieFilterType);
-        filter.providers.forEach(provider => {
-            types.forEach(type => {
-                orQuery.push(`${type}.id == $${queryParams.length}`);
-            });
-            queryParams.push(provider);
-        });
-        query.push(`(${orQuery.join(' OR ')})`);
-    } else if (filter.types?.length) {
-        query.push(`(${filter.types.map(type => `${type}.@count > 0`).join(' OR ')})`);
-    }
-    if (filter.genres?.length) {
-        filter.genres.forEach(genre => {
-            query.push(`genres.id == $${queryParams.length}`);
-            queryParams.push(genre);
-        });
-    }
-    return { query, queryParams };
-}
 
 export const movieStatusOptions: Status[] = [
     { label: 'Want to watch', value: 'pending', icon: 'bookmark', color: PlatformColor('systemOrange') },
