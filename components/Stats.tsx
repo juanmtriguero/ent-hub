@@ -4,8 +4,9 @@ import { Realm, useQuery, useRealm } from '@realm/react';
 import * as DocumentPicker from 'expo-document-picker';
 import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
-import { SymbolView } from 'expo-symbols';
-import { View, Text, StyleSheet, FlatList, Pressable, PlatformColor } from 'react-native';
+import { SFSymbol, SymbolView } from 'expo-symbols';
+import { useState } from 'react';
+import { View, Text, StyleSheet, FlatList, Pressable, PlatformColor, ActivityIndicator } from 'react-native';
 
 type Props = {
     schema: Realm.ObjectClass<SavedItem & Realm.Object>,
@@ -16,6 +17,8 @@ export default function Stats({ schema, statusOptions }: Props) {
 
     const items = useQuery(schema);
     const realm = useRealm();
+    const [ importInProgress, setImportInProgress ] = useState(false);
+    const [ exportInProgress, setExportInProgress ] = useState(false);
 
     const renderStat = ({ item }: { item: Status }) => {
         const count = items.filtered(`status == $0`, item.value).length;
@@ -31,6 +34,7 @@ export default function Stats({ schema, statusOptions }: Props) {
     };
 
     const importItems = () => {
+        setImportInProgress(true);
         DocumentPicker.getDocumentAsync({ type: 'application/json' })
         .then(({ assets }) => {
             if (assets?.length) {
@@ -41,19 +45,41 @@ export default function Stats({ schema, statusOptions }: Props) {
                         realm.create(schema, item, Realm.UpdateMode.Modified);
                     });
                 });
+                alert('The import has been completed successfully');
             }
         })
         .catch(error => {
             console.error(error);
             alert('There was an error during the import, please use a valid file');
+        })
+        .finally(() => {
+            setImportInProgress(false);
         });
     };
 
     const exportItems = () => {
+        setExportInProgress(true);
         const file = new File(Paths.cache, `${schema.name}_${Date.now()}.json`);
         file.create();
         file.write(JSON.stringify(items));
         Sharing.shareAsync(file.uri);
+        setExportInProgress(false);
+    };
+
+    const action = (label: string, icon: SFSymbol, onPress: () => void, inProgress: boolean) => {
+        if (inProgress) {
+            return (
+                <View style={styles.action}>
+                    <ActivityIndicator size="large" />
+                </View>
+            );
+        }
+        return (
+            <Pressable onPress={onPress} style={styles.action}>
+                <SymbolView name={icon} size={35} />
+                <Text style={styles.actionText}>{label}</Text>
+            </Pressable>
+        );
     };
 
     return (
@@ -65,14 +91,8 @@ export default function Stats({ schema, statusOptions }: Props) {
                 <FlatList data={statusOptions} renderItem={renderStat} />
             </View>
             <View style={styles.actions}>
-                <Pressable onPress={importItems} style={styles.action}>
-                    <SymbolView name="document.badge.plus" size={35} />
-                    <Text style={styles.actionText}>Import</Text>
-                </Pressable>
-                <Pressable onPress={exportItems} style={styles.action}>
-                <SymbolView name="document.badge.arrow.up" size={35} />
-                    <Text style={styles.actionText}>Export</Text>
-                </Pressable>
+                {action('Import', 'document.badge.plus', importItems, importInProgress)}
+                {action('Export', 'document.badge.arrow.up', exportItems, exportInProgress)}
             </View>
         </View>
     );
@@ -91,6 +111,7 @@ const styles = StyleSheet.create({
         borderColor: 'lightgray',
         borderRadius: 15,
         backgroundColor: 'white',
+        justifyContent: 'center',
         alignItems: 'center',
         padding: 15,
     },
