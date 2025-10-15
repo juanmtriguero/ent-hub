@@ -36,10 +36,11 @@ export default function Screen({ additionalContent, buildItem, fetchData, id, sc
         setIsLoading(true);
         fetchData(id)
         .then(data => {
-            setItem(buildItem(data));
+            const item = buildItem(data);
+            setItem(item);
             if (savedItem) {
                 realm.write(() => {
-                    Object.assign(savedItem, item);
+                    realm.create(schema, item, Realm.UpdateMode.Modified);
                 });
             }
         })
