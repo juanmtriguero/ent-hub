@@ -29,12 +29,25 @@ export const getMovieDetail = (id: string): Href => ({
     params: { movie: id },
 });
 
+export const getTVDetail = (id: string): Href => ({
+    pathname: '/tv/[tv]',
+    params: { tv: id },
+});
+
 export const getMovieTile = (movie: any): Tile => ({
     detail: getMovieDetail(movie.id),
     id: `${movie.id}`,
     posterUrl: getPosterUrl(movie.poster_path),
     releaseYear: getReleaseYear(movie.release_date),
     title: movie.title,
+});
+
+export const getTVTile = (tv: any): Tile => ({
+    detail: getTVDetail(tv.id),
+    id: `${tv.id}`,
+    posterUrl: getPosterUrl(tv.poster_path),
+    releaseYear: getReleaseYear(tv.first_air_date),
+    title: tv.name,
 });
 
 export const buildMovie = (movie: any): Item => ({
@@ -65,4 +78,12 @@ export const getMovieProvider = (provider: any): WatchProvider => ({
 export const movieStatusOptions: Status[] = [
     { label: 'Want to watch', value: 'pending', icon: 'bookmark', color: PlatformColor('systemOrange') },
     { label: 'Watched', value: 'watched', icon: 'checkmark', color: PlatformColor('systemGreen') },
+];
+
+export const tvStatusOptions: Status[] = [
+    { label: 'Want to watch', value: 'pending', icon: 'bookmark', color: PlatformColor('systemOrange') },
+    { label: 'Watching', value: 'watching', icon: 'play', color: PlatformColor('systemBlue') },
+    { label: 'Paused', value: 'paused', icon: 'pause', color: PlatformColor('systemYellow') },
+    { label: 'Watched', value: 'watched', icon: 'checkmark', color: PlatformColor('systemGreen') },
+    { label: 'Abandoned', value: 'abandoned', icon: 'xmark', color: PlatformColor('systemRed') },
 ];

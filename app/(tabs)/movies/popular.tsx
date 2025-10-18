@@ -2,7 +2,7 @@ import FetchList from '@/components/FetchList';
 import MovieFilter, { MovieFilterParams } from '@/components/MovieFilter';
 import { getPopularMovies } from '@/integration/tmdb';
 import { Movie } from '@/models/movies';
-import { getMovieTile, movieStatusOptions } from '@/util/movies';
+import { getMovieTile, movieStatusOptions } from '@/util/moviesAndTV';
 import { useState } from 'react';
 import { FlatList, View } from 'react-native';
 

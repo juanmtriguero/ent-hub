@@ -1,7 +1,7 @@
 import Screen from '@/components/Screen';
 import { getMovie } from '@/integration/tmdb';
 import { Movie, MovieProvider } from '@/models/movies';
-import { buildMovie, movieStatusOptions } from '@/util/movies';
+import { buildMovie, movieStatusOptions } from '@/util/moviesAndTV';
 import { Image } from 'expo-image';
 import { useLocalSearchParams } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';

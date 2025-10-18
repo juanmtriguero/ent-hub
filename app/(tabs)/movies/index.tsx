@@ -1,7 +1,7 @@
 import Index, { FetchSection, QuerySection } from '@/components/Index';
 import { getPopularMovies, searchMovies } from '@/integration/tmdb';
 import { Movie } from '@/models/movies';
-import { getMovieDetail, getMovieTile, movieStatusOptions } from '@/util/movies';
+import { getMovieDetail, getMovieTile, movieStatusOptions } from '@/util/moviesAndTV';
 
 const sections: (FetchSection | QuerySection)[] = [
     {

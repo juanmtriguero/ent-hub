@@ -4,6 +4,7 @@ import { Api, ApiKey, getApiKey, invalidApiKey } from '@/integration/main';
 const BASE_URL = 'https://api.themoviedb.org/3/';
 const PATH_AUTHENTICATE = 'authentication';
 const PATH_SEARCH_MOVIE = 'search/movie';
+const PATH_SEARCH_TV = 'search/tv';
 const PATH_DISCOVER_MOVIE = 'discover/movie';
 const PATH_GENRE_MOVIE_LIST = 'genre/movie/list';
 const PATH_MOVIE_DETAILS = 'movie/';
@@ -53,6 +54,16 @@ export async function searchMovies(page: number, params: any, signal: AbortSigna
         query: params.text,
     });
     const { results, total_pages }: { results: any[], total_pages: number } = await get(PATH_SEARCH_MOVIE, searchParams, signal);
+    return { numPages: total_pages, results };
+}
+
+export async function searchTV(page: number, params: any, signal: AbortSignal): Promise<{ numPages: number, results: any[] }> {
+    const searchParams = new URLSearchParams({
+        language: 'es-ES',
+        page: page.toString(),
+        query: params.text,
+    });
+    const { results, total_pages }: { results: any[], total_pages: number } = await get(PATH_SEARCH_TV, searchParams, signal);
     return { numPages: total_pages, results };
 }
 

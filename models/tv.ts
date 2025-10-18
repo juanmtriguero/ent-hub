@@ -1,12 +1,12 @@
 import { Genre, SavedItem, WatchProvider } from '@/models/interfaces';
 import { Realm } from '@realm/react';
 
-export class MovieGenre extends Realm.Object implements Genre {
+export class TVGenre extends Realm.Object implements Genre {
     id!: string;
     name!: string;
 
     static schema = {
-        name: 'MovieGenre',
+        name: 'TVGenre',
         primaryKey: 'id',
         properties: {
             id: 'string',
@@ -15,14 +15,14 @@ export class MovieGenre extends Realm.Object implements Genre {
     };
 }
 
-export class MovieProvider extends Realm.Object implements WatchProvider {
+export class TVProvider extends Realm.Object implements WatchProvider {
     id!: string;
     logoUrl!: string;
     name!: string;
     priority?: number;
 
     static schema = {
-        name: 'MovieProvider',
+        name: 'TVProvider',
         primaryKey: 'id',
         properties: {
             id: 'string',
@@ -33,25 +33,25 @@ export class MovieProvider extends Realm.Object implements WatchProvider {
     };
 }
 
-export class Movie extends Realm.Object implements SavedItem {
+export class TV extends Realm.Object implements SavedItem {
     id!: string;
     status!: string;
     timestamp!: number;
     title!: string;
     releaseYear!: string;
     originalTitle!: string;
-    genres!: MovieGenre[];
-    flatrate!: MovieProvider[];
-    ads!: MovieProvider[];
-    rent!: MovieProvider[];
-    buy!: MovieProvider[];
+    genres!: TVGenre[];
+    flatrate!: TVProvider[];
+    ads!: TVProvider[];
+    rent!: TVProvider[];
+    buy!: TVProvider[];
     description?: string;
     details?: string;
     posterUrl?: string;
     backdropUrl?: string;
 
     static schema = {
-        name: 'Movie',
+        name: 'TV',
         primaryKey: 'id',
         properties: {
             id: 'string',
@@ -60,11 +60,11 @@ export class Movie extends Realm.Object implements SavedItem {
             title: 'string',
             releaseYear: 'string',
             originalTitle: 'string',
-            genres: 'MovieGenre[]',
-            flatrate: 'MovieProvider[]',
-            ads: 'MovieProvider[]',
-            rent: 'MovieProvider[]',
-            buy: 'MovieProvider[]',
+            genres: 'TVGenre[]',
+            flatrate: 'TVProvider[]',
+            ads: 'TVProvider[]',
+            rent: 'TVProvider[]',
+            buy: 'TVProvider[]',
             description: 'string?',
             details: 'string?',
             posterUrl: 'string?',

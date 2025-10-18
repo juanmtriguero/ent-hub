@@ -2,7 +2,7 @@ import GenreSelector from '@/components/GenreSelector';
 import { getGenres, getMovieProviders } from '@/integration/tmdb';
 import { WatchProvider } from '@/models/interfaces';
 import { MovieGenre, MovieProvider } from '@/models/movies';
-import { getMovieGenre, getMovieProvider } from '@/util/movies';
+import { getMovieGenre, getMovieProvider } from '@/util/moviesAndTV';
 import { Realm, useQuery, useRealm } from '@realm/react';
 import { Image } from 'expo-image';
 import { useEffect, useState } from 'react';
