@@ -6,6 +6,7 @@ const PATH_AUTHENTICATE = 'authentication';
 const PATH_SEARCH_MOVIE = 'search/movie';
 const PATH_SEARCH_TV = 'search/tv';
 const PATH_DISCOVER_MOVIE = 'discover/movie';
+const PATH_DISCOVER_TV = 'discover/tv';
 const PATH_GENRE_MOVIE_LIST = 'genre/movie/list';
 const PATH_MOVIE_DETAILS = 'movie/';
 const PATH_WATCH_PROVIDERS = 'watch/providers';
@@ -84,6 +85,17 @@ export async function getPopularMovies(page: number, params: MovieFilterParams):
         searchParams.append('with_genres', params.genres.join(','));
     }
     const { results, total_pages }: { results: any[], total_pages: number } = await get(PATH_DISCOVER_MOVIE, searchParams);
+    return { numPages: total_pages, results };
+}
+
+export async function getPopularShows(page: number, params: any): Promise<{ numPages: number, results: any[] }> {
+    const searchParams = new URLSearchParams({
+        language: 'es-ES',
+        page: page.toString(),
+        sort_by: 'popularity.desc',
+        watch_region: 'ES',
+    });
+    const { results, total_pages }: { results: any[], total_pages: number } = await get(PATH_DISCOVER_TV, searchParams);
     return { numPages: total_pages, results };
 }
 
