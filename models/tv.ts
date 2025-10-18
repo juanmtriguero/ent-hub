@@ -42,9 +42,6 @@ export class TV extends Realm.Object implements SavedItem {
     originalTitle!: string;
     genres!: TVGenre[];
     flatrate!: TVProvider[];
-    ads!: TVProvider[];
-    rent!: TVProvider[];
-    buy!: TVProvider[];
     description?: string;
     details?: string;
     posterUrl?: string;
@@ -62,9 +59,6 @@ export class TV extends Realm.Object implements SavedItem {
             originalTitle: 'string',
             genres: 'TVGenre[]',
             flatrate: 'TVProvider[]',
-            ads: 'TVProvider[]',
-            rent: 'TVProvider[]',
-            buy: 'TVProvider[]',
             description: 'string?',
             details: 'string?',
             posterUrl: 'string?',
