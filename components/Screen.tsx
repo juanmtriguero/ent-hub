@@ -15,7 +15,7 @@ export type Status = {
 };
 
 type Props = {
-    additionalContent: (item: Item & any) => React.ReactNode,
+    additionalContent: (item: Item & any, savedItem?: SavedItem & any) => React.ReactNode,
     buildItem: (data: any) => Item,
     fetchData: (id: string) => Promise<any>,
     id: string,
@@ -118,7 +118,7 @@ export default function Screen({ additionalContent, buildItem, fetchData, id, sc
                 <View style={styles.tags}>
                     {item.genres.map((genre) => <Text key={genre.id} style={styles.tag}>{genre.name}</Text>)}
                 </View>
-                {additionalContent(item)}
+                {additionalContent(item, savedItem)}
             </View>
         </ScrollView>
     );

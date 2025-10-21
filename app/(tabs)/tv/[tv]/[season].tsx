@@ -1,0 +1,125 @@
+import { getTVSeason } from '@/integration/tmdb';
+import { TVEpisode, TVSeason } from '@/models/tv';
+import { buildTVSeason } from '@/util/moviesAndTV';
+import { Image } from 'expo-image';
+import { useLocalSearchParams, useNavigation } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, PlatformColor, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+
+export default function TVSeasonScreen() {
+
+    const { tv, season } = useLocalSearchParams<{ tv: string, season: string }>();
+    const navigation = useNavigation();
+    const [ tvSeason, setTVSeason ] = useState<TVSeason | null>(null);
+    const [ isLoading, setIsLoading ] = useState<boolean>(true);
+    const { width, height } = useWindowDimensions();
+    const styles = getStyles(width, height);
+
+    useEffect(() => {
+        setIsLoading(true);
+        getTVSeason(tv, season)
+        .then(data => {
+            setTVSeason(buildTVSeason(data));
+        })
+        .catch(error => {
+            console.error(error);
+            setTVSeason(null);
+        })
+        .finally(() => {
+            setIsLoading(false);
+        });
+    }, [ tv, season ]);
+
+    useEffect(() => {
+        navigation.setOptions({
+            title: tvSeason?.name,
+        });
+    }, [ navigation, tvSeason ]);
+
+    if (isLoading) {
+        return (
+            <View style={styles.centered}>
+                <ActivityIndicator size="large" />
+            </View>
+        );
+    }
+
+    if (!tvSeason) {
+        return (
+            <View style={styles.centered}>
+                <Text style={styles.centeredText}>There was an error loading the details, please try again later</Text>
+            </View>
+        );
+    }
+
+    const renderEpisode = ({ item }: { item: TVEpisode }) => {
+        return (
+            <View style={styles.episode}>
+                <View style={styles.episodeHeader}>
+                    <Image source={item.stillUrl} style={styles.episodeImage} contentFit="cover" />
+                    <View style={styles.episodeBody}>
+                        <Text style={styles.episodeName}>{item.number}. {item.name}</Text>
+                        <Text>{item.airDate.toLocaleDateString('es-ES')}{item.duration ? ` | ${item.duration}'` : null}</Text>
+                    </View>
+                </View>
+                {item.description ? (
+                    <View style={styles.episodeDescription}>
+                        <Text>{item.description}</Text>
+                    </View>
+                ) : null}
+            </View>
+        );
+    };
+
+    return (
+        <FlatList data={tvSeason.episodes} renderItem={renderEpisode} contentContainerStyle={styles.episodeList} />
+    );
+
+}
+
+const getStyles = (width: number, height: number) => StyleSheet.create({
+    centered: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginHorizontal: width / 8,
+        marginBottom: height / 8,
+    },
+    centeredText: {
+        textAlign: 'center',
+    },
+    episode: {
+        borderWidth: 1,
+        borderColor: 'lightgray',
+        borderRadius: 5,
+        overflow: 'hidden',
+        backgroundColor: 'white',
+    },
+    episodeBody: {
+        width: '65%',
+        padding: 10,
+    },
+    episodeDescription: {
+        padding: 10,
+        borderTopWidth: 1,
+        borderColor: 'lightgray',
+    },
+    episodeHeader: {
+        flexDirection: 'row',
+    },
+    episodeImage: {
+        width: '35%',
+        aspectRatio: 16 / 9,
+        backgroundColor: PlatformColor('systemGray3'),
+    },
+    episodeList: {
+        margin: 10,
+        paddingBottom: 50,
+        gap: 10,
+    },
+    episodeName: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: 5,
+    },
+});

@@ -10,6 +10,7 @@ const PATH_DISCOVER_TV = 'discover/tv';
 const PATH_GENRE_MOVIE_LIST = 'genre/movie/list';
 const PATH_MOVIE_DETAILS = 'movie/';
 const PATH_TV_DETAILS = 'tv/';
+const PATH_TV_SEASON = '/season/';
 const PATH_WATCH_PROVIDERS = 'watch/providers';
 const PATH_WATCH_PROVIDERS_MOVIE = '/watch/providers/movie';
 
@@ -114,6 +115,13 @@ export async function getTV(id: string): Promise<any> {
         language: 'es-ES',
     });
     return await get(PATH_TV_DETAILS + id, params);
+}
+
+export async function getTVSeason(id: string, season: string): Promise<any> {
+    const params = new URLSearchParams({
+        language: 'es-ES',
+    });
+    return await get(`${PATH_TV_DETAILS}${id}${PATH_TV_SEASON}${season}`, params);
 }
 
 export async function getGenres(): Promise<any[]> {

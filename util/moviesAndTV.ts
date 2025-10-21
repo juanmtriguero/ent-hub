@@ -2,13 +2,14 @@ import { Status } from '@/components/Screen';
 import { Tile } from '@/components/TileList';
 import { BACKDROP_SIZE, IMAGE_URL, LOGO_SIZE, POSTER_SIZE } from '@/integration/tmdb';
 import { Genre, Item, WatchProvider } from '@/models/interfaces';
+import { TVSeason } from '@/models/tv';
 import { formatDuration, intervalToDuration } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Href } from 'expo-router';
 import { PlatformColor } from 'react-native';
 
 const getPosterUrl = (posterPath: string): string | undefined => posterPath ? `${IMAGE_URL}${POSTER_SIZE}${posterPath}` : undefined;
-const getBackdropUrl = (backdropPath: string): string => `${IMAGE_URL}${BACKDROP_SIZE}${backdropPath}`;
+const getBackdropUrl = (backdropPath: string): string | undefined => backdropPath ? `${IMAGE_URL}${BACKDROP_SIZE}${backdropPath}` : undefined;
 const getReleaseYear = (releaseDate: string): string => new Date(releaseDate).getFullYear().toString();
 const getDuration = (minutes: number): string => formatDuration(intervalToDuration({ start: 0, end: minutes * 60000 }), { locale: es });
 const getGenres = (genres: any[]): Genre[] => genres.map(genre => ({ id: `${genre.id}`, name: genre.name }));
@@ -63,6 +64,27 @@ export const buildMovie = (movie: any): Item => ({
     ...getWatchProviders(movie['watch/providers'].results.ES),
 });
 
+export const buildTVEpisode = (episode: any): any => ({
+    id: `${episode.id}`,
+    name: episode.name,
+    number: episode.episode_number,
+    airDate: new Date(episode.air_date),
+    description: episode.overview,
+    duration: episode.runtime,
+    stillUrl: getBackdropUrl(episode.still_path),
+});
+
+export const buildTVSeason = (season: any): any => ({
+    id: `${season.id}`,
+    name: season.name,
+    number: season.season_number,
+    airDate: new Date(season.air_date),
+    count: season.episodes?.length ?? season.episode_count,
+    episodes: season.episodes?.map(buildTVEpisode),
+    description: season.overview,
+    posterUrl: getPosterUrl(season.poster_path),
+});
+
 export const buildTV = (tv: any): Item => ({
     id: `${tv.id}`,
     backdropUrl: getBackdropUrl(tv.backdrop_path),
@@ -73,7 +95,10 @@ export const buildTV = (tv: any): Item => ({
     posterUrl: getPosterUrl(tv.poster_path),
     releaseYear: getReleaseYear(tv.first_air_date),
     title: tv.name,
-    ...{ flatrate: getWatchProviders(tv['watch/providers'].results.ES).flatrate },
+    ...{
+        flatrate: getWatchProviders(tv['watch/providers'].results.ES).flatrate,
+        seasons: tv.seasons.map(buildTVSeason),
+    },
 });
 
 export const getMovieGenre = (genre: any): Genre => ({
@@ -87,6 +112,14 @@ export const getMovieProvider = (provider: any): WatchProvider => ({
     name: provider.provider_name,
     priority: provider.display_priorities.ES ?? provider.display_priority,
 });
+
+export const getSeasonProgress = (season: TVSeason): number => {
+    const watched = season.episodes?.filter(episode => episode.watched).length;
+    if (watched && season.count && season.number) {
+        return watched / season.count;
+    }
+    return 0;
+};
 
 export const movieStatusOptions: Status[] = [
     { label: 'Want to watch', value: 'pending', icon: 'bookmark', color: PlatformColor('systemOrange') },

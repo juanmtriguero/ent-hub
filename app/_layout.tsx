@@ -1,5 +1,5 @@
 import { Movie, MovieGenre, MovieProvider } from '@/models/movies';
-import { TV, TVGenre, TVProvider } from '@/models/tv';
+import { TV, TVEpisode, TVGenre, TVProvider, TVSeason } from '@/models/tv';
 import { RealmProvider } from '@realm/react';
 import { Stack } from 'expo-router';
 
@@ -8,8 +8,10 @@ const schema = [
     MovieGenre,
     MovieProvider,
     TV,
+    TVEpisode,
     TVGenre,
-    TVProvider, 
+    TVProvider,
+    TVSeason,
 ];
 
 export default function Layout() {
