@@ -145,7 +145,7 @@ const getStyles = (width: number, height: number) => StyleSheet.create({
         gap: 10,
         marginHorizontal: 20,
         marginTop: 5,
-        marginBottom: width / 2,
+        marginBottom: width * 0.45,
         top: width / 5,
     },
     description: {
