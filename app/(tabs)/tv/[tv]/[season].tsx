@@ -2,9 +2,10 @@ import { getTVSeason } from '@/integration/tmdb';
 import { TVEpisode, TVSeason } from '@/models/tv';
 import { buildTVSeason } from '@/util/moviesAndTV';
 import { Image } from 'expo-image';
+import { SymbolView } from 'expo-symbols';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, PlatformColor, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, FlatList, PlatformColor, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 export default function TVSeasonScreen() {
 
@@ -33,8 +34,15 @@ export default function TVSeasonScreen() {
     useEffect(() => {
         navigation.setOptions({
             title: tvSeason?.name,
+            headerRight: watchAll,
         });
     }, [ navigation, tvSeason ]);
+
+    const watchAll = () => (
+        <Pressable onPress={() => {}}>
+            <SymbolView name="eye.fill" size={30} />
+        </Pressable>
+    );
 
     if (isLoading) {
         return (
@@ -58,9 +66,12 @@ export default function TVSeasonScreen() {
                 <View style={styles.episodeHeader}>
                     <Image source={item.stillUrl} style={styles.episodeImage} contentFit="cover" />
                     <View style={styles.episodeBody}>
-                        <Text style={styles.episodeName}>{item.number}. {item.name}</Text>
+                        <Text style={styles.episodeName} numberOfLines={2}>{item.number}. {item.name}</Text>
                         <Text>{item.airDate.toLocaleDateString('es-ES')}{item.duration ? ` | ${item.duration}'` : null}</Text>
                     </View>
+                    <Pressable onPress={() => {}} style={{ ...styles.episodeStatus, backgroundColor: PlatformColor(item.watched ? 'systemGreen' : 'systemGray') }}>
+                        <SymbolView name={item.watched ? 'eye.fill' : 'eye.slash.fill'} size={width / 15} tintColor="white" />
+                    </Pressable>
                 </View>
                 {item.description ? (
                     <View style={styles.episodeDescription}>
@@ -96,7 +107,7 @@ const getStyles = (width: number, height: number) => StyleSheet.create({
         backgroundColor: 'white',
     },
     episodeBody: {
-        width: '65%',
+        width: '55%',
         padding: 10,
     },
     episodeDescription: {
@@ -121,5 +132,10 @@ const getStyles = (width: number, height: number) => StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         marginBottom: 5,
+    },
+    episodeStatus: {
+        width: '10%',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 });
