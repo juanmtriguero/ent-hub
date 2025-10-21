@@ -37,8 +37,8 @@ export class TVEpisode extends Realm.Object {
     id!: string;
     name!: string;
     number!: number;
-    airDate!: Date;
     watched!: boolean;
+    airDate?: Date;
     description?: string;
     duration?: number;
     stillUrl?: string;
@@ -50,8 +50,8 @@ export class TVEpisode extends Realm.Object {
             id: 'string',
             name: 'string',
             number: 'int',
-            airDate: 'date',
             watched: 'bool',
+            airDate: 'date?',
             description: 'string?',
             duration: 'int?',
             stillUrl: 'string?',
@@ -63,9 +63,9 @@ export class TVSeason extends Realm.Object {
     id!: string;
     name!: string;
     number!: number;
-    airDate!: Date;
     count!: number;
     episodes!: TVEpisode[];
+    airDate?: Date;
     description?: string;
     posterUrl?: string;
 
@@ -76,9 +76,9 @@ export class TVSeason extends Realm.Object {
             id: 'string',
             name: 'string',
             number: 'int',
-            airDate: 'date',
             count: 'int',
             episodes: 'TVEpisode[]',
+            airDate: 'date?',
             description: 'string?',
             posterUrl: 'string?',
         },

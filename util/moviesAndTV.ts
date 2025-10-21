@@ -12,6 +12,7 @@ const getPosterUrl = (posterPath: string): string | undefined => posterPath ? `$
 const getBackdropUrl = (backdropPath: string): string | undefined => backdropPath ? `${IMAGE_URL}${BACKDROP_SIZE}${backdropPath}` : undefined;
 const getReleaseYear = (releaseDate: string): string => new Date(releaseDate).getFullYear().toString();
 const getDuration = (minutes: number): string => formatDuration(intervalToDuration({ start: 0, end: minutes * 60000 }), { locale: es });
+const getAirDate = (airDate?: string): Date | undefined => airDate ? new Date(airDate) : undefined;
 const getGenres = (genres: any[]): Genre[] => genres.map(genre => ({ id: `${genre.id}`, name: genre.name }));
 const getWatchProvider = (provider: any): WatchProvider => ({
     id: `${provider.provider_id}`,
@@ -68,7 +69,7 @@ export const buildTVEpisode = (episode: any): any => ({
     id: `${episode.id}`,
     name: episode.name,
     number: episode.episode_number,
-    airDate: new Date(episode.air_date),
+    airDate: getAirDate(episode.air_date),
     description: episode.overview,
     duration: episode.runtime,
     stillUrl: getBackdropUrl(episode.still_path),
@@ -78,7 +79,7 @@ export const buildTVSeason = (season: any): any => ({
     id: `${season.id}`,
     name: season.name,
     number: season.season_number,
-    airDate: new Date(season.air_date),
+    airDate: getAirDate(season.air_date),
     count: season.episodes?.length ?? season.episode_count,
     episodes: season.episodes?.map(buildTVEpisode),
     description: season.overview,

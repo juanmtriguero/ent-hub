@@ -61,13 +61,20 @@ export default function TVSeasonScreen() {
     }
 
     const renderEpisode = ({ item }: { item: TVEpisode }) => {
+        const properties = [];
+        if (item.airDate) {
+            properties.push(item.airDate.toLocaleDateString('es-ES'));
+        }
+        if (item.duration) {
+            properties.push(`${item.duration}'`);
+        }
         return (
             <View style={styles.episode}>
                 <View style={styles.episodeHeader}>
                     <Image source={item.stillUrl} style={styles.episodeImage} contentFit="cover" />
                     <View style={styles.episodeBody}>
                         <Text style={styles.episodeName} numberOfLines={2}>{item.number}. {item.name}</Text>
-                        <Text>{item.airDate.toLocaleDateString('es-ES')}{item.duration ? ` | ${item.duration}'` : null}</Text>
+                        <Text>{properties.join(' | ')}</Text>
                     </View>
                     <Pressable onPress={() => {}} style={{ ...styles.episodeStatus, backgroundColor: PlatformColor(item.watched ? 'systemGreen' : 'systemGray') }}>
                         <SymbolView name={item.watched ? 'eye.fill' : 'eye.slash.fill'} size={width / 15} tintColor="white" />

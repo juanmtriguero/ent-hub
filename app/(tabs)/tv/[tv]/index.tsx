@@ -46,7 +46,7 @@ export default function TVScreen() {
             <View style={{ ...styles.seasonProgress, width: `${getSeasonProgress(item) * 100}%` }} />
             <View style={styles.seasonContainer}>
                 <Text style={styles.seasonName} numberOfLines={1}>{item.name}</Text>
-                <Text>{item.airDate.toLocaleDateString('es-ES')}</Text>
+                <Text>{item.airDate ? item.airDate.toLocaleDateString('es-ES') : null}</Text>
             </View>
         </Pressable>
     );
