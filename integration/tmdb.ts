@@ -1,4 +1,5 @@
 import { MovieFilterParams } from '@/components/MovieFilter';
+import { TVFilterParams } from '@/components/TVFilter';
 import { Api, ApiKey, getApiKey, invalidApiKey } from '@/integration/main';
 
 const BASE_URL = 'https://api.themoviedb.org/3/';
@@ -8,11 +9,13 @@ const PATH_SEARCH_TV = 'search/tv';
 const PATH_DISCOVER_MOVIE = 'discover/movie';
 const PATH_DISCOVER_TV = 'discover/tv';
 const PATH_GENRE_MOVIE_LIST = 'genre/movie/list';
+const PATH_GENRE_TV_LIST = 'genre/tv/list';
 const PATH_MOVIE_DETAILS = 'movie/';
 const PATH_TV_DETAILS = 'tv/';
 const PATH_TV_SEASON = '/season/';
 const PATH_WATCH_PROVIDERS = 'watch/providers';
 const PATH_WATCH_PROVIDERS_MOVIE = '/watch/providers/movie';
+const PATH_WATCH_PROVIDERS_TV = '/watch/providers/tv';
 
 export const IMAGE_URL = 'https://image.tmdb.org/t/p/';
 export const POSTER_SIZE = 'w342';
@@ -90,13 +93,19 @@ export async function getPopularMovies(page: number, params: MovieFilterParams):
     return { numPages: total_pages, results };
 }
 
-export async function getPopularShows(page: number, params: any): Promise<{ numPages: number, results: any[] }> {
+export async function getPopularShows(page: number, params: TVFilterParams): Promise<{ numPages: number, results: any[] }> {
     const searchParams = new URLSearchParams({
         language: 'es-ES',
         page: page.toString(),
         sort_by: 'popularity.desc',
         watch_region: 'ES',
     });
+    if (params?.providers?.length) {
+        searchParams.append('with_watch_providers', params.providers.join('|'));
+    }
+    if (params?.genres?.length) {
+        searchParams.append('with_genres', params.genres.join(','));
+    }
     const { results, total_pages }: { results: any[], total_pages: number } = await get(PATH_DISCOVER_TV, searchParams);
     return { numPages: total_pages, results };
 }
@@ -124,11 +133,19 @@ export async function getTVSeason(id: string, season: string): Promise<any> {
     return await get(`${PATH_TV_DETAILS}${id}${PATH_TV_SEASON}${season}`, params);
 }
 
-export async function getGenres(): Promise<any[]> {
+export async function getMovieGenres(): Promise<any[]> {
     const searchParams = new URLSearchParams({
         language: 'es',
     });
     const { genres }: { genres: any[] } = await get(PATH_GENRE_MOVIE_LIST, searchParams);
+    return genres;
+};
+
+export async function getTVGenres(): Promise<any[]> {
+    const searchParams = new URLSearchParams({
+        language: 'es',
+    });
+    const { genres }: { genres: any[] } = await get(PATH_GENRE_TV_LIST, searchParams);
     return genres;
 };
 
@@ -138,6 +155,15 @@ export async function getMovieProviders(): Promise<any[]> {
         watch_region: 'ES',
     });
     const { results }: { results: any[] } = await get(PATH_WATCH_PROVIDERS_MOVIE, searchParams);
+    return results;
+};
+
+export async function getTVProviders(): Promise<any[]> {
+    const searchParams = new URLSearchParams({
+        language: 'es-ES',
+        watch_region: 'ES',
+    });
+    const { results }: { results: any[] } = await get(PATH_WATCH_PROVIDERS_TV, searchParams);
     return results;
 };
 

@@ -14,16 +14,16 @@ const getReleaseYear = (releaseDate: string): string => new Date(releaseDate).ge
 const getDuration = (minutes: number): string => formatDuration(intervalToDuration({ start: 0, end: minutes * 60000 }), { locale: es });
 const getAirDate = (airDate?: string): Date | undefined => airDate ? new Date(airDate) : undefined;
 const getGenres = (genres: any[]): Genre[] => genres.map(genre => ({ id: `${genre.id}`, name: genre.name }));
-const getWatchProvider = (provider: any): WatchProvider => ({
+const getProvider = (provider: any): WatchProvider => ({
     id: `${provider.provider_id}`,
     logoUrl: `${IMAGE_URL}${LOGO_SIZE}${provider.logo_path}`,
     name: provider.provider_name,
 });
-const getWatchProviders = (watchProviders?: { [key: string]: any[] }): any => ({
-    flatrate: watchProviders?.flatrate?.map(getWatchProvider) ?? [],
-    ads: watchProviders?.ads?.map(getWatchProvider) ?? [],
-    rent: watchProviders?.rent?.map(getWatchProvider) ?? [],
-    buy: watchProviders?.buy?.map(getWatchProvider) ?? [],
+const getProviders = (providers?: { [key: string]: any[] }): any => ({
+    flatrate: providers?.flatrate?.map(getProvider) ?? [],
+    ads: providers?.ads?.map(getProvider) ?? [],
+    rent: providers?.rent?.map(getProvider) ?? [],
+    buy: providers?.buy?.map(getProvider) ?? [],
 });
 
 export const getMovieDetail = (id: string): Href => ({
@@ -62,7 +62,7 @@ export const buildMovie = (movie: any): Item => ({
     posterUrl: getPosterUrl(movie.poster_path),
     releaseYear: getReleaseYear(movie.release_date),
     title: movie.title,
-    ...getWatchProviders(movie['watch/providers'].results.ES),
+    ...getProviders(movie['watch/providers'].results.ES),
 });
 
 export const buildTVEpisode = (episode: any): any => ({
@@ -97,17 +97,17 @@ export const buildTV = (tv: any): Item => ({
     releaseYear: getReleaseYear(tv.first_air_date),
     title: tv.name,
     ...{
-        flatrate: getWatchProviders(tv['watch/providers'].results.ES).flatrate,
+        flatrate: getProviders(tv['watch/providers'].results.ES).flatrate,
         seasons: tv.seasons.map(buildTVSeason),
     },
 });
 
-export const getMovieGenre = (genre: any): Genre => ({
+export const getGenre = (genre: any): Genre => ({
     id: `${genre.id}`,
     name: genre.name,
 });
 
-export const getMovieProvider = (provider: any): WatchProvider => ({
+export const getWatchProvider = (provider: any): WatchProvider => ({
     id: `${provider.provider_id}`,
     logoUrl: `${IMAGE_URL}${LOGO_SIZE}${provider.logo_path}`,
     name: provider.provider_name,
