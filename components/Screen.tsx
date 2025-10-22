@@ -21,9 +21,10 @@ type Props = {
     id: string,
     schema: Realm.ObjectClass<SavedItem & Realm.Object>,
     statusOptions: Status[],
+    deleteOrphans?: (realm: Realm) => void,
 };
 
-export default function Screen({ additionalContent, buildItem, fetchData, id, schema, statusOptions }: Props) {
+export default function Screen({ additionalContent, buildItem, fetchData, id, schema, statusOptions, deleteOrphans }: Props) {
 
     const savedItem = useQuery(schema).filtered('id == $0', id)[0];
     const realm = useRealm();
@@ -83,6 +84,9 @@ export default function Screen({ additionalContent, buildItem, fetchData, id, sc
                 }
             } else {
                 realm.delete(savedItem);
+                if (deleteOrphans) {
+                    deleteOrphans(realm);
+                }
             }
         });
     };

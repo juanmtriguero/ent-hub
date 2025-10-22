@@ -4,6 +4,7 @@ import { TV, TVSeason } from '@/models/tv';
 import { getTV } from '@/integration/tmdb';
 import { buildTV, getSeasonProgress, tvStatusOptions } from '@/util/moviesAndTV';
 import { Image } from 'expo-image';
+import { Realm } from '@realm/react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { FlatList, PlatformColor, Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -63,8 +64,13 @@ export default function TVScreen() {
         );
     };
 
+    const deleteOrphans = (realm: Realm) => {
+        realm.delete(realm.objects('TVSeason').filtered('tv.@count == 0'));
+        realm.delete(realm.objects('TVEpisode').filtered('tvSeason.@count == 0'));
+    };
+
     return (
-        <Screen additionalContent={additionalContent} buildItem={buildTV} fetchData={getTV} id={tv} schema={TV} statusOptions={tvStatusOptions} />
+        <Screen additionalContent={additionalContent} buildItem={buildTV} fetchData={getTV} id={tv} schema={TV} statusOptions={tvStatusOptions} deleteOrphans={deleteOrphans} />
     );
 
 }
