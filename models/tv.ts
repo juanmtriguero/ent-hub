@@ -45,16 +45,24 @@ export class TVEpisode extends Realm.Object {
 
     static schema = {
         name: 'TVEpisode',
-        embedded: true,
+        primaryKey: 'id',
         properties: {
             id: 'string',
             name: 'string',
             number: 'int',
-            watched: 'bool',
+            watched: {
+                type: 'bool',
+                default: false,
+            },
             airDate: 'date?',
             description: 'string?',
             duration: 'int?',
             stillUrl: 'string?',
+            tvSeason: {
+                type: 'linkingObjects',
+                objectType: 'TVSeason',
+                property: 'episodes',
+            },
         },
     };
 }
@@ -71,7 +79,7 @@ export class TVSeason extends Realm.Object {
 
     static schema = {
         name: 'TVSeason',
-        embedded: true,
+        primaryKey: 'id',
         properties: {
             id: 'string',
             name: 'string',
@@ -81,6 +89,11 @@ export class TVSeason extends Realm.Object {
             airDate: 'date?',
             description: 'string?',
             posterUrl: 'string?',
+            tv: {
+                type: 'linkingObjects',
+                objectType: 'TV',
+                property: 'seasons',
+            },
         },
     };
 }

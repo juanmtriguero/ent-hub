@@ -1,6 +1,7 @@
 import { getTVSeason } from '@/integration/tmdb';
 import { TVEpisode, TVSeason } from '@/models/tv';
 import { buildTVSeason } from '@/util/moviesAndTV';
+import { Realm, useQuery, useRealm } from '@realm/react';
 import { Image } from 'expo-image';
 import { SymbolView } from 'expo-symbols';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
@@ -11,6 +12,9 @@ export default function TVSeasonScreen() {
 
     const { tv, season } = useLocalSearchParams<{ tv: string, season: string }>();
     const navigation = useNavigation();
+    const savedTVSeason = useQuery(TVSeason).filtered('tv.id == $0 AND number == $1', tv, season)[0];
+    const savedEpisodes = useQuery(TVEpisode).filtered('tvSeason.id == $0', savedTVSeason?.id);
+    const realm = useRealm();
     const [ tvSeason, setTVSeason ] = useState<TVSeason | null>(null);
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
     const { width, height } = useWindowDimensions();
@@ -20,11 +24,17 @@ export default function TVSeasonScreen() {
         setIsLoading(true);
         getTVSeason(tv, season)
         .then(data => {
-            setTVSeason(buildTVSeason(data));
+            const tvSeason = buildTVSeason(data);
+            setTVSeason(tvSeason);
+            if (savedTVSeason) {
+                realm.write(() => {
+                    realm.create(TVSeason, tvSeason, Realm.UpdateMode.Modified);
+                });
+            }
         })
         .catch(error => {
             console.error(error);
-            setTVSeason(null);
+            setTVSeason(savedTVSeason);
         })
         .finally(() => {
             setIsLoading(false);
@@ -38,11 +48,11 @@ export default function TVSeasonScreen() {
         });
     }, [ navigation, tvSeason ]);
 
-    const watchAll = () => (
-        <Pressable onPress={() => {}}>
+    const watchAll = () => savedEpisodes?.length ? (
+        <Pressable onPress={() => {realm.write(() => savedEpisodes.forEach(episode => episode.watched = true))}}>
             <SymbolView name="eye.fill" size={30} />
         </Pressable>
-    );
+    ) : null;
 
     if (isLoading) {
         return (
@@ -68,6 +78,7 @@ export default function TVSeasonScreen() {
         if (item.duration) {
             properties.push(`${item.duration}'`);
         }
+        const savedEpisode = savedEpisodes.filtered('id == $0', item.id)[0];
         return (
             <View style={styles.episode}>
                 <View style={styles.episodeHeader}>
@@ -76,9 +87,11 @@ export default function TVSeasonScreen() {
                         <Text style={styles.episodeName} numberOfLines={2}>{item.number}. {item.name}</Text>
                         <Text>{properties.join(' | ')}</Text>
                     </View>
-                    <Pressable onPress={() => {}} style={{ ...styles.episodeStatus, backgroundColor: PlatformColor(item.watched ? 'systemGreen' : 'systemGray') }}>
-                        <SymbolView name={item.watched ? 'eye.fill' : 'eye.slash.fill'} size={width / 15} tintColor="white" />
-                    </Pressable>
+                    {savedEpisode ? (
+                        <Pressable onPress={() => realm.write(() => savedEpisode.watched = !savedEpisode.watched)} style={{ ...styles.episodeStatus, backgroundColor: PlatformColor(savedEpisode.watched ? 'systemGreen' : 'systemGray') }}>
+                            <SymbolView name={savedEpisode.watched ? 'eye.fill' : 'eye.slash.fill'} size={width / 15} tintColor="white" />
+                        </Pressable>
+                    ) : null}
                 </View>
                 {item.description ? (
                     <View style={styles.episodeDescription}>
