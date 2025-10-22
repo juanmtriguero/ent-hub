@@ -58,7 +58,7 @@ export class TVEpisode extends Realm.Object {
             description: 'string?',
             duration: 'int?',
             stillUrl: 'string?',
-            tvSeason: {
+            parent: {
                 type: 'linkingObjects',
                 objectType: 'TVSeason',
                 property: 'episodes',
@@ -89,7 +89,7 @@ export class TVSeason extends Realm.Object {
             airDate: 'date?',
             description: 'string?',
             posterUrl: 'string?',
-            tv: {
+            parent: {
                 type: 'linkingObjects',
                 objectType: 'TV',
                 property: 'seasons',

@@ -65,8 +65,8 @@ export default function TVScreen() {
     };
 
     const deleteOrphans = (realm: Realm) => {
-        realm.delete(realm.objects('TVSeason').filtered('tv.@count == 0'));
-        realm.delete(realm.objects('TVEpisode').filtered('tvSeason.@count == 0'));
+        realm.delete(realm.objects('TVSeason').filtered('parent.@count == 0'));
+        realm.delete(realm.objects('TVEpisode').filtered('parent.@count == 0'));
     };
 
     return (

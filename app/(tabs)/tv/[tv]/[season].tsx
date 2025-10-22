@@ -12,8 +12,8 @@ export default function TVSeasonScreen() {
 
     const { tv, season } = useLocalSearchParams<{ tv: string, season: string }>();
     const navigation = useNavigation();
-    const savedTVSeason = useQuery(TVSeason).filtered('tv.id == $0 AND number == $1', tv, season)[0];
-    const savedEpisodes = useQuery(TVEpisode).filtered('tvSeason.id == $0', savedTVSeason?.id);
+    const savedTVSeason = useQuery(TVSeason).filtered('parent.id == $0 AND number == $1', tv, season)[0];
+    const savedEpisodes = useQuery(TVEpisode).filtered('parent.id == $0', savedTVSeason?.id);
     const realm = useRealm();
     const [ tvSeason, setTVSeason ] = useState<TVSeason | null>(null);
     const [ isLoading, setIsLoading ] = useState<boolean>(true);

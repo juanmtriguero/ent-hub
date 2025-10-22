@@ -59,10 +59,15 @@ export default function Stats({ schema, statusOptions }: Props) {
 
     const exportItems = () => {
         setExportInProgress(true);
-        const file = new File(Paths.cache, `${schema.name}_${Date.now()}.json`);
-        file.create();
-        file.write(JSON.stringify(items));
-        Sharing.shareAsync(file.uri);
+        try {
+            const file = new File(Paths.cache, `${schema.name}_${Date.now()}.json`);
+            file.create();
+            file.write(JSON.stringify(items, (key, value) => (key === 'parent' ? undefined : value)));
+            Sharing.shareAsync(file.uri);
+        } catch (error) {
+            console.error(error);
+            alert('There was an error during the export, please try again');
+        }
         setExportInProgress(false);
     };
 
