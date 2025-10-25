@@ -21,10 +21,11 @@ export default function WatchProviderSelector({ schema, fetchData, onSelect }: P
     useEffect(() => {
         fetchData()
         .then(data => {
-            setProviders(data.map(getWatchProvider).sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0)));
+            const providers = data.map(getWatchProvider).sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0));
+            setProviders(providers);
             realm.write(() => {
                 providers.forEach(provider => {
-                    realm.create(schema, { ...provider }, Realm.UpdateMode.Modified);
+                    realm.create(schema, provider, Realm.UpdateMode.Modified);
                 });
             });
         })
