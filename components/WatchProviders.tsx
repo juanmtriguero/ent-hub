@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     logo: {
         width: 60,
         height: 60,
-        borderRadius: 10,
+        borderRadius: 15,
         borderWidth: 1,
         borderColor: 'lightgray',
         overflow: 'hidden',
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         flexDirection: 'row',
         flexWrap: 'wrap',
-        gap: 10,
+        gap: 5,
     },
     sectionTitle: {
         fontWeight: 'bold',
