@@ -1,12 +1,10 @@
 import GenreSelector from '@/components/GenreSelector';
+import WatchProviderSelector from '@/components/WatchProviderSelector';
 import { getMovieGenres, getMovieProviders } from '@/integration/tmdb';
-import { WatchProvider } from '@/models/interfaces';
 import { MovieGenre, MovieProvider } from '@/models/movies';
-import { getGenre, getWatchProvider } from '@/util/moviesAndTV';
-import { Realm, useQuery, useRealm } from '@realm/react';
-import { Image } from 'expo-image';
+import { getGenre } from '@/util/moviesAndTV';
 import { useEffect, useState } from 'react';
-import { FlatList, PlatformColor, Pressable, StyleSheet, View, Text } from 'react-native';
+import { PlatformColor, Pressable, StyleSheet, View, Text } from 'react-native';
 
 enum MovieFilterType {
     Ads = 'ads',
@@ -52,28 +50,9 @@ type Props = {
 
 export default function MovieFilter({ onChange }: Props) {
 
-    const savedProviders = useQuery(MovieProvider).sorted('priority', true);
-    const realm = useRealm();
-    const [ providers, setProviders ] = useState<WatchProvider[]>([]);
     const [ selectedTypes, setSelectedTypes ] = useState<MovieFilterType[]>([]);
     const [ selectedProviders, setSelectedProviders ] = useState<string[]>([]);
     const [ selectedGenres, setSelectedGenres ] = useState<string[]>([]);
-
-    useEffect(() => {
-        getMovieProviders()
-        .then(data => {
-            setProviders(data.map(getWatchProvider).sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0)));
-            realm.write(() => {
-                providers.forEach(provider => {
-                    realm.create(MovieProvider, { ...provider }, Realm.UpdateMode.Modified);
-                });
-            });
-        })
-        .catch(error => {
-            console.error(error);
-            setProviders([ ...savedProviders ]);
-        });
-    }, []);
 
     useEffect(() => {
         onChange({
@@ -82,22 +61,6 @@ export default function MovieFilter({ onChange }: Props) {
             genres: selectedGenres,
         });
     }, [ selectedTypes, selectedProviders, selectedGenres ]);
-
-    const displayProvider = ({ item }: { item: WatchProvider }) => {
-        const selectProvider = () => {
-            if (selectedProviders.includes(item.id)) {
-                setSelectedProviders(selectedProviders.filter(provider => provider !== item.id));
-            } else {
-                setSelectedProviders([ ...selectedProviders, item.id ]);
-            }
-        };
-        return (
-            <Pressable key={item.id} onPress={selectProvider}>
-                { selectedProviders.includes(item.id) && <View style={styles.cover} /> }
-                <Image source={item.logoUrl} style={styles.logo} />
-            </Pressable>
-        );
-    };
 
     const displayType = ({ item, label }: { item: MovieFilterType, label: string }) => {
         const selectType = () => {
@@ -129,7 +92,7 @@ export default function MovieFilter({ onChange }: Props) {
                 </View>
             </View>
             <View style={styles.row}>
-                <FlatList data={providers} renderItem={displayProvider} contentContainerStyle={styles.separator} horizontal showsHorizontalScrollIndicator={false} />
+                <WatchProviderSelector schema={MovieProvider} fetchData={getMovieProviders} onSelect={setSelectedProviders} />
             </View>
             <View style={styles.row}>
                 <GenreSelector schema={MovieGenre} buildGenre={getGenre} fetchData={getMovieGenres} onSelect={setSelectedGenres} />
@@ -143,32 +106,12 @@ const styles = StyleSheet.create({
     container: {
         marginHorizontal: 10,
     },
-    cover: {
-        position: 'absolute',
-        backgroundColor: PlatformColor('systemBlue'),
-        opacity: 0.5,
-        width: '100%',
-        height: '100%',
-        borderRadius: 10,
-        zIndex: 1,
-    },
     horizontal: {
         flexDirection: 'row',
         gap: 5,
     },
-    logo: {
-        width: 60,
-        height: 60,
-        borderRadius: 10,
-        borderWidth: 1,
-        borderColor: 'lightgray',
-        overflow: 'hidden',
-    },
     row: {
         marginTop: 10,
-    },
-    separator: {
-        gap: 5,
     },
     selectedType: {
         color: 'white',

@@ -18,6 +18,7 @@ export class MovieGenre extends Realm.Object implements Genre {
 export class MovieProvider extends Realm.Object implements WatchProvider {
     id!: string;
     logoUrl!: string;
+    mine!: boolean;
     name!: string;
     priority?: number;
 
@@ -27,6 +28,10 @@ export class MovieProvider extends Realm.Object implements WatchProvider {
         properties: {
             id: 'string',
             logoUrl: 'string',
+            mine: {
+                type: 'bool',
+                default: false,
+            },
             name: 'string',
             priority: 'int?',
         },
