@@ -20,10 +20,11 @@ export default function GenreSelector({ schema, buildGenre, fetchData, onSelect 
     useEffect(() => {
         fetchData()
         .then(data => {
-            setGenres(data.map(buildGenre));
+            const genres = data.map(buildGenre);
+            setGenres(genres);
             realm.write(() => {
                 genres.forEach(genre => {
-                    realm.create(schema, { ...genre }, Realm.UpdateMode.Modified);
+                    realm.create(schema, genre, Realm.UpdateMode.Modified);
                 });
             });
         })
