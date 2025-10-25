@@ -12,9 +12,9 @@ export default function Settings() {
         <ScrollView>
             <View style={styles.container}>
                 <Setting title="Movies and TV" state={useMoviesAndTVSettings()} api={tmdb} />
-                <Setting title="Books" state={useBooksSettings()} api={google} />
-                <Setting title="Games" state={useGamesSettings()} api={giantBomb} />
-                <Setting title="Comics" state={useComicsSettings()} api={comicVine} />
+                {/* <Setting title="Books" state={useBooksSettings()} api={google} /> */}
+                {/* <Setting title="Games" state={useGamesSettings()} api={giantBomb} /> */}
+                {/* <Setting title="Comics" state={useComicsSettings()} api={comicVine} /> */}
             </View>
         </ScrollView>
     );

@@ -44,9 +44,9 @@ export default function Index() {
                 </View>
                 <View style={styles.settings}>
                     <Setting title="Movies and TV" state={moviesAndTVSettings} api={tmdb} />
-                    <Setting title="Books" state={booksSettings} api={google} />
-                    <Setting title="Games" state={gamesSettings} api={giantBomb} />
-                    <Setting title="Comics" state={comicsSettings} api={comicVine} />
+                    {/* <Setting title="Books" state={booksSettings} api={google} /> */}
+                    {/* <Setting title="Games" state={gamesSettings} api={giantBomb} /> */}
+                    {/* <Setting title="Comics" state={comicsSettings} api={comicVine} /> */}
                 </View>
                 <View style={styles.footer}>
                     <Button title="I am ready" onPress={() => generalSettings.setReady(true)} disabled={!moviesAndTVSettings.enabled && !booksSettings.enabled && !gamesSettings.enabled && !comicsSettings.enabled} />
