@@ -50,7 +50,7 @@ export default function TVSeasonScreen() {
 
     const watchAll = () => savedEpisodes?.length ? (
         <Pressable onPress={() => {realm.write(() => savedEpisodes.forEach(episode => episode.watched = true))}}>
-            <SymbolView name="eye.fill" size={30} />
+            <SymbolView name="eye.fill" size={36} />
         </Pressable>
     ) : null;
 

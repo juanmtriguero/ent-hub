@@ -50,8 +50,8 @@ export default function Index({ buildTile, schema, searchData, searchOn, section
 
     useEffect(() => {
         navigation.setOptions({
-            headerLargeTitle: true,
-            headerLeft: () => logo,
+            // FIXME: set to true when Apple fixes the bug
+            headerLargeTitle: false,
             headerRight: () => settings,
             headerSearchBarOptions: {
                 onChangeText: (event: any) => setSearchText(event.nativeEvent.text),
@@ -60,13 +60,9 @@ export default function Index({ buildTile, schema, searchData, searchOn, section
         });
     }, [navigation]);
 
-    const logo = (
-        <Text style={styles.logo}>EntHub</Text>
-    );
-
     const settings = (
         <Pressable onPress={() => router.navigate('/settings')}>
-            <SymbolView name="gear" size={30} />
+            <SymbolView name="gear" size={36} />
         </Pressable>
     );
 
@@ -107,10 +103,3 @@ export default function Index({ buildTile, schema, searchData, searchOn, section
     return searchText.length ? searchView : homeView;
 
 }
-
-const styles = StyleSheet.create({
-    logo: {
-        fontWeight: 'bold',
-        color: PlatformColor('systemBlue'),
-    },
-});
