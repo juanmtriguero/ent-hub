@@ -1,9 +1,12 @@
 import Index, { FetchSection, QuerySection } from '@/components/Index';
+import NextEpisodes from '@/components/NextEpisodes';
 import { getPopularShows, searchTV } from '@/integration/tmdb';
 import { TV } from '@/models/tv';
 import { getTVDetail, getTVTile, tvStatusOptions } from '@/util/moviesAndTV';
+import { ReactElement } from 'react';
 
-const sections: (FetchSection | QuerySection)[] = [
+const sections: (ReactElement | FetchSection | QuerySection)[] = [
+    <NextEpisodes />,
     {
         fetchData: getPopularShows,
         limit: 4,

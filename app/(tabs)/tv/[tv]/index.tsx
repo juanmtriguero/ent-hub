@@ -52,7 +52,7 @@ export default function TVScreen() {
         </Pressable>
     );
 
-    const additionalContent = (item: TV, savedItem?: TV & { seasons: Realm.List<TVSeason> }) => {
+    const additionalContent = (item: TV & { seasons: TVSeason[] }, savedItem?: TV) => {
         const seasons = savedItem?.seasons.sorted('number', true) ?? item.seasons.sort((a, b) => b.number - a.number);
         return (
             <View style={styles.container}>

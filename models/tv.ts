@@ -77,12 +77,12 @@ export class TVSeason extends Realm.Object {
     name!: string;
     number!: number;
     count!: number;
-    episodes!: TVEpisode[];
+    episodes!: Realm.List<TVEpisode>;
     airDate?: Date;
     description?: string;
     posterUrl?: string;
 
-    static schema = {
+    static schema: Realm.ObjectSchema = {
         name: 'TVSeason',
         primaryKey: 'id',
         properties: {
@@ -90,7 +90,10 @@ export class TVSeason extends Realm.Object {
             name: 'string',
             number: 'int',
             count: 'int',
-            episodes: 'TVEpisode[]',
+            episodes: {
+                type: 'list',
+                objectType: 'TVEpisode',
+            },
             airDate: 'date?',
             description: 'string?',
             posterUrl: 'string?',
@@ -112,13 +115,13 @@ export class TV extends Realm.Object implements SavedItem {
     originalTitle!: string;
     genres!: TVGenre[];
     flatrate!: TVProvider[];
-    seasons!: TVSeason[];
+    seasons!: Realm.List<TVSeason>;
     description?: string;
     details?: string;
     posterUrl?: string;
     backdropUrl?: string;
 
-    static schema = {
+    static schema: Realm.ObjectSchema = {
         name: 'TV',
         primaryKey: 'id',
         properties: {
@@ -130,7 +133,10 @@ export class TV extends Realm.Object implements SavedItem {
             originalTitle: 'string',
             genres: 'TVGenre[]',
             flatrate: 'TVProvider[]',
-            seasons: 'TVSeason[]',
+            seasons: {
+                type: 'list',
+                objectType: 'TVSeason',
+            },
             description: 'string?',
             details: 'string?',
             posterUrl: 'string?',
