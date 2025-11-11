@@ -7,7 +7,7 @@ import { SavedItem } from '@/models/interfaces';
 import { Realm } from '@realm/react';
 import { Href, useNavigation, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
-import { useEffect, useState } from 'react';
+import { isValidElement, ReactElement, useEffect, useState } from 'react';
 import { FlatList, PlatformColor, Pressable, StyleSheet, Text, View } from 'react-native';
 
 type Section = {
@@ -31,7 +31,7 @@ type Props = {
     schema: Realm.ObjectClass<SavedItem & Realm.Object>,
     searchData: (page: number, params: any, signal: AbortSignal) => Promise<{ numPages: number, results: any[] }>;
     searchOn: string;
-    sections: (FetchSection | QuerySection)[];
+    sections: (ReactElement | FetchSection | QuerySection)[];
     statusOptions: Status[];
 };
 
@@ -81,7 +81,10 @@ export default function Index({ buildTile, schema, searchData, searchOn, section
             <FlatList
                 contentInsetAdjustmentBehavior="automatic"
                 data={[ ...sections, 'stats' ]}
-                renderItem={({ item }: { item: FetchSection | QuerySection | 'stats' }) => {
+                renderItem={({ item }: { item: ReactElement | FetchSection | QuerySection | 'stats' }) => {
+                    if (isValidElement(item)) {
+                        return item;
+                    }
                     if (item === 'stats') {
                         return (
                             <Stats schema={schema} statusOptions={statusOptions} />

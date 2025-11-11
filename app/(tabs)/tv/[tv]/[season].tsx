@@ -84,8 +84,8 @@ export default function TVSeasonScreen() {
                 <View style={styles.episodeHeader}>
                     <Image source={item.stillUrl} style={styles.episodeImage} contentFit="cover" />
                     <View style={styles.episodeBody}>
-                        <Text style={styles.episodeName} numberOfLines={2}>{item.number}. {item.name}</Text>
-                        <Text>{properties.join(' | ')}</Text>
+                        <Text style={styles.episodeName} numberOfLines={2}>{item.number}. {item.name}{'\n'}</Text>
+                        <Text numberOfLines={1}>{properties.join(' | ')}</Text>
                     </View>
                     {savedEpisode ? (
                         <Pressable onPress={() => realm.write(() => savedEpisode.watched = !savedEpisode.watched)} style={{ ...styles.episodeStatus, backgroundColor: PlatformColor(savedEpisode.watched ? 'systemGreen' : 'systemGray') }}>
@@ -140,7 +140,6 @@ const getStyles = (width: number, height: number) => StyleSheet.create({
     },
     episodeImage: {
         width: '35%',
-        aspectRatio: 16 / 9,
         backgroundColor: PlatformColor('systemGray3'),
     },
     episodeList: {

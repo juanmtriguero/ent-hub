@@ -129,7 +129,8 @@ const styles = StyleSheet.create({
         margin: 10,
     },
     header: {
-        margin: 10,
+        marginVertical: 10,
+        marginHorizontal: 5,
     },
     headerTitle: {
         fontWeight: 'bold',
