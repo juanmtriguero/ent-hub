@@ -1,4 +1,4 @@
-import { WatchProvider } from '@/models/interfaces';
+import { SavedProvider, WatchProvider } from '@/models/interfaces';
 import { getWatchProvider } from '@/util/moviesAndTV';
 import { Realm, useQuery, useRealm } from '@realm/react';
 import { Image } from 'expo-image';
@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { Button, FlatList, PlatformColor, Pressable, StyleSheet, View } from 'react-native';
 
 type Props = {
-    schema: Realm.ObjectClass<WatchProvider & Realm.Object>,
+    schema: Realm.ObjectClass<SavedProvider & Realm.Object>,
     fetchData: () => Promise<WatchProvider[]>,
     onSelect: (providers: string[]) => void,
 };
@@ -40,7 +40,7 @@ export default function WatchProviderSelector({ schema, fetchData, onSelect }: P
     }, [ selectedProviders ]);
 
     const selectMyServices = () => {
-        setSelectedProviders(savedProviders.filter(provider => provider.mine).map(provider => provider.id));
+        setSelectedProviders(savedProviders.filtered('mine == true').map(provider => provider.id));
     };
 
     const updateMyServices = () => {

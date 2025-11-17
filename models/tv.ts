@@ -1,11 +1,11 @@
-import { Genre, SavedItem, WatchProvider } from '@/models/interfaces';
+import { Genre, SavedItem, SavedProvider } from '@/models/interfaces';
 import { Realm } from '@realm/react';
 
 export class TVGenre extends Realm.Object implements Genre {
     id!: string;
     name!: string;
 
-    static schema = {
+    static schema: Realm.ObjectSchema = {
         name: 'TVGenre',
         primaryKey: 'id',
         properties: {
@@ -15,14 +15,14 @@ export class TVGenre extends Realm.Object implements Genre {
     };
 }
 
-export class TVProvider extends Realm.Object implements WatchProvider {
+export class TVProvider extends Realm.Object implements SavedProvider {
     id!: string;
     logoUrl!: string;
     mine!: boolean;
     name!: string;
     priority?: number;
 
-    static schema = {
+    static schema: Realm.ObjectSchema = {
         name: 'TVProvider',
         primaryKey: 'id',
         properties: {
@@ -48,7 +48,7 @@ export class TVEpisode extends Realm.Object {
     duration?: number;
     stillUrl?: string;
 
-    static schema = {
+    static schema: Realm.ObjectSchema = {
         name: 'TVEpisode',
         primaryKey: 'id',
         properties: {

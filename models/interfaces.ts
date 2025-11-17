@@ -23,7 +23,10 @@ export interface SavedItem extends Item {
 export interface WatchProvider {
     id: string;
     logoUrl: string;
-    mine: boolean;
     name: string;
     priority?: number;
+}
+
+export interface SavedProvider extends WatchProvider {
+    mine: boolean;
 }

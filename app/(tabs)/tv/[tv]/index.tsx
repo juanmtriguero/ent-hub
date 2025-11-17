@@ -18,7 +18,7 @@ export default function TVScreen() {
         if (savedItem) {
             const { watched, total } = savedItem?.seasons.reduce((acc, season) => {
                 if (season.number) {
-                    acc.watched += season.episodes.filter(episode => episode.watched).length;
+                    acc.watched += season.episodes.filtered('watched == true').length;
                     acc.total += season.count;
                 }
                 return acc;

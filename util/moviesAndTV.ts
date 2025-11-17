@@ -115,7 +115,7 @@ export const getWatchProvider = (provider: any): WatchProvider => ({
 });
 
 export const getSeasonProgress = (season: TVSeason): number => {
-    const watched = season.episodes?.filter(episode => episode.watched).length;
+    const watched = season.episodes?.filtered('watched == true').length;
     if (watched && season.count && season.number) {
         return watched / season.count;
     }
