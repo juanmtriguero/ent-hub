@@ -3,12 +3,12 @@ import QueryList from '@/components/QueryList';
 import { Status } from '@/components/Screen';
 import Stats from '@/components/Stats';
 import { Tile } from '@/components/TileList';
-import { SavedItem } from '@/models/interfaces';
+import { Genre, SavedItem } from '@/models/interfaces';
 import { Realm } from '@realm/react';
 import { Href, useNavigation, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { isValidElement, ReactElement, useEffect, useState } from 'react';
-import { FlatList, PlatformColor, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, View } from 'react-native';
 
 type Section = {
     title: string;
@@ -26,16 +26,16 @@ export type QuerySection = {
     getDetail: (id: string) => Href;
 } & Section;
 
-type Props = {
+type Props<G extends Genre, S extends SavedItem<G> & Realm.Object> = {
     buildTile: (item: any) => Tile;
-    schema: Realm.ObjectClass<SavedItem & Realm.Object>,
+    schema: Realm.ObjectClass<S>,
     searchData: (page: number, params: any, signal: AbortSignal) => Promise<{ numPages: number, results: any[] }>;
     searchOn: string;
     sections: (ReactElement | FetchSection | QuerySection)[];
     statusOptions: Status[];
 };
 
-export default function Index({ buildTile, schema, searchData, searchOn, sections, statusOptions }: Props) {
+export default function Index<G extends Genre, S extends SavedItem<G> & Realm.Object>({ buildTile, schema, searchData, searchOn, sections, statusOptions }: Props<G, S>) {
 
     const navigation = useNavigation();
     const router = useRouter();
@@ -67,7 +67,7 @@ export default function Index({ buildTile, schema, searchData, searchOn, section
     );
 
     const searchView = (
-        <FetchList schema={schema} statusOptions={statusOptions} buildTile={buildTile} fetchData={searchData} params={searchParams} />
+        <FetchList<G, S> schema={schema} statusOptions={statusOptions} buildTile={buildTile} fetchData={searchData} params={searchParams} />
     );
 
     const isFetchSection = (section: FetchSection | QuerySection): section is FetchSection => 'fetchData' in section;
@@ -83,17 +83,17 @@ export default function Index({ buildTile, schema, searchData, searchOn, section
                     }
                     if (item === 'stats') {
                         return (
-                            <Stats schema={schema} statusOptions={statusOptions} />
+                            <Stats<G, S> schema={schema} statusOptions={statusOptions} />
                         );
                     }
                     const header = { title: item.title, link: item.viewAll };
                     if (isFetchSection(item)) {
                         return (
-                            <FetchList buildTile={buildTile} fetchData={item.fetchData} schema={schema} statusOptions={statusOptions} header={header} limit={item.limit} />
+                            <FetchList<G, S> buildTile={buildTile} fetchData={item.fetchData} schema={schema} statusOptions={statusOptions} header={header} limit={item.limit} />
                         );
                     }
                     return (
-                        <QueryList query={item.query} queryParams={item.queryParams} getDetail={item.getDetail} schema={schema} statusOptions={statusOptions} header={header} limit={item.limit} />
+                        <QueryList<G, S> query={item.query} queryParams={item.queryParams} getDetail={item.getDetail} schema={schema} statusOptions={statusOptions} header={header} limit={item.limit} />
                     );
                 }}
             />

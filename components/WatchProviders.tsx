@@ -1,19 +1,20 @@
-import { WatchProvider } from '@/models/interfaces';
+import { SavedProvider, WatchProvider } from '@/models/interfaces';
+import { Realm } from '@realm/react';
 import { Image } from 'expo-image';
 import { View, Text, StyleSheet } from 'react-native';
 
 const justWatchLogo = require('@/assets/logos/just-watch.png');
 
-type Props = {
-    flatrate?: WatchProvider[];
-    ads?: WatchProvider[];
-    rent?: WatchProvider[];
-    buy?: WatchProvider[];
+type Props<S extends SavedProvider> = {
+    flatrate?: WatchProvider[] | Realm.List<S>;
+    ads?: WatchProvider[] | Realm.List<S>;
+    rent?: WatchProvider[] | Realm.List<S>;
+    buy?: WatchProvider[] | Realm.List<S>;
 };
 
-export default function WatchProviders({ flatrate, ads, rent, buy }: Props) {
+export default function WatchProviders<S extends SavedProvider>({ flatrate, ads, rent, buy }: Props<S>) {
 
-    const renderWatchProviderSection = (title: string, providers?: WatchProvider[]) => {
+    const renderWatchProviderSection = (title: string, providers?: WatchProvider[] | Realm.List<S>) => {
         if (providers?.length) {
             const renderWatchProviders = providers.map(({ id, logoUrl }) => (
                 <Image key={id} source={logoUrl} style={styles.logo} />

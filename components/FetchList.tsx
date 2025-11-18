@@ -1,21 +1,21 @@
 import { Status } from '@/components/Screen';
 import TileList, { Tile } from '@/components/TileList';
-import { SavedItem } from '@/models/interfaces';
+import { Genre, SavedItem } from '@/models/interfaces';
 import { Realm, useQuery } from '@realm/react';
 import { Href } from 'expo-router';
 import { useEffect, useState } from 'react';
 
-type Props = {
+type Props<G extends Genre, S extends SavedItem<G> & Realm.Object> = {
     buildTile: (item: any) => Tile,
     fetchData: (page: number, params: any, signal: AbortSignal) => Promise<{ numPages: number, results: any[] }>,
-    schema: Realm.ObjectClass<SavedItem & Realm.Object>,
+    schema: Realm.ObjectClass<S>,
     statusOptions: Status[],
     header?: { title: string, link: Href },
     limit?: number,
     params?: any,
 };
 
-export default function FetchList({ fetchData, buildTile, schema, statusOptions, header, limit, params }: Props) {
+export default function FetchList<G extends Genre, S extends SavedItem<G> & Realm.Object>({ fetchData, buildTile, schema, statusOptions, header, limit, params }: Props<G, S>) {
 
     const [ isLoading, setIsLoading ] = useState<boolean>(false);
     const [ numPages, setNumPages ] = useState<number>(0);

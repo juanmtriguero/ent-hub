@@ -1,4 +1,4 @@
-import { Item, SavedItem } from '@/models/interfaces';
+import { Genre, Item, SavedItem } from '@/models/interfaces';
 import { Realm, useQuery, useRealm } from '@realm/react';
 import { Image } from 'expo-image';
 import { SFSymbol, SymbolView } from 'expo-symbols';
@@ -14,22 +14,22 @@ export type Status = {
     value: string,
 };
 
-type Props = {
-    additionalContent: (item: Item & any, savedItem?: SavedItem & any) => React.ReactNode,
-    buildItem: (data: any) => Item,
+type Props<I extends Item, G extends Genre, S extends SavedItem<G> & Realm.Object> = {
+    additionalContent: (item: I | S) => React.ReactNode,
+    buildItem: (data: any) => I,
     fetchData: (id: string) => Promise<any>,
     id: string,
-    schema: Realm.ObjectClass<SavedItem & Realm.Object>,
+    schema: Realm.ObjectClass<S>,
     statusOptions: Status[],
     deleteOrphans?: (realm: Realm) => void,
 };
 
-export default function Screen({ additionalContent, buildItem, fetchData, id, schema, statusOptions, deleteOrphans }: Props) {
+export default function Screen<I extends Item, G extends Genre, S extends SavedItem<G> & Realm.Object>({ additionalContent, buildItem, fetchData, id, schema, statusOptions, deleteOrphans }: Props<I, G, S>) {
 
     const savedItem = useQuery(schema).filtered('id == $0', id)[0];
     const realm = useRealm();
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
-    const [ item, setItem ] = useState<Item | null>(null);
+    const [ item, setItem ] = useState<I | S | null>(null);
     const { height, width } = useWindowDimensions();
     const styles = getStyles(width, height);
 
@@ -41,7 +41,7 @@ export default function Screen({ additionalContent, buildItem, fetchData, id, sc
             setItem(item);
             if (savedItem) {
                 realm.write(() => {
-                    realm.create(schema, item, Realm.UpdateMode.Modified);
+                    realm.create(schema, item as unknown as Partial<S>, Realm.UpdateMode.Modified);
                 });
             }
         })
@@ -80,7 +80,7 @@ export default function Screen({ additionalContent, buildItem, fetchData, id, sc
                     savedItem.status = status;
                     savedItem.timestamp = Date.now();
                 } else {
-                    realm.create(schema, { ...item, status, timestamp: Date.now() }, Realm.UpdateMode.Modified);
+                    realm.create(schema, { ...item as Partial<S>, status, timestamp: Date.now() }, Realm.UpdateMode.Modified);
                 }
             } else {
                 realm.delete(savedItem);
@@ -122,7 +122,7 @@ export default function Screen({ additionalContent, buildItem, fetchData, id, sc
                 <View style={styles.tags}>
                     {item.genres.map((genre) => <Text key={genre.id} style={styles.tag}>{genre.name}</Text>)}
                 </View>
-                {additionalContent(item, savedItem)}
+                {additionalContent(savedItem ?? item)}
             </View>
         </ScrollView>
     );

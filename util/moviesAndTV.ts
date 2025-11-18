@@ -1,8 +1,9 @@
 import { Status } from '@/components/Screen';
 import { Tile } from '@/components/TileList';
 import { BACKDROP_SIZE, IMAGE_URL, LOGO_SIZE, POSTER_SIZE } from '@/integration/tmdb';
-import { Genre, Item, WatchProvider } from '@/models/interfaces';
-import { TVSeason } from '@/models/tv';
+import { Genre, WatchProvider } from '@/models/interfaces';
+import { MovieItem } from '@/models/movies';
+import { TVItem, TVSeason } from '@/models/tv';
 import { formatDuration, intervalToDuration } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Href } from 'expo-router';
@@ -14,17 +15,11 @@ const getReleaseYear = (releaseDate: string): string => new Date(releaseDate).ge
 const getDuration = (minutes: number): string => formatDuration(intervalToDuration({ start: 0, end: minutes * 60000 }), { locale: es });
 const getAirDate = (airDate?: string): Date | undefined => airDate ? new Date(airDate) : undefined;
 const getGenres = (genres: any[]): Genre[] => genres.map(genre => ({ id: `${genre.id}`, name: genre.name }));
-const getProvider = (provider: any): WatchProvider => ({
+const getProviders = (providers?: any[]): WatchProvider[] => (providers?.map(provider => ({
     id: `${provider.provider_id}`,
     logoUrl: `${IMAGE_URL}${LOGO_SIZE}${provider.logo_path}`,
     name: provider.provider_name,
-});
-const getProviders = (providers?: { [key: string]: any[] }): any => ({
-    flatrate: providers?.flatrate?.map(getProvider) ?? [],
-    ads: providers?.ads?.map(getProvider) ?? [],
-    rent: providers?.rent?.map(getProvider) ?? [],
-    buy: providers?.buy?.map(getProvider) ?? [],
-});
+})) ?? []);
 
 export const getMovieDetail = (id: string): Href => ({
     pathname: '/movies/[movie]',
@@ -52,18 +47,24 @@ export const getTVTile = (tv: any): Tile => ({
     title: tv.name,
 });
 
-export const buildMovie = (movie: any): Item => ({
-    id: `${movie.id}`,
-    backdropUrl: getBackdropUrl(movie.backdrop_path),
-    description: movie.overview,
-    details: getDuration(movie.runtime),
-    genres: getGenres(movie.genres),
-    originalTitle: movie.original_title,
-    posterUrl: getPosterUrl(movie.poster_path),
-    releaseYear: getReleaseYear(movie.release_date),
-    title: movie.title,
-    ...getProviders(movie['watch/providers'].results.ES),
-});
+export const buildMovie = (movie: any): MovieItem => {
+    const providers = movie['watch/providers'].results.ES;
+    return {
+        id: `${movie.id}`,
+        backdropUrl: getBackdropUrl(movie.backdrop_path),
+        description: movie.overview,
+        details: getDuration(movie.runtime),
+        genres: getGenres(movie.genres),
+        originalTitle: movie.original_title,
+        posterUrl: getPosterUrl(movie.poster_path),
+        releaseYear: getReleaseYear(movie.release_date),
+        title: movie.title,
+        flatrate: getProviders(providers?.flatrate),
+        ads: getProviders(providers?.ads),
+        rent: getProviders(providers?.rent),
+        buy: getProviders(providers?.buy),
+    };
+};
 
 export const buildTVEpisode = (episode: any): any => ({
     id: `${episode.id}`,
@@ -86,7 +87,7 @@ export const buildTVSeason = (season: any): any => ({
     posterUrl: getPosterUrl(season.poster_path),
 });
 
-export const buildTV = (tv: any): Item => ({
+export const buildTV = (tv: any): TVItem => ({
     id: `${tv.id}`,
     backdropUrl: getBackdropUrl(tv.backdrop_path),
     description: tv.overview,
@@ -96,10 +97,8 @@ export const buildTV = (tv: any): Item => ({
     posterUrl: getPosterUrl(tv.poster_path),
     releaseYear: getReleaseYear(tv.first_air_date),
     title: tv.name,
-    ...{
-        flatrate: getProviders(tv['watch/providers'].results.ES).flatrate,
-        seasons: tv.seasons.map(buildTVSeason),
-    },
+    flatrate: getProviders(tv['watch/providers'].results.ES?.flatrate),
+    seasons: tv.seasons.map(buildTVSeason),
 });
 
 export const getGenre = (genre: any): Genre => ({

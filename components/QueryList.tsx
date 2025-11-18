@@ -1,20 +1,20 @@
 import { Status } from '@/components/Screen';
 import TileList, { Tile } from '@/components/TileList';
-import { SavedItem } from '@/models/interfaces';
+import { Genre, SavedItem } from '@/models/interfaces';
 import { Realm, useQuery } from '@realm/react';
 import { Href } from 'expo-router';
 
-type Props = {
+type Props<G extends Genre, S extends SavedItem<G> & Realm.Object> = {
     query: string,
     queryParams: any[],
     getDetail: (id: string) => Href,
-    schema: Realm.ObjectClass<SavedItem & Realm.Object>,
+    schema: Realm.ObjectClass<S>,
     statusOptions: Status[],
     header?: { title: string, link: Href },
     limit?: number,
 };
 
-export default function QueryList({ query, queryParams, getDetail, schema, statusOptions, header, limit }: Props) {
+export default function QueryList<G extends Genre, S extends SavedItem<G> & Realm.Object>({ query, queryParams, getDetail, schema, statusOptions, header, limit }: Props<G, S>) {
 
     const data = useQuery(schema).filtered(query, ...queryParams).sorted('timestamp', true);
 

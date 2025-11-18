@@ -1,4 +1,4 @@
-import { Genre, SavedItem, SavedProvider } from '@/models/interfaces';
+import { Genre, Item, SavedItem, SavedProvider, WatchProvider } from '@/models/interfaces';
 import { Realm } from '@realm/react';
 
 export class MovieGenre extends Realm.Object implements Genre {
@@ -38,18 +38,25 @@ export class MovieProvider extends Realm.Object implements SavedProvider {
     };
 }
 
-export class Movie extends Realm.Object implements SavedItem {
+export interface MovieItem extends Item {
+    flatrate: WatchProvider[];
+    ads: WatchProvider[];
+    rent: WatchProvider[];
+    buy: WatchProvider[];
+}
+
+export class Movie extends Realm.Object implements SavedItem<MovieGenre> {
     id!: string;
     status!: string;
     timestamp!: number;
     title!: string;
     releaseYear!: string;
     originalTitle!: string;
-    genres!: MovieGenre[];
-    flatrate!: MovieProvider[];
-    ads!: MovieProvider[];
-    rent!: MovieProvider[];
-    buy!: MovieProvider[];
+    genres!: Realm.List<MovieGenre>;
+    flatrate!: Realm.List<MovieProvider>;
+    ads!: Realm.List<MovieProvider>;
+    rent!: Realm.List<MovieProvider>;
+    buy!: Realm.List<MovieProvider>;
     description?: string;
     details?: string;
     posterUrl?: string;
