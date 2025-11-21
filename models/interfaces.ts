@@ -15,15 +15,19 @@ export interface Item {
     backdropUrl?: string;
 }
 
-export interface SavedItem extends Item {
+export interface SavedItem<T extends Genre> extends Omit<Item, 'genres'> {
     status: string;
     timestamp: number;
+    genres: Realm.List<T>;
 }
 
 export interface WatchProvider {
     id: string;
     logoUrl: string;
-    mine: boolean;
     name: string;
     priority?: number;
+}
+
+export interface SavedProvider extends WatchProvider {
+    mine: boolean;
 }

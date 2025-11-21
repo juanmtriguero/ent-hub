@@ -1,7 +1,7 @@
 import Index, { FetchSection, QuerySection } from '@/components/Index';
 import NextEpisodes from '@/components/NextEpisodes';
 import { getPopularShows, searchTV } from '@/integration/tmdb';
-import { TV } from '@/models/tv';
+import { TV, TVGenre } from '@/models/tv';
 import { getTVDetail, getTVTile, tvStatusOptions } from '@/util/moviesAndTV';
 import { ReactElement } from 'react';
 
@@ -58,7 +58,7 @@ const sections: (ReactElement | FetchSection | QuerySection)[] = [
 export default function TVIndex() {
 
     return (
-        <Index buildTile={getTVTile} schema={TV} searchData={searchTV} searchOn="TV" sections={sections} statusOptions={tvStatusOptions} />
+        <Index<TVGenre, TV> buildTile={getTVTile} schema={TV} searchData={searchTV} searchOn="TV" sections={sections} statusOptions={tvStatusOptions} />
     );
 
 }

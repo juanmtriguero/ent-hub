@@ -1,6 +1,6 @@
 import Screen from '@/components/Screen';
 import WatchProviders from '@/components/WatchProviders';
-import { TV, TVSeason } from '@/models/tv';
+import { TV, TVGenre, TVItem, TVProvider, TVSeason, TVSeasonItem } from '@/models/tv';
 import { getTV } from '@/integration/tmdb';
 import { buildTV, getSeasonProgress, tvStatusOptions } from '@/util/moviesAndTV';
 import { Image } from 'expo-image';
@@ -14,11 +14,11 @@ export default function TVScreen() {
 
     const { tv } = useLocalSearchParams<{ tv: string }>();
 
-    const renderProgress = (savedItem?: TV) => {
-        if (savedItem) {
-            const { watched, total } = savedItem?.seasons.reduce((acc, season) => {
+    const renderProgress = (item: TV) => {
+        if (item) {
+            const { watched, total } = item?.seasons.reduce((acc, season) => {
                 if (season.number) {
-                    acc.watched += season.episodes.filter(episode => episode.watched).length;
+                    acc.watched += season.episodes.filtered('watched == true').length;
                     acc.total += season.count;
                 }
                 return acc;
@@ -34,17 +34,19 @@ export default function TVScreen() {
         return null;
     }
 
-    const navigateToSeason = (season: TVSeason) => {
+    const navigateToSeason = (season: TVSeasonItem | TVSeason) => {
         router.navigate({
             pathname: '/tv/[tv]/[season]',
             params: { tv, season: season.number },
         });
     };
 
-    const renderSeason = ({ item }: { item: TVSeason }) => (
+    const renderSeason = ({ item }: { item: TVSeasonItem | TVSeason }) => (
         <Pressable onPress={() => navigateToSeason(item)} style={styles.season}>
             <Image source={item.posterUrl} style={styles.seasonPoster} contentFit="cover" placeholder={posterPlaceholder} placeholderContentFit="cover" />
-            <View style={{ ...styles.seasonProgress, width: `${getSeasonProgress(item) * 100}%` }} />
+            { item instanceof TVSeason ? (
+                <View style={{ ...styles.seasonProgress, width: `${getSeasonProgress(item) * 100}%` }} />
+            ) : null }
             <View style={styles.seasonContainer}>
                 <Text style={styles.seasonName} numberOfLines={1}>{item.name}</Text>
                 <Text>{item.airDate ? item.airDate.toLocaleDateString('es-ES') : null}</Text>
@@ -52,14 +54,15 @@ export default function TVScreen() {
         </Pressable>
     );
 
-    const additionalContent = (item: TV & { seasons: TVSeason[] }, savedItem?: TV) => {
-        const seasons = savedItem?.seasons.sorted('number', true) ?? item.seasons.sort((a, b) => b.number - a.number);
+    const additionalContent = (item: TVItem | TV) => {
+        const isSavedItem = item instanceof TV;
+        const seasons = isSavedItem ? item?.seasons.sorted('number', true) : item.seasons.sort((a, b) => b.number - a.number);
         return (
             <View style={styles.container}>
                 <Text style={styles.title}>Seasons</Text>
-                {renderProgress(savedItem)}
+                { isSavedItem ? renderProgress(item) : null }
                 <FlatList data={seasons} renderItem={renderSeason} horizontal contentContainerStyle={styles.separator} />
-                <WatchProviders flatrate={item.flatrate} />
+                <WatchProviders<TVProvider> flatrate={item.flatrate} />
             </View>
         );
     };
@@ -70,7 +73,7 @@ export default function TVScreen() {
     };
 
     return (
-        <Screen additionalContent={additionalContent} buildItem={buildTV} fetchData={getTV} id={tv} schema={TV} statusOptions={tvStatusOptions} deleteOrphans={deleteOrphans} />
+        <Screen<TVItem, TVGenre, TV> additionalContent={additionalContent} buildItem={buildTV} fetchData={getTV} id={tv} schema={TV} statusOptions={tvStatusOptions} deleteOrphans={deleteOrphans} />
     );
 
 }

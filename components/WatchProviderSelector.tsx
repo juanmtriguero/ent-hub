@@ -1,4 +1,4 @@
-import { WatchProvider } from '@/models/interfaces';
+import { SavedProvider, WatchProvider } from '@/models/interfaces';
 import { getWatchProvider } from '@/util/moviesAndTV';
 import { Realm, useQuery, useRealm } from '@realm/react';
 import { Image } from 'expo-image';
@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { Button, FlatList, PlatformColor, Pressable, StyleSheet, View } from 'react-native';
 
 type Props = {
-    schema: Realm.ObjectClass<WatchProvider & Realm.Object>,
+    schema: Realm.ObjectClass<SavedProvider & Realm.Object>,
     fetchData: () => Promise<WatchProvider[]>,
     onSelect: (providers: string[]) => void,
 };
@@ -40,7 +40,7 @@ export default function WatchProviderSelector({ schema, fetchData, onSelect }: P
     }, [ selectedProviders ]);
 
     const selectMyServices = () => {
-        setSelectedProviders(savedProviders.filter(provider => provider.mine).map(provider => provider.id));
+        setSelectedProviders(savedProviders.filtered('mine == true').map(provider => provider.id));
     };
 
     const updateMyServices = () => {
@@ -52,13 +52,14 @@ export default function WatchProviderSelector({ schema, fetchData, onSelect }: P
         alert('Your services have been updated');
     };
 
-    const displayProvider = ({ item }: { item: WatchProvider | 'action' }) => {
-        if (item === 'action') {
-            const { title, action } = selectedProviders.length ? { title: 'Update my\nservices', action: updateMyServices } : { title: 'Select my\nservices', action: selectMyServices };
-            return (
-                <Button title={title} onPress={action} />
-            );
-        }
+    const displayAction = () => {
+        const { title, action } = selectedProviders.length ? { title: 'Update my\nservices', action: updateMyServices } : { title: 'Select my\nservices', action: selectMyServices };
+        return (
+            <Button title={title} onPress={action} />
+        );
+    };
+
+    const displayProvider = ({ item }: { item: WatchProvider }) => {
         const selectProvider = () => {
             if (selectedProviders.includes(item.id)) {
                 setSelectedProviders(selectedProviders.filter(provider => provider !== item.id));
@@ -75,7 +76,7 @@ export default function WatchProviderSelector({ schema, fetchData, onSelect }: P
     };
 
     return (
-        <FlatList data={[ 'action', ...providers ]} renderItem={displayProvider} contentContainerStyle={styles.list} horizontal showsHorizontalScrollIndicator={false} />
+        <FlatList data={providers} ListHeaderComponent={displayAction} renderItem={displayProvider} contentContainerStyle={styles.list} horizontal showsHorizontalScrollIndicator={false} />
     );
 
 }

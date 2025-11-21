@@ -1,5 +1,5 @@
 import { Status } from '@/components/Screen';
-import { SavedItem } from '@/models/interfaces';
+import { Genre, SavedItem } from '@/models/interfaces';
 import { Realm, useQuery, useRealm } from '@realm/react';
 import * as DocumentPicker from 'expo-document-picker';
 import { File, Paths } from 'expo-file-system';
@@ -8,12 +8,12 @@ import { SFSymbol, SymbolView } from 'expo-symbols';
 import { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, Pressable, PlatformColor, ActivityIndicator } from 'react-native';
 
-type Props = {
-    schema: Realm.ObjectClass<SavedItem & Realm.Object>,
+type Props<G extends Genre, S extends SavedItem<G> & Realm.Object> = {
+    schema: Realm.ObjectClass<S>,
     statusOptions: Status[],
 };
 
-export default function Stats({ schema, statusOptions }: Props) {
+export default function Stats<G extends Genre, S extends SavedItem<G> & Realm.Object>({ schema, statusOptions }: Props<G, S>) {
 
     const items = useQuery(schema);
     const realm = useRealm();
@@ -41,7 +41,7 @@ export default function Stats({ schema, statusOptions }: Props) {
                 const file = new File(assets[0].uri);
                 const items = JSON.parse(file.textSync());
                 realm.write(() => {
-                    items.forEach((item: SavedItem) => {
+                    items.forEach((item: S) => {
                         realm.create(schema, item, Realm.UpdateMode.Modified);
                     });
                 });
