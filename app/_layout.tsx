@@ -16,8 +16,7 @@ const schema = [
 
 export default function Layout() {
     return (
-        // FIXME: remove deleteRealmIfMigrationNeeded after development
-        <RealmProvider schema={schema} deleteRealmIfMigrationNeeded>
+        <RealmProvider schema={schema}>
             <Stack screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="index" />
                 <Stack.Screen name="(tabs)" />
