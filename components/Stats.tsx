@@ -8,6 +8,8 @@ import { SFSymbol, SymbolView } from 'expo-symbols';
 import { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, Pressable, PlatformColor, ActivityIndicator } from 'react-native';
 
+const PARENT_FIELDS = [ 'parent', 'games' ];
+
 type Props<G extends Genre, S extends SavedItem<G> & Realm.Object> = {
     schema: Realm.ObjectClass<S>,
     statusOptions: Status[],
@@ -62,7 +64,7 @@ export default function Stats<G extends Genre, S extends SavedItem<G> & Realm.Ob
         try {
             const file = new File(Paths.cache, `${schema.name}_${Date.now()}.json`);
             file.create();
-            file.write(JSON.stringify(items, (key, value) => (key === 'parent' ? undefined : value)));
+            file.write(JSON.stringify(items, (key, value) => (PARENT_FIELDS.includes(key) ? undefined : value)));
             Sharing.shareAsync(file.uri);
         } catch (error) {
             console.error(error);

@@ -8,12 +8,19 @@ import { SymbolView } from 'expo-symbols';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, PlatformColor, Pressable, StyleSheet, Text, View } from 'react-native';
 
+type FranchiseGame = {
+    id: string;
+    title: string;
+}
+
 export default function FranchiseScreen() {
 
     const { franchise } = useLocalSearchParams<{ franchise: string }>();
     const savedFranchise = useQuery(GameFranchise).filtered('id == $0', franchise)[0];
+    const savedFranchiseGames = useQuery(Game).filtered('ANY franchises.id == $0', franchise);
     const realm = useRealm();
     const [ item, setItem ] = useState<GameFranchiseItem | GameFranchise | null>(null);
+    const [ games, setGames ] = useState<FranchiseGame[]>([]);
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
 
     useEffect(() => {
@@ -27,10 +34,14 @@ export default function FranchiseScreen() {
                     realm.create(GameFranchise, item, Realm.UpdateMode.Modified);
                 });
             }
+            if (data.games?.length) {
+                setGames(data.games.map((game: any) => ({ id: `${game.id}`, title: game.name })));
+            }
         })
         .catch(error => {
             console.error(error);
             setItem(savedFranchise);
+            setGames(savedFranchiseGames.map(({ id, title}) => ({ id, title })));
         })
         .finally(() => {
             setIsLoading(false);
@@ -40,9 +51,9 @@ export default function FranchiseScreen() {
     const savedGames = useQuery({
         type: Game,
         query: (collection) => {
-            return collection.filtered('id IN $0', item?.games?.map(game => game.id) ?? []);
+            return collection.filtered('id IN $0', games.map(game => game.id));
         }
-    }, [item]);
+    }, [games]);
 
     if (isLoading) {
         return (
@@ -74,7 +85,7 @@ export default function FranchiseScreen() {
         </View>
     );
 
-    const statusIcon = (game: GameItem | Game) => {
+    const statusIcon = (game: FranchiseGame) => {
         const status = gameStatusOptions.find(option => option.value === savedGames.filtered('id == $0', game.id)[0]?.status);
         if (status) {
             return (
@@ -86,7 +97,7 @@ export default function FranchiseScreen() {
         return null;
     };
 
-    const renderItem = ({ item }: { item: GameItem | Game }) => (
+    const renderItem = ({ item }: { item: FranchiseGame }) => (
         <Pressable style={styles.game} onPress={() => router.navigate(getGameDetail(item.id))}  >
             <Text numberOfLines={2} style={styles.title}>{item.title + '\n'}</Text>
             {statusIcon(item)}
@@ -94,7 +105,7 @@ export default function FranchiseScreen() {
     );
 
     return (
-        <FlatList contentContainerStyle={styles.games} data={item.games} ListFooterComponent={footer} ListHeaderComponent={header} renderItem={renderItem} />
+        <FlatList contentContainerStyle={styles.games} data={games} ListFooterComponent={footer} ListHeaderComponent={header} renderItem={renderItem} />
     );
 
 }
