@@ -52,13 +52,14 @@ export default function WatchProviderSelector({ schema, fetchData, onSelect }: P
         alert('Your services have been updated');
     };
 
-    const displayProvider = ({ item }: { item: WatchProvider | 'action' }) => {
-        if (item === 'action') {
-            const { title, action } = selectedProviders.length ? { title: 'Update my\nservices', action: updateMyServices } : { title: 'Select my\nservices', action: selectMyServices };
-            return (
-                <Button title={title} onPress={action} />
-            );
-        }
+    const displayAction = () => {
+        const { title, action } = selectedProviders.length ? { title: 'Update my\nservices', action: updateMyServices } : { title: 'Select my\nservices', action: selectMyServices };
+        return (
+            <Button title={title} onPress={action} />
+        );
+    };
+
+    const displayProvider = ({ item }: { item: WatchProvider }) => {
         const selectProvider = () => {
             if (selectedProviders.includes(item.id)) {
                 setSelectedProviders(selectedProviders.filter(provider => provider !== item.id));
@@ -75,7 +76,7 @@ export default function WatchProviderSelector({ schema, fetchData, onSelect }: P
     };
 
     return (
-        <FlatList data={[ 'action', ...providers ]} renderItem={displayProvider} contentContainerStyle={styles.list} horizontal showsHorizontalScrollIndicator={false} />
+        <FlatList data={providers} ListHeaderComponent={displayAction} renderItem={displayProvider} contentContainerStyle={styles.list} horizontal showsHorizontalScrollIndicator={false} />
     );
 
 }
