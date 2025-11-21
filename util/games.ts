@@ -27,7 +27,6 @@ export const buildFranchise = (franchise: any): GameFranchiseItem => ({
     name: franchise.name,
     description: franchise.deck,
     imageUrl: franchise.image?.screen_url,
-    games: franchise.games?.map((game: any) => ({ id: `${game.id}`, title: game.name })),
 });
 
 export const buildGame = (game: any): GameItem => ({

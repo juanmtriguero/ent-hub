@@ -56,7 +56,6 @@ export class GameFranchise extends Realm.Object implements GameFranchiseItem {
     name!: string;
     description?: string;
     imageUrl?: string;
-    games?: GameItem[];
 
     static schema: Realm.ObjectSchema = {
         name: 'GameFranchise',
