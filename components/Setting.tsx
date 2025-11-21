@@ -4,7 +4,7 @@ import { Image } from 'expo-image';
 import { Link } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { useEffect, useState } from 'react';
-import { Alert, Button, PlatformColor, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import { Alert, ActivityIndicator, Button, PlatformColor, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 
 type Props = {
     api: Api;
@@ -16,6 +16,7 @@ export default function Setting({ api, title, state }: Props) {
 
     const [ key, setKey ] = useState('');
     const [ isValidApiKey, setIsValidApiKey ] = useState(false);
+    const [ isLoading, setIsLoading ] = useState(false);
 
     useEffect(() => {
         getApiKey(api.key).then(key => {
@@ -32,6 +33,7 @@ export default function Setting({ api, title, state }: Props) {
     }, [key]);
 
     const validateApiKey = () => {
+        setIsLoading(true);
         setApiKey(api.key, key).then(() => {
             return api.validateKey();
         })
@@ -47,6 +49,9 @@ export default function Setting({ api, title, state }: Props) {
             console.error(error);
             setIsValidApiKey(false);
             Alert.alert('Error', 'Something went wrong, please try again');
+        })
+        .finally(() => {
+            setIsLoading(false);
         });
     };
 
@@ -67,7 +72,10 @@ export default function Setting({ api, title, state }: Props) {
                     </View>
                     <View style={styles.inputContainer}>
                         <TextInput value={key} onChangeText={setKey} secureTextEntry={true} placeholder="Add an API key" style={styles.input} />
-                        <Button title="Validate" onPress={validateApiKey} disabled={!key.length || isValidApiKey} />
+                        <View>
+                            <Button title="Validate" onPress={validateApiKey} disabled={!key.length || isValidApiKey || isLoading} />
+                            { isLoading ? <ActivityIndicator style={styles.spinner} /> : null }
+                        </View>
                     </View>
                     <View style={styles.linkContainer}>
                         <Link href={api.url} style={styles.link}>Get an API key </Link>
@@ -129,6 +137,13 @@ const styles = StyleSheet.create({
     },
     name: {
         fontWeight: 'bold',
+    },
+    spinner: {
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'white',
+        zIndex: 1,
     },
     title: {
         fontSize: 20,
