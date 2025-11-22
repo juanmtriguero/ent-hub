@@ -3,7 +3,7 @@ import TileList, { Tile } from '@/components/TileList';
 import { Genre, SavedItem } from '@/models/interfaces';
 import { Realm, useQuery } from '@realm/react';
 import { Href } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type Props<G extends Genre, S extends SavedItem<G> & Realm.Object> = {
     buildTile: (item: any) => Tile,
@@ -22,11 +22,11 @@ export default function FetchList<G extends Genre, S extends SavedItem<G> & Real
     const [ page, setPage ] = useState<number>(1);
     const [ tiles, setTiles ] = useState<Tile[]>([]);
 
-    let controller = new AbortController();
+    const controller = useRef<AbortController>(new AbortController());
 
-    const getTiles = (): Promise<Tile[]> => {
+    const getTiles = (signal: AbortSignal): Promise<Tile[]> => {
         setIsLoading(true);
-        return fetchData(page, params, controller.signal)
+        return fetchData(page, params, signal)
         .then(({ numPages, results }) => {
             setNumPages(numPages);
             return results.map(buildTile);
@@ -35,10 +35,13 @@ export default function FetchList<G extends Genre, S extends SavedItem<G> & Real
             if (error.name !== 'AbortError') {
                 console.error(error);
             }
+            setNumPages(0);
             return [];
         })
         .finally(() => {
-            setIsLoading(false);
+            if (!signal.aborted) {
+                setIsLoading(false);
+            }
         });
     };
 
@@ -50,17 +53,22 @@ export default function FetchList<G extends Genre, S extends SavedItem<G> & Real
     };
 
     useEffect(() => {
-        controller.abort();
-        controller = new AbortController();
-        getTiles().then(newTiles => {
-            setTiles(limitTiles(newTiles));
+        controller.current.abort();
+        setNumPages(0);
+        setTiles([]);
+        const newController = new AbortController();
+        controller.current = newController;
+        getTiles(newController.signal).then(newTiles => {
+            if (!newController.signal.aborted) {
+                setTiles(limitTiles(newTiles));
+            }
         });
         setPage(1);
     }, [params]);
 
     useEffect(() => {
         if (page > 1) {
-            getTiles().then(newTiles => {
+            getTiles(controller.current.signal).then(newTiles => {
                 setTiles(limitTiles([ ...tiles, ...newTiles ]));
             });
         }
