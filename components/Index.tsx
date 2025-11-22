@@ -7,8 +7,10 @@ import { Genre, SavedItem } from '@/models/interfaces';
 import { Realm } from '@realm/react';
 import { Href, useNavigation, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
-import { isValidElement, ReactElement, useEffect, useState } from 'react';
+import { isValidElement, ReactElement, useEffect, useRef, useState } from 'react';
 import { FlatList, Pressable, View } from 'react-native';
+
+const DEBOUNCE_TIME = 500;
 
 type Section = {
     title: string;
@@ -38,15 +40,9 @@ type Props<G extends Genre, S extends SavedItem<G> & Realm.Object> = {
 export default function Index<G extends Genre, S extends SavedItem<G> & Realm.Object>({ buildTile, schema, searchData, searchOn, sections, statusOptions }: Props<G, S>) {
 
     const navigation = useNavigation();
+    const timeout = useRef<number>(undefined);
     const router = useRouter();
     const [ searchText, setSearchText ] = useState<string>('');
-    const [ searchParams, setSearchParams ] = useState<any>({});
-
-    useEffect(() => {
-        setSearchParams({
-            text: searchText,
-        });
-    }, [searchText]);
 
     useEffect(() => {
         navigation.setOptions({
@@ -54,11 +50,18 @@ export default function Index<G extends Genre, S extends SavedItem<G> & Realm.Ob
             headerLargeTitle: false,
             headerRight: () => settings,
             headerSearchBarOptions: {
-                onChangeText: (event: any) => setSearchText(event.nativeEvent.text),
+                onChangeText: (event: any) => search(event.nativeEvent.text),
                 placeholder: `Search on ${searchOn}`,
             },
         });
     }, [navigation]);
+
+    const search = (text: string) => {
+        clearTimeout(timeout.current);
+        timeout.current = setTimeout(() => {
+            setSearchText(text);
+        }, DEBOUNCE_TIME);
+    };
 
     const settings = (
         <Pressable onPress={() => router.navigate('/settings')}>
@@ -67,7 +70,7 @@ export default function Index<G extends Genre, S extends SavedItem<G> & Realm.Ob
     );
 
     const searchView = (
-        <FetchList<G, S> schema={schema} statusOptions={statusOptions} buildTile={buildTile} fetchData={searchData} params={searchParams} />
+        <FetchList<G, S> schema={schema} statusOptions={statusOptions} buildTile={buildTile} fetchData={searchData} params={{ text: searchText }} />
     );
 
     const isFetchSection = (section: FetchSection | QuerySection): section is FetchSection => 'fetchData' in section;

@@ -11,7 +11,7 @@ import { PlatformColor } from 'react-native';
 
 const getPosterUrl = (posterPath: string): string | undefined => posterPath ? `${IMAGE_URL}${POSTER_SIZE}${posterPath}` : undefined;
 const getBackdropUrl = (backdropPath: string): string | undefined => backdropPath ? `${IMAGE_URL}${BACKDROP_SIZE}${backdropPath}` : undefined;
-const getReleaseYear = (releaseDate: string): string => new Date(releaseDate).getFullYear().toString();
+const getReleaseYear = (releaseDate?: string): string => releaseDate ? new Date(releaseDate).getFullYear().toString() : '????';
 const getDuration = (minutes: number): string => formatDuration(intervalToDuration({ start: 0, end: minutes * 60000 }), { locale: es });
 const getAirDate = (airDate?: string): Date | undefined => airDate ? new Date(airDate) : undefined;
 const getGenres = (genres: any[]): Genre[] => genres.map(genre => ({ id: `${genre.id}`, name: genre.name }));
