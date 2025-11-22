@@ -2,6 +2,7 @@ import { Status } from '@/components/Screen';
 import { Image } from 'expo-image';
 import { Href, Link, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
+import { useRef } from 'react';
 import { ActivityIndicator, FlatList, PlatformColor, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 const posterPlaceholder = require('@/assets/images/poster.png');
@@ -26,6 +27,7 @@ type Props = {
 
 export default function TileList({ tiles, statusOptions, isLoading, getStatus, nextPage, header }: Props) {
 
+    const allowPagination = useRef(true);
     const router = useRouter();
     const { width } = useWindowDimensions();
     const numberOfColumns = Math.floor(width / 180);
@@ -86,6 +88,17 @@ export default function TileList({ tiles, statusOptions, isLoading, getStatus, n
         ) : null;
     };
 
+    const handleEndReached = () => {
+        if (nextPage && !isLoading && allowPagination.current) {
+            allowPagination.current = false;
+            nextPage();
+        }
+    };
+
+    const handleScrollBegin = () => {
+        allowPagination.current = true;
+    };
+
     return (
         <FlatList
             columnWrapperStyle={styles.columnWrapper}
@@ -97,7 +110,8 @@ export default function TileList({ tiles, statusOptions, isLoading, getStatus, n
             ListHeaderComponent={renderHeader}
             numColumns={numberOfColumns}
             renderItem={renderTile}
-            onEndReached={nextPage}
+            onEndReached={handleEndReached}
+            onMomentumScrollBegin={handleScrollBegin}
             style={styles.list}
         />
     );
