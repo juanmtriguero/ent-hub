@@ -2,7 +2,7 @@ import { Status } from '@/components/Screen';
 import { Tile } from '@/components/TileList';
 import { GameFranchiseItem, GameItem, GamePlatformItem } from '@/models/games';
 import { Genre } from '@/models/interfaces';
-import { Href } from 'expo-router';
+import { ExternalPathString, Href } from 'expo-router';
 import { PlatformColor } from 'react-native';
 
 const getReleaseYear = (game: any): string => `${(game.original_release_date ? new Date(game.original_release_date).getFullYear() : game.expected_release_year) ?? '????'}`;
@@ -59,3 +59,5 @@ export const gameStatusOptions: Status[] = [
     { label: 'Completed', value: 'completed', icon: 'trophy', color: PlatformColor('systemPurple') },
     { label: 'Abandoned', value: 'abandoned', icon: 'xmark', color: PlatformColor('systemRed') },
 ];
+
+export const openGameInBrowser = (id: string): ExternalPathString => `https://www.giantbomb.com/game/3030-${id}`;

@@ -2,7 +2,7 @@ import Screen from '@/components/Screen';
 import WatchProviders from '@/components/WatchProviders';
 import { TV, TVGenre, TVItem, TVProvider, TVSeason, TVSeasonItem } from '@/models/tv';
 import { getTV } from '@/integration/tmdb';
-import { buildTV, getSeasonProgress, tvStatusOptions } from '@/util/moviesAndTV';
+import { buildTV, getSeasonProgress, openTVInBrowser, tvStatusOptions } from '@/util/moviesAndTV';
 import { Image } from 'expo-image';
 import { Realm } from '@realm/react';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -73,7 +73,7 @@ export default function TVScreen() {
     };
 
     return (
-        <Screen<TVItem, TVGenre, TV> additionalContent={additionalContent} buildItem={buildTV} fetchData={getTV} id={tv} schema={TV} statusOptions={tvStatusOptions} deleteOrphans={deleteOrphans} />
+        <Screen<TVItem, TVGenre, TV> additionalContent={additionalContent} buildItem={buildTV} fetchData={getTV} id={tv} openInBrowser={openTVInBrowser} schema={TV} statusOptions={tvStatusOptions} deleteOrphans={deleteOrphans} />
     );
 
 }
