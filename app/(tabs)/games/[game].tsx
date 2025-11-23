@@ -1,6 +1,6 @@
 import Screen from '@/components/Screen';
 import { Game, GameFranchise, GameFranchiseItem, GameGenre, GameItem, GamePlatform, GamePlatformItem } from '@/models/games';
-import { buildGame, gameStatusOptions } from '@/util/games';
+import { buildGame, gameStatusOptions, openGameInBrowser } from '@/util/games';
 import { getGame } from '@/integration/giantBomb';
 import { Realm, useQuery } from '@realm/react';
 import { Image } from 'expo-image';
@@ -60,7 +60,7 @@ export default function GameScreen() {
     };
 
     return (
-        <Screen<GameItem, GameGenre, Game> additionalContent={additionalContent} buildItem={buildGame} fetchData={getGame} id={game} schema={Game} statusOptions={gameStatusOptions} deleteOrphans={deleteOrphans} />
+        <Screen<GameItem, GameGenre, Game> additionalContent={additionalContent} buildItem={buildGame} fetchData={getGame} id={game} openInBrowser={openGameInBrowser} schema={Game} statusOptions={gameStatusOptions} deleteOrphans={deleteOrphans} />
     );
 
 }

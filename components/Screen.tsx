@@ -1,6 +1,8 @@
 import { Genre, Item, SavedItem } from '@/models/interfaces';
+import { useRoute } from '@react-navigation/native';
 import { Realm, useQuery, useRealm } from '@realm/react';
 import { Image } from 'expo-image';
+import { ExternalPathString, Link, useNavigation } from 'expo-router';
 import { SFSymbol, SymbolView } from 'expo-symbols';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, AlertButton, OpaqueColorValue, PlatformColor, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
@@ -19,19 +21,39 @@ type Props<I extends Item, G extends Genre, S extends SavedItem<G> & Realm.Objec
     buildItem: (data: any) => I,
     fetchData: (id: string) => Promise<any>,
     id: string,
+    openInBrowser: (id: string) => ExternalPathString,
     schema: Realm.ObjectClass<S>,
     statusOptions: Status[],
     deleteOrphans?: (realm: Realm) => void,
 };
 
-export default function Screen<I extends Item, G extends Genre, S extends SavedItem<G> & Realm.Object>({ additionalContent, buildItem, fetchData, id, schema, statusOptions, deleteOrphans }: Props<I, G, S>) {
+export default function Screen<I extends Item, G extends Genre, S extends SavedItem<G> & Realm.Object>({ additionalContent, buildItem, fetchData, id, openInBrowser, schema, statusOptions, deleteOrphans }: Props<I, G, S>) {
 
+    const navigation = useNavigation();
     const savedItem = useQuery(schema).filtered('id == $0', id)[0];
     const realm = useRealm();
+    const route = useRoute();
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
     const [ item, setItem ] = useState<I | S | null>(null);
     const { height, width } = useWindowDimensions();
     const styles = getStyles(width, height);
+
+    useEffect(() => {
+        const options = {
+            headerRight: () => (
+                <Link href={openInBrowser(id)} asChild>
+                    <Pressable>
+                        <SymbolView name="safari" size={36} />
+                    </Pressable>
+                </Link>
+            ),
+        };
+        if (route.name === 'index') {
+            navigation.getParent()?.setOptions(options);
+        } else {
+            navigation.setOptions(options);
+        }
+    }, [navigation]);
 
     useEffect(() => {
         setIsLoading(true);

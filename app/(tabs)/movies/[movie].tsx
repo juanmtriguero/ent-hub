@@ -2,7 +2,7 @@ import Screen from '@/components/Screen';
 import WatchProviders from '@/components/WatchProviders';
 import { getMovie } from '@/integration/tmdb';
 import { Movie, MovieGenre, MovieItem, MovieProvider } from '@/models/movies';
-import { buildMovie, movieStatusOptions } from '@/util/moviesAndTV';
+import { buildMovie, movieStatusOptions, openMovieInBrowser } from '@/util/moviesAndTV';
 import { useLocalSearchParams } from 'expo-router';
 
 export default function MovieScreen() {
@@ -14,7 +14,7 @@ export default function MovieScreen() {
     );
 
     return (
-        <Screen<MovieItem, MovieGenre, Movie> additionalContent={additionalContent} buildItem={buildMovie} fetchData={getMovie} id={movie} schema={Movie} statusOptions={movieStatusOptions} />
+        <Screen<MovieItem, MovieGenre, Movie> additionalContent={additionalContent} buildItem={buildMovie} fetchData={getMovie} id={movie} openInBrowser={openMovieInBrowser} schema={Movie} statusOptions={movieStatusOptions} />
     );
 
 }

@@ -6,7 +6,7 @@ import { MovieItem } from '@/models/movies';
 import { TVItem, TVSeason } from '@/models/tv';
 import { formatDuration, intervalToDuration } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Href } from 'expo-router';
+import { ExternalPathString, Href } from 'expo-router';
 import { PlatformColor } from 'react-native';
 
 const getPosterUrl = (posterPath: string): string | undefined => posterPath ? `${IMAGE_URL}${POSTER_SIZE}${posterPath}` : undefined;
@@ -133,3 +133,6 @@ export const tvStatusOptions: Status[] = [
     { label: 'Watched', value: 'watched', icon: 'checkmark', color: PlatformColor('systemGreen') },
     { label: 'Abandoned', value: 'abandoned', icon: 'xmark', color: PlatformColor('systemRed') },
 ];
+
+export const openMovieInBrowser = (id: string): ExternalPathString => `https://www.themoviedb.org/movie/${id}`;
+export const openTVInBrowser = (id: string): ExternalPathString => `https://www.themoviedb.org/tv/${id}`;
