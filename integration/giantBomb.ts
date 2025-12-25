@@ -1,4 +1,4 @@
-import { Api, ApiKey, getApiKey, invalidApiKey } from '@/integration/main';
+import { Api, ApiAuth, ApiCode, getCredentials, invalidCredentials } from '@/integration/main';
 import { GameFilterParams } from '@/components/GameFilter';
 
 const BASE_URL = 'https://www.giantbomb.com/api/';
@@ -12,7 +12,7 @@ const LIMIT = 100;
 
 async function get(path: string, fields: string[], additionalParams?: URLSearchParams, signal?: AbortSignal): Promise<any> {
     const params = additionalParams ?? new URLSearchParams();
-    params.append('api_key', (await getApiKey(ApiKey.GiantBomb)) ?? '');
+    params.append('api_key', (await getCredentials(giantBomb)) ?? '');
     params.append('format', 'JSON');
     params.append('field_list', fields.join(','));
     const response = await fetch(`${BASE_URL}${path}?${params}`, {
@@ -27,7 +27,7 @@ async function get(path: string, fields: string[], additionalParams?: URLSearchP
         return body;
     } else {
         if (response.status === 401) {
-            invalidApiKey(giantBomb.name);
+            invalidCredentials(giantBomb);
         }
         throw new Error(`[${response.status}] ${response.statusText}`);
     }
@@ -128,7 +128,7 @@ export async function getGamePlatforms(page: number): Promise<{ numPages: number
 
 async function test(): Promise<boolean> {
     const params = new URLSearchParams({
-        api_key: (await getApiKey(ApiKey.GiantBomb)) ?? '',
+        api_key: (await getCredentials(giantBomb)) ?? '',
         format: 'JSON',
         field_list: 'id',
         limit: '1',
@@ -140,9 +140,10 @@ async function test(): Promise<boolean> {
 }
 
 export const giantBomb: Api = {
-    key: ApiKey.GiantBomb,
+    code: ApiCode.GiantBomb,
+    auth: ApiAuth.ApiKey,
     logo: require('@/assets/logos/giant-bomb.png'),
     name: 'Giant Bomb',
     url: 'https://www.giantbomb.com/api/',
-    validateKey: test,
+    validateCredentials: test,
 };
