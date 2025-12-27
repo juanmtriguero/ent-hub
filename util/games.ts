@@ -1,11 +1,13 @@
 import { Status } from '@/components/Screen';
 import { Tile } from '@/components/TileList';
+import { IMAGE_FORMAT, IMAGE_URL, POSTER_SIZE } from '@/integration/igdb';
 import { GameFranchiseItem, GameItem, GamePlatformItem } from '@/models/games';
 import { Genre } from '@/models/interfaces';
 import { ExternalPathString, Href } from 'expo-router';
 import { PlatformColor } from 'react-native';
 
-const getReleaseYear = (game: any): string => `${(game.original_release_date ? new Date(game.original_release_date).getFullYear() : game.expected_release_year) ?? '????'}`;
+const getPosterUrl = (game: any): string | undefined => game.cover?.image_id?.length ? `${IMAGE_URL}${POSTER_SIZE}/${game.cover.image_id}${IMAGE_FORMAT}` : undefined;
+const getReleaseYear = (game: any): string => game.first_release_date ? `${new Date(game.first_release_date * 1000).getFullYear()}` : '????';
 const getGenres = (genres?: any[]): Genre[] => genres?.map(genre => ({ id: `${genre.id}`, name: genre.name })) ?? [];
 const getPlatforms = (platforms?: any[]): GamePlatformItem[] => platforms?.map(platform => ({ id: `${platform.id}`, name: platform.name, short: platform.abbreviation })) ?? [];
 
@@ -17,7 +19,7 @@ export const getGameDetail = (id: string): Href => ({
 export const getGameTile = (game: any): Tile => ({
     detail: getGameDetail(game.id),
     id: `${game.id}`,
-    posterUrl: game.image.small_url,
+    posterUrl: getPosterUrl(game),
     releaseYear: getReleaseYear(game),
     title: game.name,
 });
