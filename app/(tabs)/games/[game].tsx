@@ -1,7 +1,7 @@
 import Screen from '@/components/Screen';
 import { Game, GameFranchise, GameFranchiseItem, GameGenre, GameItem, GamePlatform, GamePlatformItem } from '@/models/games';
 import { buildGame, gameStatusOptions, openGameInBrowser } from '@/util/games';
-import { getGame } from '@/integration/giantBomb';
+import { getGame } from '@/integration/igdb';
 import { Realm, useQuery } from '@realm/react';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -15,7 +15,7 @@ export default function GameScreen() {
 
     const renderPlatform = (platform: GamePlatformItem | GamePlatform) => (
         <View key={platform.id} style={styles.section}>
-            <Image source={platform.imageUrl ?? savedPlatforms.filtered('id == $0', platform.id)[0]?.imageUrl} style={styles.logo} contentFit="cover" />
+            <Image source={platform.imageUrl ?? savedPlatforms.filtered('id == $0', platform.id)[0]?.imageUrl} style={styles.logo} contentFit="contain" />
             <Text numberOfLines={1} style={styles.name}>{platform.name}</Text>
         </View>
     );
@@ -76,9 +76,8 @@ const styles = StyleSheet.create({
         backgroundColor: PlatformColor('systemGray3'),
     },
     logo: {
-        width: '15%',
-        aspectRatio: 1,
-        backgroundColor: PlatformColor('systemGray3'),
+        width: '20%',
+        aspectRatio: 2,
     },
     name: {
         flex: 1,
@@ -93,7 +92,9 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 5,
+        gap: 10,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
     },
     sections: {
         gap: 5,
