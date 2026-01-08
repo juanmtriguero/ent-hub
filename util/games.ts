@@ -68,4 +68,5 @@ export const gameStatusOptions: Status[] = [
     { label: 'Abandoned', value: 'abandoned', icon: 'xmark', color: PlatformColor('systemRed') },
 ];
 
-export const openGameInBrowser = (id: string): ExternalPathString => `https://www.giantbomb.com/game/3030-${id}`;
+// FIXME: IGDB uses slugs for URLs
+export const openGameInBrowser = (id: string): ExternalPathString => `https://www.igdb.com/${id}`;

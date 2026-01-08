@@ -1,6 +1,6 @@
 import FetchList from '@/components/FetchList';
 import GameFilter, { GameFilterParams } from '@/components/GameFilter';
-import { getLatestGames } from '@/integration/giantBomb';
+import { getLatestGames } from '@/integration/igdb';
 import { Game, GameGenre } from '@/models/games';
 import { gameStatusOptions, getGameTile } from '@/util/games';
 import { useState } from 'react';
@@ -13,7 +13,7 @@ export default function GamesLatest() {
     return (
         <View>
             <FlatList data={[
-                <GameFilter onChange={setFilter} includeGenres={false} />,
+                <GameFilter onChange={setFilter} />,
                 <FetchList<GameGenre, Game> schema={Game} statusOptions={gameStatusOptions} buildTile={getGameTile} fetchData={getLatestGames} params={filter} />,
             ]} renderItem={({ item }: { item: React.JSX.Element }) => item} />
         </View>

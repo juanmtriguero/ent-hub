@@ -1,6 +1,5 @@
 import Index, { FetchSection, QuerySection } from '@/components/Index';
-import { getLatestGames } from '@/integration/giantBomb';
-import { searchGames } from '@/integration/igdb';
+import { getLatestGames, searchGames } from '@/integration/igdb';
 import { Game, GameGenre } from '@/models/games';
 import { getGameDetail, getGameTile, gameStatusOptions } from '@/util/games';
 

@@ -16,7 +16,6 @@ export enum ApiCode {
     TheMovieDB = 'TMDB',
     InternetGameDB = 'IGDB',
     Google = 'GOOGLE',
-    GiantBomb = 'GIANT_BOMB',
     ComicVine = 'COMIC_VINE',
 };
 

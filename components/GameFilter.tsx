@@ -35,10 +35,9 @@ export const buildGameQuery = (filter: GameFilterParams): { query: string[], que
 
 type Props = {
     onChange: (filter: GameFilterParams) => void,
-    includeGenres?: boolean,
 };
 
-export default function GameFilter({ onChange, includeGenres = true }: Props) {
+export default function GameFilter({ onChange }: Props) {
 
     const savedPlatforms = useQuery(GamePlatform).sorted('releaseDate', true);
     const realm = useRealm();
@@ -114,11 +113,9 @@ export default function GameFilter({ onChange, includeGenres = true }: Props) {
             <View style={styles.row}>
                 <FlatList data={platforms} renderItem={displayPlatform} contentContainerStyle={styles.list} horizontal onEndReached={nextPage} ListFooterComponent={renderFooter} showsHorizontalScrollIndicator={false} />
             </View>
-            { includeGenres ? (
-                <View style={styles.row}>
-                    <GenreSelector schema={GameGenre} buildGenre={getGenre} fetchData={getGameGenres} onSelect={setSelectedGenres} />
-                </View>
-            ) : null}
+            <View style={styles.row}>
+                <GenreSelector schema={GameGenre} buildGenre={getGenre} fetchData={getGameGenres} onSelect={setSelectedGenres} />
+            </View>
         </View>
     );
 

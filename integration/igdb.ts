@@ -1,3 +1,4 @@
+import { GameFilterParams } from '@/components/GameFilter';
 import { Api, ApiAuth, ApiCode, getAccessToken, getCredentials, invalidCredentials } from '@/integration/main';
 
 const BASE_URL = 'https://api.igdb.com/v4/';
@@ -99,6 +100,25 @@ export async function searchGames(page: number, params: any, signal: AbortSignal
     const filter = `game_type = (${INCLUDED_GAME_TYPES.join(', ')}) & version_parent = null`;
     const body = getBody(fields, filter, params.text, page);
     const results: any[] = await get(PATH_GAMES, body, signal);
+    const numPages = results.length === LIMIT ? page + 1 : page;
+    return { numPages, results };
+}
+
+export async function getLatestGames(page: number, params?: GameFilterParams): Promise<{ numPages: number, results: any[] }> {
+    const fields = [
+        'cover.image_id',
+        'first_release_date',
+        'name',
+    ];
+    let filter = `game_type = (${INCLUDED_GAME_TYPES.join(', ')}) & version_parent = null & first_release_date <= ${Math.floor(new Date().getTime() / 1000)}`;
+    if (params?.platforms?.length) {
+        filter += ` & platforms = (${params.platforms.join(', ')})`;
+    }
+    if (params?.genres?.length) {
+        filter += ` & genres = [${params.genres.join(', ')}]`;
+    }
+    const body = getBody(fields, filter, undefined, page, 'first_release_date desc');
+    const results: any[] = await get(PATH_GAMES, body);
     const numPages = results.length === LIMIT ? page + 1 : page;
     return { numPages, results };
 }
