@@ -1,6 +1,7 @@
+import PartialList from '@/components/PartialList';
 import Screen from '@/components/Screen';
 import { Game, GameFranchise, GameFranchiseItem, GameGenre, GameItem, GamePlatform, GamePlatformItem } from '@/models/games';
-import { buildGame, gameStatusOptions, openGameInBrowser } from '@/util/games';
+import { buildGame, gameStatusOptions, getGameDetail, openGameInBrowser } from '@/util/games';
 import { getGame } from '@/integration/igdb';
 import { Realm, useQuery } from '@realm/react';
 import { Image } from 'expo-image';
@@ -36,6 +37,54 @@ export default function GameScreen() {
 
     const additionalContent = (item: GameItem | Game) => (
         <View>
+            { item.parentGame ? (
+                <View style={styles.container}>
+                    <Text style={styles.title}>Parent Game</Text>
+                    <PartialList<GameGenre, Game> partialItems={[ item.parentGame ]} mainSchema={Game} statusOptions={gameStatusOptions} getDetail={getGameDetail} />
+                </View>
+            ) : null}
+            { item.dlcs?.length ? (
+                <View style={styles.container}>
+                    <Text style={styles.title}>DLCs</Text>
+                    <PartialList<GameGenre, Game> partialItems={item.dlcs} mainSchema={Game} statusOptions={gameStatusOptions} getDetail={getGameDetail} />
+                </View>
+            ) : null}
+            { item.expansions?.length ? (
+                <View style={styles.container}>
+                    <Text style={styles.title}>Expansions</Text>
+                    <PartialList<GameGenre, Game> partialItems={item.expansions} mainSchema={Game} statusOptions={gameStatusOptions} getDetail={getGameDetail} />
+                </View>
+            ) : null}
+            { item.standaloneExpansions?.length ? (
+                <View style={styles.container}>
+                    <Text style={styles.title}>Standalone Expansions</Text>
+                    <PartialList<GameGenre, Game> partialItems={item.standaloneExpansions} mainSchema={Game} statusOptions={gameStatusOptions} getDetail={getGameDetail} />
+                </View>
+            ) : null}
+            { item.expandedGames?.length ? (
+                <View style={styles.container}>
+                    <Text style={styles.title}>Expanded Games</Text>
+                    <PartialList<GameGenre, Game> partialItems={item.expandedGames} mainSchema={Game} statusOptions={gameStatusOptions} getDetail={getGameDetail} />
+                </View>
+            ) : null}
+            { item.remasters?.length ? (
+                <View style={styles.container}>
+                    <Text style={styles.title}>Remasters</Text>
+                    <PartialList<GameGenre, Game> partialItems={item.remasters} mainSchema={Game} statusOptions={gameStatusOptions} getDetail={getGameDetail} />
+                </View>
+            ) : null}
+            { item.remakes?.length ? (
+                <View style={styles.container}>
+                    <Text style={styles.title}>Remakes</Text>
+                    <PartialList<GameGenre, Game> partialItems={item.remakes} mainSchema={Game} statusOptions={gameStatusOptions} getDetail={getGameDetail} />
+                </View>
+            ) : null}
+            { item.ports?.length ? (
+                <View style={styles.container}>
+                    <Text style={styles.title}>Ports</Text>
+                    <PartialList<GameGenre, Game> partialItems={item.ports} mainSchema={Game} statusOptions={gameStatusOptions} getDetail={getGameDetail} />
+                </View>
+            ) : null}
             { item.platforms?.length ? (
                 <View style={styles.container}>
                     <Text style={styles.title}>Platforms</Text>

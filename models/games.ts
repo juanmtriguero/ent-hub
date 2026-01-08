@@ -1,4 +1,4 @@
-import { Genre, Item, SavedItem } from '@/models/interfaces';
+import { Genre, Item, PartialItem, SavedItem } from '@/models/interfaces';
 import { Realm } from '@realm/react';
 
 export class GameGenre extends Realm.Object implements Genre {
@@ -77,6 +77,32 @@ export class GameFranchise extends Realm.Object implements GameFranchiseItem {
 export interface GameItem extends Item {
     platforms: GamePlatformItem[];
     franchises: GameFranchiseItem[];
+    parentGame?: PartialItem;
+    dlcs: PartialItem[];
+    expandedGames: PartialItem[];
+    expansions: PartialItem[];
+    ports: PartialItem[];
+    remakes: PartialItem[];
+    remasters: PartialItem[];
+    standaloneExpansions: PartialItem[];
+}
+
+export class GamePartial extends Realm.Object implements PartialItem {
+    id!: string;
+    title!: string;
+    releaseYear!: string;
+    posterUrl?: string;
+
+    static schema = {
+        name: 'GamePartial',
+        embedded: true,
+        properties: {
+            id: 'string',
+            title: 'string',
+            releaseYear: 'string',
+            posterUrl: 'string?',
+        },
+    };
 }
 
 export class Game extends Realm.Object implements SavedItem<GameGenre> {
@@ -89,6 +115,14 @@ export class Game extends Realm.Object implements SavedItem<GameGenre> {
     genres!: Realm.List<GameGenre>;
     platforms!: Realm.List<GamePlatform>;
     franchises!: Realm.List<GameFranchise>;
+    dlcs!: Realm.List<GamePartial>;
+    expandedGames!: Realm.List<GamePartial>;
+    expansions!: Realm.List<GamePartial>;
+    ports!: Realm.List<GamePartial>;
+    remakes!: Realm.List<GamePartial>;
+    remasters!: Realm.List<GamePartial>;
+    standaloneExpansions!: Realm.List<GamePartial>;
+    parentGame?: GamePartial;
     description?: string;
     details?: string;
     posterUrl?: string;
@@ -107,6 +141,14 @@ export class Game extends Realm.Object implements SavedItem<GameGenre> {
             genres: 'GameGenre[]',
             platforms: 'GamePlatform[]',
             franchises: 'GameFranchise[]',
+            dlcs: 'GamePartial[]',
+            expandedGames: 'GamePartial[]',
+            expansions: 'GamePartial[]',
+            ports: 'GamePartial[]',
+            remakes: 'GamePartial[]',
+            remasters: 'GamePartial[]',
+            standaloneExpansions: 'GamePartial[]',
+            parentGame: 'GamePartial?',
             description: 'string?',
             details: 'string?',
             posterUrl: 'string?',

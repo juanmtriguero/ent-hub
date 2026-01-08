@@ -3,15 +3,18 @@ export interface Genre {
     name: string;
 }
 
-export interface Item {
-    id: string;
-    title: string;
-    releaseYear: string;
+export interface PartialItem {
+    id: string,
+    title: string,
+    releaseYear: string,
+    posterUrl?: string,
+}
+
+export interface Item extends PartialItem {
     originalTitle: string;
     genres: Genre[];
     description?: string;
     details?: string;
-    posterUrl?: string;
     backdropUrl?: string;
 }
 

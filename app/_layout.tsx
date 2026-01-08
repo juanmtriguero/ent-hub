@@ -1,4 +1,4 @@
-import { Game, GameFranchise, GameGenre, GamePlatform } from '@/models/games';
+import { Game, GameFranchise, GameGenre, GamePartial, GamePlatform } from '@/models/games';
 import { Movie, MovieGenre, MovieProvider } from '@/models/movies';
 import { TV, TVEpisode, TVGenre, TVProvider, TVSeason } from '@/models/tv';
 import { RealmProvider } from '@realm/react';
@@ -8,6 +8,7 @@ const schema = [
     Game,
     GameFranchise,
     GameGenre,
+    GamePartial,
     GamePlatform,
     Movie,
     MovieGenre,

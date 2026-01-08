@@ -2,7 +2,7 @@ import { Status } from '@/components/Screen';
 import { Tile } from '@/components/TileList';
 import { BACKDROP_SIZE, IMAGE_FORMAT, IMAGE_URL, LOGO_FORMAT, LOGO_SIZE, POSTER_SIZE } from '@/integration/igdb';
 import { GameFranchiseItem, GameItem, GamePlatformItem } from '@/models/games';
-import { Genre } from '@/models/interfaces';
+import { Genre, PartialItem } from '@/models/interfaces';
 import { ExternalPathString, Href } from 'expo-router';
 import { PlatformColor } from 'react-native';
 
@@ -19,6 +19,10 @@ export const getGameDetail = (id: string): Href => ({
 
 export const getGameTile = (game: any): Tile => ({
     detail: getGameDetail(game.id),
+    ...getPartialGame(game),
+});
+
+const getPartialGame = (game: any): PartialItem => ({
     id: `${game.id}`,
     posterUrl: getPosterUrl(game),
     releaseYear: getReleaseYear(game),
@@ -42,9 +46,17 @@ export const buildGame = (game: any): GameItem => ({
     posterUrl: getPosterUrl(game),
     releaseYear: getReleaseYear(game),
     title: game.name,
+    parentGame: game.parent_game ? getPartialGame(game.parent_game) : undefined,
     platforms: game.platforms?.map(buildPlatform) ?? [],
     // FIXME: Remove franchises (?)
     franchises: [],
+    dlcs: game.dlcs?.map(getPartialGame) ?? [],
+    expandedGames: game.expanded_games?.map(getPartialGame) ?? [],
+    expansions: game.expansions?.map(getPartialGame) ?? [],
+    ports: game.ports?.map(getPartialGame) ?? [],
+    remakes: game.remakes?.map(getPartialGame) ?? [],
+    remasters: game.remasters?.map(getPartialGame) ?? [],
+    standaloneExpansions: game.standalone_expansions?.map(getPartialGame) ?? [],
 });
 
 export const buildPlatform = (platform: any): GamePlatformItem => ({
