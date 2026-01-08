@@ -1,6 +1,6 @@
 import { MovieFilterParams } from '@/components/MovieFilter';
 import { TVFilterParams } from '@/components/TVFilter';
-import { Api, ApiKey, getApiKey, invalidApiKey } from '@/integration/main';
+import { Api, ApiAuth, ApiCode, getCredentials, invalidCredentials } from '@/integration/main';
 
 const BASE_URL = 'https://api.themoviedb.org/3/';
 const PATH_AUTHENTICATE = 'authentication';
@@ -25,7 +25,7 @@ export const LOGO_SIZE = 'w92';
 async function getHeaders(): Promise<HeadersInit> {
     return {
         Accept: 'application/json',
-        Authorization: `Bearer ${await getApiKey(ApiKey.TheMovieDB)}`
+        Authorization: `Bearer ${await getCredentials(tmdb)}`
     };
 }
 
@@ -47,7 +47,7 @@ async function get(path: string, params?: URLSearchParams, signal?: AbortSignal)
         return response.json();
     } else {
         if (response.status === 401) {
-            invalidApiKey(tmdb.name);
+            invalidCredentials(tmdb);
         }
         throw new Error(`[${response.status}] ${response.statusText}`);
     }
@@ -168,9 +168,10 @@ export async function getTVProviders(): Promise<any[]> {
 };
 
 export const tmdb: Api = {
-    key: ApiKey.TheMovieDB,
+    code: ApiCode.TheMovieDB,
+    auth: ApiAuth.ApiKey,
     logo: require('@/assets/logos/tmdb.png'),
     name: 'The Movie Database',
     url: 'https://www.themoviedb.org/settings/api',
-    validateKey: authenticate,
+    validateCredentials: authenticate,
 };

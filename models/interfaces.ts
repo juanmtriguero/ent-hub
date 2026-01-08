@@ -1,17 +1,23 @@
+import { ExternalPathString } from 'expo-router';
+
 export interface Genre {
     id: string;
     name: string;
 }
 
-export interface Item {
-    id: string;
-    title: string;
-    releaseYear: string;
+export interface PartialItem {
+    id: string,
+    title: string,
+    releaseYear: string,
+    posterUrl?: string,
+}
+
+export interface Item extends PartialItem {
     originalTitle: string;
+    url: ExternalPathString;
     genres: Genre[];
     description?: string;
     details?: string;
-    posterUrl?: string;
     backdropUrl?: string;
 }
 

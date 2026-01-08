@@ -21,13 +21,12 @@ type Props<I extends Item, G extends Genre, S extends SavedItem<G> & Realm.Objec
     buildItem: (data: any) => I,
     fetchData: (id: string) => Promise<any>,
     id: string,
-    openInBrowser: (id: string) => ExternalPathString,
     schema: Realm.ObjectClass<S>,
     statusOptions: Status[],
     deleteOrphans?: (realm: Realm) => void,
 };
 
-export default function Screen<I extends Item, G extends Genre, S extends SavedItem<G> & Realm.Object>({ additionalContent, buildItem, fetchData, id, openInBrowser, schema, statusOptions, deleteOrphans }: Props<I, G, S>) {
+export default function Screen<I extends Item, G extends Genre, S extends SavedItem<G> & Realm.Object>({ additionalContent, buildItem, fetchData, id, schema, statusOptions, deleteOrphans }: Props<I, G, S>) {
 
     const navigation = useNavigation();
     const savedItem = useQuery(schema).filtered('id == $0', id)[0];
@@ -40,20 +39,20 @@ export default function Screen<I extends Item, G extends Genre, S extends SavedI
 
     useEffect(() => {
         const options = {
-            headerRight: () => (
-                <Link href={openInBrowser(id)} asChild>
+            headerRight: () => item ? (
+                <Link href={item.url} asChild>
                     <Pressable>
                         <SymbolView name="safari" size={36} />
                     </Pressable>
                 </Link>
-            ),
+            ) : null,
         };
         if (route.name === 'index') {
             navigation.getParent()?.setOptions(options);
         } else {
             navigation.setOptions(options);
         }
-    }, [navigation]);
+    }, [ navigation, item ]);
 
     useEffect(() => {
         setIsLoading(true);
