@@ -1,4 +1,5 @@
 import { Status } from '@/components/Screen';
+import { PartialItem } from '@/models/interfaces';
 import { Image } from 'expo-image';
 import { Href, Link, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
@@ -7,12 +8,8 @@ import { ActivityIndicator, FlatList, PlatformColor, Pressable, StyleSheet, Text
 
 const posterPlaceholder = require('@/assets/images/poster.png');
 
-export type Tile = {
+export interface Tile extends PartialItem {
     detail: Href,
-    id: string,
-    posterUrl?: string,
-    releaseYear: string,
-    title: string,
     status?: string,
 };
 
@@ -23,15 +20,16 @@ type Props = {
     getStatus: (item: Tile) => string | undefined,
     nextPage?: () => void,
     header?: { title: string, link: Href },
+    horizontal?: boolean,
 };
 
-export default function TileList({ tiles, statusOptions, isLoading, getStatus, nextPage, header }: Props) {
+export default function TileList({ tiles, statusOptions, isLoading, getStatus, nextPage, header, horizontal }: Props) {
 
     const allowPagination = useRef(true);
     const router = useRouter();
     const { width } = useWindowDimensions();
-    const numberOfColumns = Math.floor(width / 180);
-    const styles = getStyles((width - 10 - (numberOfColumns * 10)) / numberOfColumns);
+    const numberOfColumns = horizontal ? 1 : Math.floor(width / 180);
+    const styles = getStyles(horizontal ? 160 : (width - 10 - (numberOfColumns * 10)) / numberOfColumns);
 
     const statusIcon = (item: Tile) => {
         const status = statusOptions.find(option => option.value === getStatus(item));
@@ -101,9 +99,10 @@ export default function TileList({ tiles, statusOptions, isLoading, getStatus, n
 
     return (
         <FlatList
-            columnWrapperStyle={styles.columnWrapper}
+            columnWrapperStyle={horizontal ? undefined : styles.columnWrapper}
             contentInsetAdjustmentBehavior="automatic"
             data={tiles}
+            horizontal={horizontal}
             key={numberOfColumns}
             ListEmptyComponent={renderNoData}
             ListFooterComponent={renderFooter}
@@ -112,7 +111,7 @@ export default function TileList({ tiles, statusOptions, isLoading, getStatus, n
             renderItem={renderTile}
             onEndReached={handleEndReached}
             onMomentumScrollBegin={handleScrollBegin}
-            style={styles.list}
+            style={horizontal ? styles.horizontalList : styles.list}
         />
     );
 
@@ -142,6 +141,9 @@ const getStyles = (tileWidth: number) => StyleSheet.create({
     headerLink: {
         fontSize: 16,
         color: PlatformColor('systemBlue'),
+    },
+    horizontalList: {
+        marginHorizontal: -5,
     },
     list: {
         margin: 5,
