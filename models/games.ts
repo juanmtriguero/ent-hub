@@ -43,40 +43,8 @@ export class GamePlatform extends Realm.Object implements GamePlatformItem {
     };
 }
 
-export interface GameFranchiseItem {
-    id: string;
-    name: string;
-    description?: string;
-    imageUrl?: string;
-    games?: GameItem[];
-}
-
-export class GameFranchise extends Realm.Object implements GameFranchiseItem {
-    id!: string;
-    name!: string;
-    description?: string;
-    imageUrl?: string;
-
-    static schema: Realm.ObjectSchema = {
-        name: 'GameFranchise',
-        primaryKey: 'id',
-        properties: {
-            id: 'string',
-            name: 'string',
-            description: 'string?',
-            imageUrl: 'string?',
-            games: {
-                type: 'linkingObjects',
-                objectType: 'Game',
-                property: 'franchises',
-            },
-        },
-    };
-}
-
 export interface GameItem extends Item {
     platforms: GamePlatformItem[];
-    franchises: GameFranchiseItem[];
     parentGame?: PartialItem;
     dlcs: PartialItem[];
     expandedGames: PartialItem[];
@@ -114,7 +82,6 @@ export class Game extends Realm.Object implements SavedItem<GameGenre> {
     originalTitle!: string;
     genres!: Realm.List<GameGenre>;
     platforms!: Realm.List<GamePlatform>;
-    franchises!: Realm.List<GameFranchise>;
     dlcs!: Realm.List<GamePartial>;
     expandedGames!: Realm.List<GamePartial>;
     expansions!: Realm.List<GamePartial>;
@@ -140,7 +107,6 @@ export class Game extends Realm.Object implements SavedItem<GameGenre> {
             originalTitle: 'string',
             genres: 'GameGenre[]',
             platforms: 'GamePlatform[]',
-            franchises: 'GameFranchise[]',
             dlcs: 'GamePartial[]',
             expandedGames: 'GamePartial[]',
             expansions: 'GamePartial[]',

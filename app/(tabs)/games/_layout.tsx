@@ -12,7 +12,6 @@ export default function GamesLayout() {
             <Stack.Screen name="completed" options={{ title: 'Recently completed' }} />
             <Stack.Screen name="abandoned" options={{ title: 'Abandoned' }} />
             <Stack.Screen name="[game]" options={{ title: '' }} />
-            <Stack.Screen name="franchises/[franchise]" options={{ title: '' }} />
         </Stack>
     );
 }

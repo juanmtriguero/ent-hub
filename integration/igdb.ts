@@ -112,7 +112,6 @@ export async function getGame(id: string): Promise<any> {
         'expansions.first_release_date',
         'expansions.name',
         'first_release_date',
-        'franchises',
         'game_type.type',
         'genres.name',
         'name',

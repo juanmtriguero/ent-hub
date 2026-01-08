@@ -1,7 +1,7 @@
 import { Status } from '@/components/Screen';
 import { Tile } from '@/components/TileList';
 import { BACKDROP_SIZE, IMAGE_FORMAT, IMAGE_URL, LOGO_FORMAT, LOGO_SIZE, POSTER_SIZE } from '@/integration/igdb';
-import { GameFranchiseItem, GameItem, GamePlatformItem } from '@/models/games';
+import { GameItem, GamePlatformItem } from '@/models/games';
 import { Genre, PartialItem } from '@/models/interfaces';
 import { ExternalPathString, Href } from 'expo-router';
 import { PlatformColor } from 'react-native';
@@ -29,13 +29,6 @@ const getPartialGame = (game: any): PartialItem => ({
     title: game.name,
 });
 
-export const buildFranchise = (franchise: any): GameFranchiseItem => ({
-    id: `${franchise.id}`,
-    name: franchise.name,
-    description: franchise.deck,
-    imageUrl: franchise.image?.screen_url,
-});
-
 export const buildGame = (game: any): GameItem => ({
     id: `${game.id}`,
     backdropUrl: getBackdropUrl(game),
@@ -48,8 +41,6 @@ export const buildGame = (game: any): GameItem => ({
     title: game.name,
     parentGame: game.parent_game ? getPartialGame(game.parent_game) : undefined,
     platforms: game.platforms?.map(buildPlatform) ?? [],
-    // FIXME: Remove franchises (?)
-    franchises: [],
     dlcs: game.dlcs?.map(getPartialGame) ?? [],
     expandedGames: game.expanded_games?.map(getPartialGame) ?? [],
     expansions: game.expansions?.map(getPartialGame) ?? [],
