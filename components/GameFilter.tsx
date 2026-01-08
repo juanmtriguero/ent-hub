@@ -1,5 +1,5 @@
 import GenreSelector from '@/components/GenreSelector';
-import { getGameGenres, getGamePlatforms } from '@/integration/giantBomb';
+import { getGameGenres, getGamePlatforms } from '@/integration/igdb';
 import { GameGenre, GamePlatform, GamePlatformItem } from '@/models/games';
 import { buildPlatform } from '@/util/games';
 import { getGenre } from '@/util/moviesAndTV';
@@ -9,16 +9,20 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, PlatformColor, Pressable, StyleSheet, Text, View } from 'react-native';
 
 export type GameFilterParams = {
-    platform?: string,
+    platforms?: string[],
     genres?: string[],
 };
     
 export const buildGameQuery = (filter: GameFilterParams): { query: string[], queryParams: any[] } => {
     const query: string[] = [];
     const queryParams: any[] = [];
-    if (filter.platform) {
-        query.push(`platforms.id == $${queryParams.length}`);
-        queryParams.push(filter.platform);
+    if (filter.platforms?.length) {
+        const orQuery: string[] = [];
+        filter.platforms.forEach(platform => {
+            orQuery.push(`platforms.id == $${queryParams.length}`);
+            queryParams.push(platform);
+        });
+        query.push(`(${orQuery.join(' OR ')})`);
     }
     if (filter.genres?.length) {
         filter.genres.forEach(genre => {
@@ -42,7 +46,7 @@ export default function GameFilter({ onChange, includeGenres = true }: Props) {
     const [ numPages, setNumPages ] = useState<number>(0);
     const [ page, setPage ] = useState<number>(1);
     const [ platforms, setPlatforms ] = useState<GamePlatformItem[]>([]);
-    const [ selectedPlatform, setSelectedPlatform ] = useState<string | undefined>(undefined);
+    const [ selectedPlatforms, setSelectedPlatforms ] = useState<string[]>([]);
     const [ selectedGenres, setSelectedGenres ] = useState<string[]>([]);
 
     useEffect(() => {
@@ -69,24 +73,24 @@ export default function GameFilter({ onChange, includeGenres = true }: Props) {
 
     useEffect(() => {
         onChange({
-            platform: selectedPlatform,
+            platforms: selectedPlatforms,
             genres: selectedGenres,
         });
-    }, [ selectedPlatform, selectedGenres ]);
+    }, [ selectedPlatforms, selectedGenres ]);
 
     const displayPlatform = ({ item }: { item: GamePlatformItem }) => {
         const selectPlatform = () => {
-            if (selectedPlatform === item.id) {
-                setSelectedPlatform(undefined);
+            if (selectedPlatforms.includes(item.id)) {
+                setSelectedPlatforms(selectedPlatforms.filter(platform => platform !== item.id));
             } else {
-                setSelectedPlatform(item.id);
+                setSelectedPlatforms([ ...selectedPlatforms, item.id ]);
             }
         };
         return (
             <Pressable key={item.id} onPress={selectPlatform} style={styles.platform}>
-                { selectedPlatform === item.id && <View style={styles.cover} /> }
-                <Image source={item.imageUrl} style={styles.logo} />
-                <Text style={styles.short}>{item.short}</Text>
+                { selectedPlatforms.includes(item.id) && <View style={styles.cover} /> }
+                <Image source={item.imageUrl} style={styles.logo} contentFit="contain" />
+                <Text style={styles.short} numberOfLines={1}>{item.short}</Text>
             </Pressable>
         );
     };
@@ -143,15 +147,19 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     logo: {
-        aspectRatio: 1,
+        aspectRatio: 2,
+        width: 80,
+        marginTop: 10,
     },
     platform: {
-        width: 70,
+        width: 100,
         borderRadius: 10,
         borderWidth: 1,
         borderColor: 'lightgray',
         overflow: 'hidden',
         backgroundColor: 'white',
+        alignItems: 'center',
+        gap: 5,
     },
     row: {
         marginTop: 10,

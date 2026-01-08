@@ -92,11 +92,6 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         gap: 10,
     },
-    image: {
-        width: '25%',
-        aspectRatio: 16 / 9,
-        backgroundColor: PlatformColor('systemGray3'),
-    },
     logo: {
         width: '20%',
         aspectRatio: 2,

@@ -2,6 +2,8 @@ import { Api, ApiAuth, ApiCode, getAccessToken, getCredentials, invalidCredentia
 
 const BASE_URL = 'https://api.igdb.com/v4/';
 const PATH_GAMES = 'games/';
+const PATH_GENRES = 'genres/';
+const PATH_PLATFORMS = 'platforms/';
 
 const LIMIT = 100;
 
@@ -70,7 +72,7 @@ async function get(path: string, body: string, signal?: AbortSignal): Promise<an
     }
 }
 
-function getBody(fields: string[], filter?: string, search?: string, page?: number) {
+function getBody(fields: string[], filter?: string, search?: string, page?: number, sort?: string) {
     let body = `fields ${fields.join(', ')};`;
     if (filter?.length) {
         body += ` where ${filter};`;
@@ -78,10 +80,12 @@ function getBody(fields: string[], filter?: string, search?: string, page?: numb
     if (search?.length) {
         body += ` search "${search}";`;
     }
+    body += ` limit ${LIMIT};`;
     if (page) {
-        body += ` limit ${LIMIT}; offset ${LIMIT * (page - 1)};`;
-    } else {
-        body += ' limit 1;';
+        body += ` offset ${LIMIT * (page - 1)};`;
+    }
+    if (sort?.length) {
+        body += ` sort ${sort};`;
     }
     return body;
 }
@@ -119,6 +123,7 @@ export async function getGame(id: string): Promise<any> {
         'parent_game.first_release_date',
         'parent_game.name',
         'platforms.abbreviation',
+        'platforms.created_at',
         'platforms.name',
         'platforms.platform_logo.image_id',
         'ports.cover.image_id',
@@ -138,6 +143,23 @@ export async function getGame(id: string): Promise<any> {
     const [ result ] = await get(PATH_GAMES, getBody(fields, `id = ${id}`));
     return result;
 }
+
+export async function getGameGenres(): Promise<any[]> {
+    return await get(PATH_GENRES, getBody([ 'name' ]));
+};
+
+export async function getGamePlatforms(page: number): Promise<{ numPages: number, results: any[] }> {
+    const fields = [
+        'abbreviation',
+        'created_at',
+        'name',
+        'platform_logo.image_id',
+    ];
+    const body = getBody(fields, undefined, undefined, page, 'created_at desc');
+    const results: any[] = await get(PATH_PLATFORMS, body);
+    const numPages = results.length === LIMIT ? page + 1 : page;
+    return { numPages, results };
+};
 
 async function test(): Promise<boolean> {
     const response = await fetch(`${BASE_URL}${PATH_GAMES}`, {

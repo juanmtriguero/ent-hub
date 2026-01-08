@@ -53,10 +53,10 @@ export const buildGame = (game: any): GameItem => ({
 export const buildPlatform = (platform: any): GamePlatformItem => ({
     id: `${platform.id}`,
     name: platform.name,
-    short: platform.abbreviation,
+    short: platform.abbreviation ?? platform.name,
     imageUrl: getLogoUrl(platform),
-    // FIXME: Remove release date field
-    releaseDate: undefined,
+    // FIXME: IGDB does not provide release date yet
+    releaseDate: new Date(platform.created_at),
 });
 
 export const gameStatusOptions: Status[] = [
