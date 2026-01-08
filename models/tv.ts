@@ -1,5 +1,6 @@
 import { Genre, Item, SavedItem, SavedProvider, WatchProvider } from '@/models/interfaces';
 import { Realm } from '@realm/react';
+import { ExternalPathString } from 'expo-router';
 
 export class TVGenre extends Realm.Object implements Genre {
     id!: string;
@@ -136,6 +137,7 @@ export class TV extends Realm.Object implements SavedItem<TVGenre> {
     title!: string;
     releaseYear!: string;
     originalTitle!: string;
+    url!: ExternalPathString;
     genres!: Realm.List<TVGenre>;
     flatrate!: Realm.List<TVProvider>;
     seasons!: Realm.List<TVSeason>;
@@ -154,6 +156,7 @@ export class TV extends Realm.Object implements SavedItem<TVGenre> {
             title: 'string',
             releaseYear: 'string',
             originalTitle: 'string',
+            url: 'string',
             genres: 'TVGenre[]',
             flatrate: 'TVProvider[]',
             seasons: 'TVSeason[]',

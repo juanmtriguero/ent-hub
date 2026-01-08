@@ -1,3 +1,5 @@
+import { ExternalPathString } from 'expo-router';
+
 export interface Genre {
     id: string;
     name: string;
@@ -12,6 +14,7 @@ export interface PartialItem {
 
 export interface Item extends PartialItem {
     originalTitle: string;
+    url: ExternalPathString;
     genres: Genre[];
     description?: string;
     details?: string;

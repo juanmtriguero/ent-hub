@@ -59,6 +59,7 @@ export const buildMovie = (movie: any): MovieItem => {
         posterUrl: getPosterUrl(movie.poster_path),
         releaseYear: getReleaseYear(movie.release_date),
         title: movie.title,
+        url: `https://www.themoviedb.org/movie/${movie.id}`,
         flatrate: getProviders(providers?.flatrate),
         ads: getProviders(providers?.ads),
         rent: getProviders(providers?.rent),
@@ -97,6 +98,7 @@ export const buildTV = (tv: any): TVItem => ({
     posterUrl: getPosterUrl(tv.poster_path),
     releaseYear: getReleaseYear(tv.first_air_date),
     title: tv.name,
+    url: `https://www.themoviedb.org/tv/${tv.id}`,
     flatrate: getProviders(tv['watch/providers'].results.ES?.flatrate),
     seasons: tv.seasons.map(buildTVSeason),
 });
@@ -133,6 +135,3 @@ export const tvStatusOptions: Status[] = [
     { label: 'Watched', value: 'watched', icon: 'checkmark', color: PlatformColor('systemGreen') },
     { label: 'Abandoned', value: 'abandoned', icon: 'xmark', color: PlatformColor('systemRed') },
 ];
-
-export const openMovieInBrowser = (id: string): ExternalPathString => `https://www.themoviedb.org/movie/${id}`;
-export const openTVInBrowser = (id: string): ExternalPathString => `https://www.themoviedb.org/tv/${id}`;

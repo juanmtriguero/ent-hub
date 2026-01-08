@@ -1,12 +1,12 @@
 import PartialList from '@/components/PartialList';
 import Screen from '@/components/Screen';
 import { Game, GameGenre, GameItem, GamePlatform, GamePlatformItem } from '@/models/games';
-import { buildGame, gameStatusOptions, getGameDetail, openGameInBrowser } from '@/util/games';
+import { buildGame, gameStatusOptions, getGameDetail } from '@/util/games';
 import { getGame } from '@/integration/igdb';
-import { Realm, useQuery } from '@realm/react';
+import { useQuery } from '@realm/react';
 import { Image } from 'expo-image';
-import { router, useLocalSearchParams } from 'expo-router';
-import { PlatformColor, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import { StyleSheet, Text, View } from 'react-native';
 
 export default function GameScreen() {
 
@@ -82,7 +82,7 @@ export default function GameScreen() {
     );
 
     return (
-        <Screen<GameItem, GameGenre, Game> additionalContent={additionalContent} buildItem={buildGame} fetchData={getGame} id={game} openInBrowser={openGameInBrowser} schema={Game} statusOptions={gameStatusOptions} />
+        <Screen<GameItem, GameGenre, Game> additionalContent={additionalContent} buildItem={buildGame} fetchData={getGame} id={game} schema={Game} statusOptions={gameStatusOptions} />
     );
 
 }

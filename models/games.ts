@@ -1,5 +1,6 @@
 import { Genre, Item, PartialItem, SavedItem } from '@/models/interfaces';
 import { Realm } from '@realm/react';
+import { ExternalPathString } from 'expo-router';
 
 export class GameGenre extends Realm.Object implements Genre {
     id!: string;
@@ -80,6 +81,7 @@ export class Game extends Realm.Object implements SavedItem<GameGenre> {
     title!: string;
     releaseYear!: string;
     originalTitle!: string;
+    url!: ExternalPathString;
     genres!: Realm.List<GameGenre>;
     platforms!: Realm.List<GamePlatform>;
     dlcs!: Realm.List<GamePartial>;
@@ -105,6 +107,7 @@ export class Game extends Realm.Object implements SavedItem<GameGenre> {
             title: 'string',
             releaseYear: 'string',
             originalTitle: 'string',
+            url: 'string',
             genres: 'GameGenre[]',
             platforms: 'GamePlatform[]',
             dlcs: 'GamePartial[]',

@@ -159,6 +159,7 @@ export async function getGame(id: string): Promise<any> {
         'standalone_expansions.first_release_date',
         'standalone_expansions.name',
         'summary',
+        'url',
     ];
     const [ result ] = await get(PATH_GAMES, getBody(fields, `id = ${id}`));
     return result;

@@ -39,6 +39,7 @@ export const buildGame = (game: any): GameItem => ({
     posterUrl: getPosterUrl(game),
     releaseYear: getReleaseYear(game),
     title: game.name,
+    url: game.url,
     parentGame: game.parent_game ? getPartialGame(game.parent_game) : undefined,
     platforms: game.platforms?.map(buildPlatform) ?? [],
     dlcs: game.dlcs?.map(getPartialGame) ?? [],
@@ -67,6 +68,3 @@ export const gameStatusOptions: Status[] = [
     { label: 'Completed', value: 'completed', icon: 'trophy', color: PlatformColor('systemPurple') },
     { label: 'Abandoned', value: 'abandoned', icon: 'xmark', color: PlatformColor('systemRed') },
 ];
-
-// FIXME: IGDB uses slugs for URLs
-export const openGameInBrowser = (id: string): ExternalPathString => `https://www.igdb.com/${id}`;
