@@ -50,6 +50,7 @@ export async function setCredentials(api: Api, value: string): Promise<void> {
             const { clientId, clientSecret } = JSON.parse(value);
             await SecureStore.setItemAsync(`${api.code}${CLIENT_ID_SUFFIX}`, clientId);
             await SecureStore.setItemAsync(`${api.code}${CLIENT_SECRET_SUFFIX}`, clientSecret);
+            await SecureStore.setItemAsync(`${api.code}${OAUTH_TOKEN_SUFFIX}`, '');
             break;
     }
 }

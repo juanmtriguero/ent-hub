@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
         gap: 7,
     },
     loading: {
-        height: 96,
+        height: 80,
         width: 70,
         alignItems: 'center',
         justifyContent: 'center',
