@@ -155,7 +155,7 @@ export async function getGame(id: string): Promise<any> {
         'platforms.abbreviation',
         'platforms.name',
         'platforms.platform_logo.image_id',
-        'versions.platform_version_release_dates.date',
+        'platforms.versions.platform_version_release_dates.date',
         'ports.cover.image_id',
         'ports.first_release_date',
         'ports.name',
