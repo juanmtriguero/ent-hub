@@ -3,7 +3,6 @@ import Screen from '@/components/Screen';
 import { Game, GameGenre, GameItem, GamePlatform, GamePlatformItem } from '@/models/games';
 import { buildGame, gameStatusOptions, getGameDetail } from '@/util/games';
 import { getGame } from '@/integration/igdb';
-import { useQuery } from '@realm/react';
 import { Image } from 'expo-image';
 import { useLocalSearchParams } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
@@ -11,11 +10,10 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function GameScreen() {
 
     const { game } = useLocalSearchParams<{ game: string }>();
-    const savedPlatforms = useQuery(GamePlatform);
 
     const renderPlatform = (platform: GamePlatformItem | GamePlatform) => (
         <View key={platform.id} style={styles.section}>
-            <Image source={platform.imageUrl ?? savedPlatforms.filtered('id == $0', platform.id)[0]?.imageUrl} style={styles.logo} contentFit="contain" />
+            <Image source={platform.imageUrl} style={styles.logo} contentFit="contain" />
             <Text numberOfLines={1} style={styles.name}>{platform.name}</Text>
         </View>
     );
