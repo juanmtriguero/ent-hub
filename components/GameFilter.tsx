@@ -6,7 +6,7 @@ import { getGenre } from '@/util/moviesAndTV';
 import { Realm, useQuery, useRealm } from '@realm/react';
 import { Image } from 'expo-image';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, PlatformColor, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, PlatformColor, Pressable, StyleSheet, Text, View } from 'react-native';
 
 export type GameFilterParams = {
     platforms?: string[],
@@ -41,34 +41,26 @@ export default function GameFilter({ onChange }: Props) {
 
     const savedPlatforms = useQuery(GamePlatform).sorted('releaseDate', true);
     const realm = useRealm();
-    const [ isLoading, setIsLoading ] = useState<boolean>(false);
-    const [ numPages, setNumPages ] = useState<number>(0);
-    const [ page, setPage ] = useState<number>(1);
     const [ platforms, setPlatforms ] = useState<GamePlatformItem[]>([]);
     const [ selectedPlatforms, setSelectedPlatforms ] = useState<string[]>([]);
     const [ selectedGenres, setSelectedGenres ] = useState<string[]>([]);
 
     useEffect(() => {
-        setIsLoading(true);
-        getGamePlatforms(page)
-        .then(({ numPages, results }) => {
-            setNumPages(numPages);
-            const newPlatforms = results.map(buildPlatform);
+        getGamePlatforms()
+        .then(data => {
+            const platforms = data.map(buildPlatform).sort((a, b) => (b.releaseDate?.getTime() ?? 0) - (a.releaseDate?.getTime() ?? 0));
             realm.write(() => {
-                newPlatforms.forEach(platform => {
+                platforms.forEach(platform => {
                     realm.create(GamePlatform, platform, Realm.UpdateMode.Modified);
                 });
             });
-            setPlatforms([ ...platforms, ...newPlatforms ]);
+            setPlatforms(platforms);
         })
         .catch(error => {
             console.error(error);
             setPlatforms([ ...savedPlatforms ]);
-        })
-        .finally(() => {
-            setIsLoading(false);
         });
-    }, [page]);
+    }, []);
 
     useEffect(() => {
         onChange({
@@ -94,24 +86,10 @@ export default function GameFilter({ onChange }: Props) {
         );
     };
 
-    const renderFooter = () => {
-        return isLoading ? (
-            <View style={styles.loading}>
-                <ActivityIndicator />
-            </View>
-        ) : null;
-    };
-
-    const nextPage = () => {
-        if (page < numPages) {
-            setPage(page + 1);
-        }
-    };
-
     return (
         <View style={styles.container}>
             <View style={styles.row}>
-                <FlatList data={platforms} renderItem={displayPlatform} contentContainerStyle={styles.list} horizontal onEndReached={nextPage} ListFooterComponent={renderFooter} showsHorizontalScrollIndicator={false} />
+                <FlatList data={platforms} renderItem={displayPlatform} contentContainerStyle={styles.list} horizontal showsHorizontalScrollIndicator={false} />
             </View>
             <View style={styles.row}>
                 <GenreSelector schema={GameGenre} buildGenre={getGenre} fetchData={getGameGenres} onSelect={setSelectedGenres} />
@@ -136,12 +114,6 @@ const styles = StyleSheet.create({
     },
     list: {
         gap: 7,
-    },
-    loading: {
-        height: 80,
-        width: 70,
-        alignItems: 'center',
-        justifyContent: 'center',
     },
     logo: {
         aspectRatio: 2,

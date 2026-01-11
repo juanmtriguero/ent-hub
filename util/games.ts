@@ -11,6 +11,19 @@ const getBackdropUrl = (game: any): string | undefined => game.cover?.image_id?.
 const getReleaseYear = (game: any): string => game.first_release_date ? `${new Date(game.first_release_date * 1000).getFullYear()}` : '????';
 const getGenres = (genres?: any[]): Genre[] => genres?.map(genre => ({ id: `${genre.id}`, name: genre.name })) ?? [];
 const getLogoUrl = (platform: any): string | undefined => platform.platform_logo?.image_id?.length ? `${IMAGE_URL}${LOGO_SIZE}/${platform.platform_logo.image_id}${LOGO_FORMAT}` : undefined;
+const getPlatformReleaseDate = (platform: any): Date | undefined => {
+    return platform.versions?.reduce((latestDate: Date | undefined, version: any) => {
+        return version.platform_version_release_dates?.reduce((latestReleaseDate: Date | undefined, releaseDate: any) => {
+            if (releaseDate?.date) {
+                const date = new Date(releaseDate.date * 1000);
+                if (!latestReleaseDate || date > latestReleaseDate) {
+                    return date;
+                }
+            }
+            return latestReleaseDate;
+        }, latestDate);
+    }, undefined);
+};
 
 export const getGameDetail = (id: string): Href => ({
     pathname: '/games/[game]',
@@ -56,8 +69,7 @@ export const buildPlatform = (platform: any): GamePlatformItem => ({
     name: platform.name,
     short: platform.abbreviation ?? platform.name,
     imageUrl: getLogoUrl(platform),
-    // FIXME: IGDB does not provide release date yet
-    releaseDate: new Date(platform.created_at),
+    releaseDate: getPlatformReleaseDate(platform),
 });
 
 export const gameStatusOptions: Status[] = [
