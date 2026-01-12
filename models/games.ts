@@ -26,6 +26,7 @@ export interface GamePlatformItem {
 
 export class GamePlatform extends Realm.Object implements GamePlatformItem {
     id!: string;
+    mine!: boolean;
     name!: string;
     short!: string;
     imageUrl?: string;
@@ -36,6 +37,10 @@ export class GamePlatform extends Realm.Object implements GamePlatformItem {
         primaryKey: 'id',
         properties: {
             id: 'string',
+            mine: {
+                type: 'bool',
+                default: false,
+            },
             name: 'string',
             short: 'string',
             imageUrl: 'string?',

@@ -39,21 +39,16 @@ export default function WatchProviderSelector({ schema, fetchData, onSelect }: P
         onSelect(selectedProviders);
     }, [ selectedProviders ]);
 
+    const clearSelection = () => {
+        setSelectedProviders([]);
+    };
+
     const selectMyServices = () => {
         setSelectedProviders(savedProviders.filtered('mine == true').map(provider => provider.id));
     };
 
-    const updateMyServices = () => {
-        realm.write(() => {
-            savedProviders.forEach(provider => {
-                provider.mine = selectedProviders.includes(provider.id);
-            });
-        });
-        alert('Your services have been updated');
-    };
-
     const displayAction = () => {
-        const { title, action } = selectedProviders.length ? { title: 'Update my\nservices', action: updateMyServices } : { title: 'Select my\nservices', action: selectMyServices };
+        const { title, action } = selectedProviders.length ? { title: 'Clear\nselection', action: clearSelection } : { title: 'Select my\nservices', action: selectMyServices };
         return (
             <Button title={title} onPress={action} />
         );

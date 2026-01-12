@@ -11,6 +11,7 @@ export default function TVLayout() {
             <Stack.Screen name="watched" options={{ title: 'Recently watched' }} />
             <Stack.Screen name="abandoned" options={{ title: 'Abandoned' }} />
             <Stack.Screen name="[tv]" options={{ title: '' }} />
+            <Stack.Screen name="providers" options={{ title: 'Select my providers', presentation: 'modal' }} />
         </Stack>
     );
 }

@@ -6,7 +6,8 @@ const PATH_GAMES = 'games/';
 const PATH_GENRES = 'genres/';
 const PATH_PLATFORMS = 'platforms/';
 
-const LIMIT = 100;
+const DEFAULT_LIMIT = 100;
+const MAX_LIMIT = 500;
 
 export const IMAGE_URL = 'https://images.igdb.com/igdb/image/upload/';
 export const IMAGE_FORMAT = '.jpg';
@@ -73,7 +74,15 @@ async function get(path: string, body: string, signal?: AbortSignal): Promise<an
     }
 }
 
-function getBody(fields: string[], filter?: string, search?: string, page?: number, sort?: string) {
+type GetBodyOptions = {
+    filter?: string;
+    search?: string;
+    page?: number;
+    sort?: string;
+    limit?: number;
+};
+
+function getBody(fields: string[], { filter, search, page, sort, limit }: GetBodyOptions) {
     let body = `fields ${fields.join(', ')};`;
     if (filter?.length) {
         body += ` where ${filter};`;
@@ -81,9 +90,10 @@ function getBody(fields: string[], filter?: string, search?: string, page?: numb
     if (search?.length) {
         body += ` search "${search}";`;
     }
-    body += ` limit ${LIMIT};`;
+    const limitValue = limit ?? DEFAULT_LIMIT;
+    body += ` limit ${limitValue};`;
     if (page) {
-        body += ` offset ${LIMIT * (page - 1)};`;
+        body += ` offset ${limitValue * (page - 1)};`;
     }
     if (sort?.length) {
         body += ` sort ${sort};`;
@@ -98,9 +108,9 @@ export async function searchGames(page: number, params: any, signal: AbortSignal
         'name',
     ];
     const filter = `game_type = (${INCLUDED_GAME_TYPES.join(', ')}) & version_parent = null`;
-    const body = getBody(fields, filter, params.text, page);
+    const body = getBody(fields, { filter, search: params.text, page });
     const results: any[] = await get(PATH_GAMES, body, signal);
-    const numPages = results.length === LIMIT ? page + 1 : page;
+    const numPages = results.length === DEFAULT_LIMIT ? page + 1 : page;
     return { numPages, results };
 }
 
@@ -117,9 +127,9 @@ export async function getLatestGames(page: number, params?: GameFilterParams): P
     if (params?.genres?.length) {
         filter += ` & genres = [${params.genres.join(', ')}]`;
     }
-    const body = getBody(fields, filter, undefined, page, 'first_release_date desc');
+    const body = getBody(fields, { filter, page, sort: 'first_release_date desc' });
     const results: any[] = await get(PATH_GAMES, body);
-    const numPages = results.length === LIMIT ? page + 1 : page;
+    const numPages = results.length === DEFAULT_LIMIT ? page + 1 : page;
     return { numPages, results };
 }
 
@@ -143,9 +153,9 @@ export async function getGame(id: string): Promise<any> {
         'parent_game.first_release_date',
         'parent_game.name',
         'platforms.abbreviation',
-        'platforms.created_at',
         'platforms.name',
         'platforms.platform_logo.image_id',
+        'platforms.versions.platform_version_release_dates.date',
         'ports.cover.image_id',
         'ports.first_release_date',
         'ports.name',
@@ -161,25 +171,22 @@ export async function getGame(id: string): Promise<any> {
         'summary',
         'url',
     ];
-    const [ result ] = await get(PATH_GAMES, getBody(fields, `id = ${id}`));
+    const [ result ] = await get(PATH_GAMES, getBody(fields, { filter: `id = ${id}`, limit: 1 }));
     return result;
 }
 
 export async function getGameGenres(): Promise<any[]> {
-    return await get(PATH_GENRES, getBody([ 'name' ]));
+    return await get(PATH_GENRES, getBody([ 'name' ], { limit: MAX_LIMIT }));
 };
 
-export async function getGamePlatforms(page: number): Promise<{ numPages: number, results: any[] }> {
+export async function getGamePlatforms(): Promise<any[]> {
     const fields = [
         'abbreviation',
-        'created_at',
         'name',
         'platform_logo.image_id',
+        'versions.platform_version_release_dates.date',
     ];
-    const body = getBody(fields, undefined, undefined, page, 'created_at desc');
-    const results: any[] = await get(PATH_PLATFORMS, body);
-    const numPages = results.length === LIMIT ? page + 1 : page;
-    return { numPages, results };
+    return await get(PATH_PLATFORMS, getBody(fields, { limit: MAX_LIMIT }));
 };
 
 async function test(): Promise<boolean> {

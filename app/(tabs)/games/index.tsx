@@ -1,4 +1,4 @@
-import Index, { FetchSection, QuerySection } from '@/components/Index';
+import Index, { FetchSection, IndexAction, QuerySection } from '@/components/Index';
 import { getLatestGames, searchGames } from '@/integration/igdb';
 import { Game, GameGenre } from '@/models/games';
 import { getGameDetail, getGameTile, gameStatusOptions } from '@/util/games';
@@ -60,10 +60,14 @@ const sections: (FetchSection | QuerySection)[] = [
     },
 ];
 
+const actions: IndexAction[] = [
+    { icon: 'arcade.stick.console', path: '/games/platforms' },
+];
+
 export default function GamesIndex() {
 
     return (
-        <Index<GameGenre, Game> buildTile={getGameTile} schema={Game} searchData={searchGames} searchOn="games" sections={sections} statusOptions={gameStatusOptions} />
+        <Index<GameGenre, Game> buildTile={getGameTile} schema={Game} searchData={searchGames} searchOn="games" sections={sections} statusOptions={gameStatusOptions} actions={actions} />
     );
 
 }
