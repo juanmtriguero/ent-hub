@@ -6,7 +6,7 @@ import { Tile } from '@/components/TileList';
 import { Genre, SavedItem } from '@/models/interfaces';
 import { Realm } from '@realm/react';
 import { Href, useNavigation, useRouter } from 'expo-router';
-import { SymbolView } from 'expo-symbols';
+import { SFSymbol, SymbolView } from 'expo-symbols';
 import { isValidElement, ReactElement, useEffect, useRef, useState } from 'react';
 import { FlatList, Pressable, View } from 'react-native';
 
@@ -28,6 +28,11 @@ export type QuerySection = {
     getDetail: (id: string) => Href;
 } & Section;
 
+export type IndexAction = {
+    icon: SFSymbol;
+    path: Href;
+};
+
 type Props<G extends Genre, S extends SavedItem<G> & Realm.Object> = {
     buildTile: (item: any) => Tile;
     schema: Realm.ObjectClass<S>,
@@ -35,9 +40,10 @@ type Props<G extends Genre, S extends SavedItem<G> & Realm.Object> = {
     searchOn: string;
     sections: (ReactElement | FetchSection | QuerySection)[];
     statusOptions: Status[];
+    actions?: IndexAction[];
 };
 
-export default function Index<G extends Genre, S extends SavedItem<G> & Realm.Object>({ buildTile, schema, searchData, searchOn, sections, statusOptions }: Props<G, S>) {
+export default function Index<G extends Genre, S extends SavedItem<G> & Realm.Object>({ buildTile, schema, searchData, searchOn, sections, statusOptions, actions = [] }: Props<G, S>) {
 
     const navigation = useNavigation();
     const timeout = useRef<number>(undefined);
@@ -48,7 +54,7 @@ export default function Index<G extends Genre, S extends SavedItem<G> & Realm.Ob
         navigation.setOptions({
             // FIXME: set to true when Apple fixes the bug
             headerLargeTitle: false,
-            headerRight: () => settings,
+            headerRight: buildHeaderActions,
             headerSearchBarOptions: {
                 onChangeText: (event: any) => search(event.nativeEvent.text),
                 placeholder: `Search on ${searchOn}`,
@@ -63,11 +69,18 @@ export default function Index<G extends Genre, S extends SavedItem<G> & Realm.Ob
         }, DEBOUNCE_TIME);
     };
 
-    const settings = (
-        <Pressable onPress={() => router.navigate('/settings')}>
-            <SymbolView name="gear" size={36} />
-        </Pressable>
-    );
+    const buildHeaderActions = () => {
+        const headerActions: IndexAction[] = [ ...actions, { icon: 'gear', path: '/settings' } ];
+        return (
+            <View style={{ flexDirection: 'row', gap: 5 }}>
+                {headerActions.map(action => (
+                    <Pressable key={action.icon} onPress={() => router.navigate(action.path)}>
+                        <SymbolView name={action.icon} size={36} />
+                    </Pressable>
+                ))}
+            </View>
+        );
+    };
 
     const searchView = (
         <FetchList<G, S> schema={schema} statusOptions={statusOptions} buildTile={buildTile} fetchData={searchData} params={{ text: searchText }} />

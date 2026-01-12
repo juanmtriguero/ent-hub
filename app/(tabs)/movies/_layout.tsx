@@ -8,6 +8,7 @@ export default function MoviesLayout() {
             <Stack.Screen name="pending" options={{ title: 'My watchlist' }} />
             <Stack.Screen name="watched" options={{ title: 'Recently watched' }} />
             <Stack.Screen name="[movie]" options={{ title: '' }} />
+            <Stack.Screen name="providers" options={{ title: 'Select my providers', presentation: 'modal' }} />
         </Stack>
     );
 }

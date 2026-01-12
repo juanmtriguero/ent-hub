@@ -6,7 +6,7 @@ import { getGenre } from '@/util/moviesAndTV';
 import { Realm, useQuery, useRealm } from '@realm/react';
 import { Image } from 'expo-image';
 import { useEffect, useState } from 'react';
-import { FlatList, PlatformColor, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Button, FlatList, PlatformColor, Pressable, StyleSheet, Text, View } from 'react-native';
 
 export type GameFilterParams = {
     platforms?: string[],
@@ -69,6 +69,21 @@ export default function GameFilter({ onChange }: Props) {
         });
     }, [ selectedPlatforms, selectedGenres ]);
 
+    const clearSelection = () => {
+        setSelectedPlatforms([]);
+    };
+
+    const selectMyPlatforms = () => {
+        setSelectedPlatforms(savedPlatforms.filtered('mine == true').map(platform => platform.id));
+    };
+
+    const displayAction = () => {
+        const { title, action } = selectedPlatforms.length ? { title: 'Clear\nselection', action: clearSelection } : { title: 'Select my\nplatforms', action: selectMyPlatforms };
+        return (
+            <Button title={title} onPress={action} />
+        );
+    };
+
     const displayPlatform = ({ item }: { item: GamePlatformItem }) => {
         const selectPlatform = () => {
             if (selectedPlatforms.includes(item.id)) {
@@ -89,7 +104,7 @@ export default function GameFilter({ onChange }: Props) {
     return (
         <View style={styles.container}>
             <View style={styles.row}>
-                <FlatList data={platforms} renderItem={displayPlatform} contentContainerStyle={styles.list} horizontal showsHorizontalScrollIndicator={false} />
+                <FlatList data={platforms} ListHeaderComponent={displayAction} renderItem={displayPlatform} contentContainerStyle={styles.list} horizontal showsHorizontalScrollIndicator={false} />
             </View>
             <View style={styles.row}>
                 <GenreSelector schema={GameGenre} buildGenre={getGenre} fetchData={getGameGenres} onSelect={setSelectedGenres} />
@@ -113,6 +128,7 @@ const styles = StyleSheet.create({
         zIndex: 1,
     },
     list: {
+        alignItems: 'center',
         gap: 7,
     },
     logo: {

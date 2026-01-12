@@ -1,4 +1,4 @@
-import Index, { FetchSection, QuerySection } from '@/components/Index';
+import Index, { FetchSection, IndexAction, QuerySection } from '@/components/Index';
 import { getPopularMovies, searchMovies } from '@/integration/tmdb';
 import { Movie, MovieGenre } from '@/models/movies';
 import { getMovieDetail, getMovieTile, movieStatusOptions } from '@/util/moviesAndTV';
@@ -28,10 +28,14 @@ const sections: (FetchSection | QuerySection)[] = [
     },
 ];
 
+const actions: IndexAction[] = [
+    { icon: 'play.display', path: '/movies/providers' },
+];
+
 export default function MoviesIndex() {
 
     return (
-        <Index<MovieGenre, Movie> buildTile={getMovieTile} schema={Movie} searchData={searchMovies} searchOn="movies" sections={sections} statusOptions={movieStatusOptions} />
+        <Index<MovieGenre, Movie> buildTile={getMovieTile} schema={Movie} searchData={searchMovies} searchOn="movies" sections={sections} statusOptions={movieStatusOptions} actions={actions} />
     );
 
 }

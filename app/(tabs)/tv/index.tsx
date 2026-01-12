@@ -1,4 +1,4 @@
-import Index, { FetchSection, QuerySection } from '@/components/Index';
+import Index, { FetchSection, IndexAction, QuerySection } from '@/components/Index';
 import NextEpisodes from '@/components/NextEpisodes';
 import { getPopularShows, searchTV } from '@/integration/tmdb';
 import { TV, TVGenre } from '@/models/tv';
@@ -55,10 +55,14 @@ const sections: (ReactElement | FetchSection | QuerySection)[] = [
     },
 ];
 
+const actions: IndexAction[] = [
+    { icon: 'play.display', path: '/tv/providers' },
+];
+
 export default function TVIndex() {
 
     return (
-        <Index<TVGenre, TV> buildTile={getTVTile} schema={TV} searchData={searchTV} searchOn="TV" sections={sections} statusOptions={tvStatusOptions} />
+        <Index<TVGenre, TV> buildTile={getTVTile} schema={TV} searchData={searchTV} searchOn="TV" sections={sections} statusOptions={tvStatusOptions} actions={actions} />
     );
 
 }
