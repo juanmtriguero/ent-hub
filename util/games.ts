@@ -48,6 +48,7 @@ export const buildGame = (game: any): GameItem => ({
     description: game.summary,
     details: game.game_type.type,
     genres: getGenres(game.genres),
+    related: game.similar_games?.map(getPartialGame) ?? [],
     originalTitle: game.name,
     posterUrl: getPosterUrl(game),
     releaseYear: getReleaseYear(game),

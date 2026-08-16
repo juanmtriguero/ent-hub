@@ -1,7 +1,7 @@
 import { Status } from '@/components/Screen';
 import { Tile } from '@/components/TileList';
 import { BACKDROP_SIZE, IMAGE_URL, LOGO_SIZE, POSTER_SIZE } from '@/integration/tmdb';
-import { Genre, WatchProvider } from '@/models/interfaces';
+import { Genre, PartialItem, WatchProvider } from '@/models/interfaces';
 import { MovieItem } from '@/models/movies';
 import { TVItem, TVSeason } from '@/models/tv';
 import { formatDuration, intervalToDuration } from 'date-fns';
@@ -33,6 +33,10 @@ export const getTVDetail = (id: string): Href => ({
 
 export const getMovieTile = (movie: any): Tile => ({
     detail: getMovieDetail(movie.id),
+    ...getPartialMovie(movie),
+});
+
+const getPartialMovie = (movie: any): PartialItem => ({
     id: `${movie.id}`,
     posterUrl: getPosterUrl(movie.poster_path),
     releaseYear: getReleaseYear(movie.release_date),
@@ -41,6 +45,10 @@ export const getMovieTile = (movie: any): Tile => ({
 
 export const getTVTile = (tv: any): Tile => ({
     detail: getTVDetail(tv.id),
+    ...getPartialTV(tv),
+});
+
+const getPartialTV = (tv: any): PartialItem => ({
     id: `${tv.id}`,
     posterUrl: getPosterUrl(tv.poster_path),
     releaseYear: getReleaseYear(tv.first_air_date),
@@ -55,6 +63,7 @@ export const buildMovie = (movie: any): MovieItem => {
         description: movie.overview,
         details: getDuration(movie.runtime),
         genres: getGenres(movie.genres),
+        related: movie.recommendations.results.map(getPartialMovie),
         originalTitle: movie.original_title,
         posterUrl: getPosterUrl(movie.poster_path),
         releaseYear: getReleaseYear(movie.release_date),
@@ -94,6 +103,7 @@ export const buildTV = (tv: any): TVItem => ({
     description: tv.overview,
     details: tv.status,
     genres: getGenres(tv.genres),
+    related: tv.recommendations.results.map(getPartialTV),
     originalTitle: tv.original_name,
     posterUrl: getPosterUrl(tv.poster_path),
     releaseYear: getReleaseYear(tv.first_air_date),
