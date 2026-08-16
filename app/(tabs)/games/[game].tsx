@@ -80,7 +80,7 @@ export default function GameScreen() {
     );
 
     return (
-        <Screen<GameItem, GameGenre, Game> additionalContent={additionalContent} buildItem={buildGame} fetchData={getGame} id={game} schema={Game} statusOptions={gameStatusOptions} />
+        <Screen<GameItem, GameGenre, Game> additionalContent={additionalContent} buildItem={buildGame} fetchData={getGame} id={game} schema={Game} statusOptions={gameStatusOptions} getDetail={getGameDetail} />
     );
 
 }

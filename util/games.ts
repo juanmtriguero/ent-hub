@@ -3,7 +3,7 @@ import { Tile } from '@/components/TileList';
 import { BACKDROP_SIZE, IMAGE_FORMAT, IMAGE_URL, LOGO_FORMAT, LOGO_SIZE, POSTER_SIZE } from '@/integration/igdb';
 import { GameItem, GamePlatformItem } from '@/models/games';
 import { Genre, PartialItem } from '@/models/interfaces';
-import { ExternalPathString, Href } from 'expo-router';
+import { Href } from 'expo-router';
 import { PlatformColor } from 'react-native';
 
 const getPosterUrl = (game: any): string | undefined => game.cover?.image_id?.length ? `${IMAGE_URL}${POSTER_SIZE}/${game.cover.image_id}${IMAGE_FORMAT}` : undefined;
@@ -48,6 +48,7 @@ export const buildGame = (game: any): GameItem => ({
     description: game.summary,
     details: game.game_type.type,
     genres: getGenres(game.genres),
+    related: game.similar_games?.map(getPartialGame) ?? [],
     originalTitle: game.name,
     posterUrl: getPosterUrl(game),
     releaseYear: getReleaseYear(game),

@@ -1,8 +1,9 @@
+import PartialList from '@/components/PartialList';
 import { Genre, Item, SavedItem } from '@/models/interfaces';
 import { useRoute } from '@react-navigation/native';
 import { Realm, useQuery, useRealm } from '@realm/react';
 import { Image } from 'expo-image';
-import { ExternalPathString, Link, useNavigation } from 'expo-router';
+import { Href, Link, useNavigation } from 'expo-router';
 import { SFSymbol, SymbolView } from 'expo-symbols';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, AlertButton, OpaqueColorValue, PlatformColor, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
@@ -21,12 +22,13 @@ type Props<I extends Item, G extends Genre, S extends SavedItem<G> & Realm.Objec
     buildItem: (data: any) => I,
     fetchData: (id: string) => Promise<any>,
     id: string,
-    schema: Realm.ObjectClass<S>,
+    schema: Realm.RealmObjectConstructor<S>,
     statusOptions: Status[],
+    getDetail: (id: string) => Href,
     deleteOrphans?: (realm: Realm) => void,
 };
 
-export default function Screen<I extends Item, G extends Genre, S extends SavedItem<G> & Realm.Object>({ additionalContent, buildItem, fetchData, id, schema, statusOptions, deleteOrphans }: Props<I, G, S>) {
+export default function Screen<I extends Item, G extends Genre, S extends SavedItem<G> & Realm.Object>({ additionalContent, buildItem, fetchData, id, schema, statusOptions, getDetail, deleteOrphans }: Props<I, G, S>) {
 
     const navigation = useNavigation();
     const savedItem = useQuery(schema).filtered('id == $0', id)[0];
@@ -36,6 +38,8 @@ export default function Screen<I extends Item, G extends Genre, S extends SavedI
     const [ item, setItem ] = useState<I | S | null>(null);
     const { height, width } = useWindowDimensions();
     const styles = getStyles(width, height);
+
+    const isItem = (item: I | S): item is I => (item as I).related !== undefined;
 
     useEffect(() => {
         const options = {
@@ -125,6 +129,13 @@ export default function Screen<I extends Item, G extends Genre, S extends SavedI
         Alert.alert('Status', '', buttons);
     };
 
+    const relatedItems = (item: I | S) => isItem(item) && item.related?.length ? (
+        <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Related</Text>
+            <PartialList<G, S> partialItems={item.related} mainSchema={schema} statusOptions={statusOptions} getDetail={getDetail} />
+        </View>
+    ) : null;
+
     return (
         <ScrollView>
             <Image source={item.backdropUrl} style={styles.backdrop} contentFit="cover" />
@@ -144,6 +155,7 @@ export default function Screen<I extends Item, G extends Genre, S extends SavedI
                     {item.genres.map((genre) => <Text key={genre.id} style={styles.tag}>{genre.name}</Text>)}
                 </View>
                 {additionalContent(savedItem ?? item)}
+                {relatedItems(item)}
             </View>
         </ScrollView>
     );
@@ -191,6 +203,14 @@ const getStyles = (width: number, height: number) => StyleSheet.create({
         position: 'absolute',
         top: width * 0.15,
         left: 20,
+    },
+    section: {
+        marginVertical: 10,
+        gap: 10,
+    },
+    sectionTitle: {
+        fontWeight: 'bold',
+        fontSize: 18,
     },
     subtitle: {
         fontSize: 20,

@@ -13,6 +13,7 @@ const PATH_GENRE_TV_LIST = 'genre/tv/list';
 const PATH_MOVIE_DETAILS = 'movie/';
 const PATH_TV_DETAILS = 'tv/';
 const PATH_TV_SEASON = '/season/';
+const PATH_RECOMMENDATIONS = 'recommendations';
 const PATH_WATCH_PROVIDERS = 'watch/providers';
 const PATH_WATCH_PROVIDERS_MOVIE = '/watch/providers/movie';
 const PATH_WATCH_PROVIDERS_TV = '/watch/providers/tv';
@@ -112,7 +113,7 @@ export async function getPopularShows(page: number, params: TVFilterParams): Pro
 
 export async function getMovie(id: string): Promise<any> {
     const params = new URLSearchParams({
-        append_to_response: PATH_WATCH_PROVIDERS,
+        append_to_response: [ PATH_WATCH_PROVIDERS, PATH_RECOMMENDATIONS ].join(','),
         language: 'es-ES',
     });
     return await get(PATH_MOVIE_DETAILS + id, params);
@@ -120,7 +121,7 @@ export async function getMovie(id: string): Promise<any> {
 
 export async function getTV(id: string): Promise<any> {
     const params = new URLSearchParams({
-        append_to_response: PATH_WATCH_PROVIDERS,
+        append_to_response: [ PATH_WATCH_PROVIDERS, PATH_RECOMMENDATIONS ].join(','),
         language: 'es-ES',
     });
     return await get(PATH_TV_DETAILS + id, params);

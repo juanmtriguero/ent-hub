@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { Button, FlatList, PlatformColor, Pressable, StyleSheet, View } from 'react-native';
 
 type Props = {
-    schema: Realm.ObjectClass<SavedProvider & Realm.Object>,
+    schema: Realm.RealmObjectConstructor<SavedProvider & Realm.Object>,
     fetchData: () => Promise<WatchProvider[]>,
     onSelect: (providers: string[]) => void,
 };

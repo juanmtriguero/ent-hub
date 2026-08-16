@@ -16,12 +16,13 @@ export interface Item extends PartialItem {
     originalTitle: string;
     url: ExternalPathString;
     genres: Genre[];
+    related: PartialItem[];
     description?: string;
     details?: string;
     backdropUrl?: string;
 }
 
-export interface SavedItem<T extends Genre> extends Omit<Item, 'genres'> {
+export interface SavedItem<T extends Genre> extends Omit<Item, 'genres' | 'related'> {
     status: string;
     timestamp: number;
     genres: Realm.List<T>;

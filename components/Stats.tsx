@@ -11,7 +11,7 @@ import { View, Text, StyleSheet, FlatList, Pressable, PlatformColor, ActivityInd
 const PARENT_FIELDS = [ 'parent', 'games' ];
 
 type Props<G extends Genre, S extends SavedItem<G> & Realm.Object> = {
-    schema: Realm.ObjectClass<S>,
+    schema: Realm.RealmObjectConstructor<S>,
     statusOptions: Status[],
 };
 

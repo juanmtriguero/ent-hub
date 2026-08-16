@@ -35,7 +35,7 @@ export type IndexAction = {
 
 type Props<G extends Genre, S extends SavedItem<G> & Realm.Object> = {
     buildTile: (item: any) => Tile;
-    schema: Realm.ObjectClass<S>,
+    schema: Realm.RealmObjectConstructor<S>,
     searchData: (page: number, params: any, signal: AbortSignal) => Promise<{ numPages: number, results: any[] }>;
     searchOn: string;
     sections: (ReactElement | FetchSection | QuerySection)[];

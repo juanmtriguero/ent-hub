@@ -8,7 +8,7 @@ type Props<G extends Genre, S extends SavedItem<G> & Realm.Object> = {
     query: string,
     queryParams: any[],
     getDetail: (id: string) => Href,
-    schema: Realm.ObjectClass<S>,
+    schema: Realm.RealmObjectConstructor<S>,
     statusOptions: Status[],
     header?: { title: string, link: Href },
     limit?: number,
