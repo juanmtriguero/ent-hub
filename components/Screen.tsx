@@ -2,7 +2,7 @@ import { Genre, Item, SavedItem } from '@/models/interfaces';
 import { useRoute } from '@react-navigation/native';
 import { Realm, useQuery, useRealm } from '@realm/react';
 import { Image } from 'expo-image';
-import { ExternalPathString, Link, useNavigation } from 'expo-router';
+import { Link, useNavigation } from 'expo-router';
 import { SFSymbol, SymbolView } from 'expo-symbols';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, AlertButton, OpaqueColorValue, PlatformColor, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
@@ -21,7 +21,7 @@ type Props<I extends Item, G extends Genre, S extends SavedItem<G> & Realm.Objec
     buildItem: (data: any) => I,
     fetchData: (id: string) => Promise<any>,
     id: string,
-    schema: Realm.ObjectClass<S>,
+    schema: Realm.RealmObjectConstructor<S>,
     statusOptions: Status[],
     deleteOrphans?: (realm: Realm) => void,
 };

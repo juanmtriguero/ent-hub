@@ -10,7 +10,7 @@ type Props<G extends Genre, S extends SavedItem<G> & Realm.Object> = {
     buildQuery: (filter: any) => { query: string[], queryParams: any[] },
     FilterComponent: React.ComponentType<{ onChange: (filter: any) => void }>,
     getDetail: (id: string) => Href,
-    schema: Realm.ObjectClass<S>,
+    schema: Realm.RealmObjectConstructor<S>,
     status: string,
     statusOptions: Status[],
 };
@@ -30,8 +30,8 @@ export default function StatusPage<G extends Genre, S extends SavedItem<G> & Rea
     return (
         <View>
             <FlatList data={[
-                <FilterComponent onChange={setFilter} />,
-                <QueryList<G, S> schema={schema} statusOptions={statusOptions} query={query} queryParams={queryParams} getDetail={getDetail} />,
+                <FilterComponent key="filter" onChange={setFilter} />,
+                <QueryList<G, S> key="list" schema={schema} statusOptions={statusOptions} query={query} queryParams={queryParams} getDetail={getDetail} />,
             ]} renderItem={({ item }: { item: React.JSX.Element }) => item} />
         </View>
     );

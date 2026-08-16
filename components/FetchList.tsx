@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 type Props<G extends Genre, S extends SavedItem<G> & Realm.Object> = {
     buildTile: (item: any) => Tile,
     fetchData: (page: number, params: any, signal: AbortSignal) => Promise<{ numPages: number, results: any[] }>,
-    schema: Realm.ObjectClass<S>,
+    schema: Realm.RealmObjectConstructor<S>,
     statusOptions: Status[],
     header?: { title: string, link: Href },
     limit?: number,

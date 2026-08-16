@@ -1,10 +1,10 @@
 import { Genre } from '@/models/interfaces';
 import { Realm, useQuery, useRealm } from '@realm/react';
 import { useEffect, useState } from 'react';
-import { FlatList, PlatformColor, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, PlatformColor, Pressable, StyleSheet, Text } from 'react-native';
 
 type Props = {
-    schema: Realm.ObjectClass<Genre & Realm.Object>,
+    schema: Realm.RealmObjectConstructor<Genre & Realm.Object>,
     buildGenre: (genre: any) => Genre,
     fetchData: () => Promise<Genre[]>,
     onSelect: (genres: string[]) => void,

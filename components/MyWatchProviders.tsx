@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { FlatList, StyleSheet, Switch, Text, View } from 'react-native';
 
 type Props = {
-    schema: Realm.ObjectClass<SavedProvider & Realm.Object>,
+    schema: Realm.RealmObjectConstructor<SavedProvider & Realm.Object>,
     fetchData: () => Promise<WatchProvider[]>,
 };
 

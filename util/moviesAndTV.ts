@@ -6,7 +6,7 @@ import { MovieItem } from '@/models/movies';
 import { TVItem, TVSeason } from '@/models/tv';
 import { formatDuration, intervalToDuration } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { ExternalPathString, Href } from 'expo-router';
+import { Href } from 'expo-router';
 import { PlatformColor } from 'react-native';
 
 const getPosterUrl = (posterPath: string): string | undefined => posterPath ? `${IMAGE_URL}${POSTER_SIZE}${posterPath}` : undefined;

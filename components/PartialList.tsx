@@ -6,7 +6,7 @@ import { Href } from 'expo-router';
 
 type Props<G extends Genre, S extends SavedItem<G> & Realm.Object> = {
     partialItems: PartialItem[] | Realm.List<PartialItem & Realm.Object>,
-    mainSchema: Realm.ObjectClass<S>,
+    mainSchema: Realm.RealmObjectConstructor<S>,
     statusOptions: Status[],
     getDetail: (id: string) => Href,
 };
