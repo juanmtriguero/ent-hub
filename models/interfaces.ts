@@ -15,6 +15,7 @@ export interface PartialItem {
 export interface Item extends PartialItem {
     originalTitle: string;
     url: ExternalPathString;
+    rating: number;
     genres: Genre[];
     related: PartialItem[];
     description?: string;

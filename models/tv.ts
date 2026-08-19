@@ -138,6 +138,7 @@ export class TV extends Realm.Object implements SavedItem<TVGenre> {
     releaseYear!: string;
     originalTitle!: string;
     url!: ExternalPathString;
+    rating!: number;
     genres!: Realm.List<TVGenre>;
     flatrate!: Realm.List<TVProvider>;
     seasons!: Realm.List<TVSeason>;
@@ -157,6 +158,7 @@ export class TV extends Realm.Object implements SavedItem<TVGenre> {
             releaseYear: 'string',
             originalTitle: 'string',
             url: 'string',
+            rating: 'float',
             genres: 'TVGenre[]',
             flatrate: 'TVProvider[]',
             seasons: 'TVSeason[]',

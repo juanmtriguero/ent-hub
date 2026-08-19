@@ -13,8 +13,8 @@ export default function TVPopular() {
     return (
         <View>
             <FlatList data={[
-                <TVFilter onChange={setFilter} />,
-                <FetchList<TVGenre, TV> schema={TV} statusOptions={tvStatusOptions} buildTile={getTVTile} fetchData={getPopularShows} params={filter} />,
+                <TVFilter key="filter" onChange={setFilter} />,
+                <FetchList<TVGenre, TV> key="list" schema={TV} statusOptions={tvStatusOptions} buildTile={getTVTile} fetchData={getPopularShows} params={filter} />,
             ]} renderItem={({ item }: { item: React.JSX.Element }) => item} />
         </View>
     );

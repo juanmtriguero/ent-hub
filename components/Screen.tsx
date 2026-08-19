@@ -136,11 +136,22 @@ export default function Screen<I extends Item, G extends Genre, S extends SavedI
         </View>
     ) : null;
 
+    const formatRating = (item: I | S): string => {
+        const formattedRating = item.rating.toFixed(1);
+        if (formattedRating.length > 3) {
+            return '10';
+        }
+        return formattedRating;
+    };
+
     return (
         <ScrollView>
             <Image source={item.backdropUrl} style={styles.backdrop} contentFit="cover" />
             <View style={styles.posterContainer}>
                 <Image source={item.posterUrl} style={styles.poster} contentFit="cover" placeholder={posterPlaceholder} placeholderContentFit="cover" />
+            </View>
+            <View style={styles.ratingContainer}>
+                <Text style={styles.rating}>{formatRating(item)}</Text>
             </View>
             <Pressable style={{ ...styles.statusButton, backgroundColor: selectedStatus.color }} onPress={selectStatus}>
                 <SymbolView name={selectedStatus.icon} size={16} tintColor="white" />
@@ -203,6 +214,21 @@ const getStyles = (width: number, height: number) => StyleSheet.create({
         position: 'absolute',
         top: width * 0.15,
         left: 20,
+    },
+    rating: {
+        fontWeight: 'bold',
+        fontSize: 18,
+    },
+    ratingContainer: {
+        position: 'absolute',
+        top: 20,
+        right: 20,
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'rgba(255, 255, 255, 0.6)',
     },
     section: {
         marginVertical: 10,

@@ -54,6 +54,7 @@ export class Movie extends Realm.Object implements SavedItem<MovieGenre> {
     releaseYear!: string;
     originalTitle!: string;
     url!: ExternalPathString;
+    rating!: number;
     genres!: Realm.List<MovieGenre>;
     flatrate!: Realm.List<MovieProvider>;
     ads!: Realm.List<MovieProvider>;
@@ -75,6 +76,7 @@ export class Movie extends Realm.Object implements SavedItem<MovieGenre> {
             releaseYear: 'string',
             originalTitle: 'string',
             url: 'string',
+            rating: 'float',
             genres: 'MovieGenre[]',
             flatrate: 'MovieProvider[]',
             ads: 'MovieProvider[]',
