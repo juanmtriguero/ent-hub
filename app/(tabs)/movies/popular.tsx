@@ -13,8 +13,8 @@ export default function MoviesPopular() {
     return (
         <View>
             <FlatList data={[
-                <MovieFilter onChange={setFilter} />,
-                <FetchList<MovieGenre, Movie> schema={Movie} statusOptions={movieStatusOptions} buildTile={getMovieTile} fetchData={getPopularMovies} params={filter} />,
+                <MovieFilter key="filter" onChange={setFilter} />,
+                <FetchList<MovieGenre, Movie> key="list" schema={Movie} statusOptions={movieStatusOptions} buildTile={getMovieTile} fetchData={getPopularMovies} params={filter} />,
             ]} renderItem={({ item }: { item: React.JSX.Element }) => item} />
         </View>
     );

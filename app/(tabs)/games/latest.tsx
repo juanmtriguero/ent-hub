@@ -13,8 +13,8 @@ export default function GamesLatest() {
     return (
         <View>
             <FlatList data={[
-                <GameFilter onChange={setFilter} />,
-                <FetchList<GameGenre, Game> schema={Game} statusOptions={gameStatusOptions} buildTile={getGameTile} fetchData={getLatestGames} params={filter} />,
+                <GameFilter key="filter" onChange={setFilter} />,
+                <FetchList<GameGenre, Game> key="list" schema={Game} statusOptions={gameStatusOptions} buildTile={getGameTile} fetchData={getLatestGames} params={filter} />,
             ]} renderItem={({ item }: { item: React.JSX.Element }) => item} />
         </View>
     );

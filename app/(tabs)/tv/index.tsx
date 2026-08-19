@@ -6,7 +6,7 @@ import { getTVDetail, getTVTile, tvStatusOptions } from '@/util/moviesAndTV';
 import { ReactElement } from 'react';
 
 const sections: (ReactElement | FetchSection | QuerySection)[] = [
-    <NextEpisodes />,
+    <NextEpisodes key="next-episodes" />,
     {
         fetchData: getPopularShows,
         limit: 4,
