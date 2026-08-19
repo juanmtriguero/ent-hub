@@ -87,6 +87,7 @@ export class Game extends Realm.Object implements SavedItem<GameGenre> {
     releaseYear!: string;
     originalTitle!: string;
     url!: ExternalPathString;
+    rating!: number;
     genres!: Realm.List<GameGenre>;
     platforms!: Realm.List<GamePlatform>;
     dlcs!: Realm.List<GamePartial>;
@@ -113,6 +114,7 @@ export class Game extends Realm.Object implements SavedItem<GameGenre> {
             releaseYear: 'string',
             originalTitle: 'string',
             url: 'string',
+            rating: 'float',
             genres: 'GameGenre[]',
             platforms: 'GamePlatform[]',
             dlcs: 'GamePartial[]',

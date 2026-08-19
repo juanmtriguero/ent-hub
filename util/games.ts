@@ -54,6 +54,7 @@ export const buildGame = (game: any): GameItem => ({
     releaseYear: getReleaseYear(game),
     title: game.name,
     url: game.url,
+    rating: game.total_rating ? game.total_rating / 10 : 0,
     parentGame: game.parent_game ? getPartialGame(game.parent_game) : undefined,
     platforms: game.platforms?.map(buildPlatform) ?? [],
     dlcs: game.dlcs?.map(getPartialGame) ?? [],

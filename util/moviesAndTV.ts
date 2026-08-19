@@ -69,6 +69,7 @@ export const buildMovie = (movie: any): MovieItem => {
         releaseYear: getReleaseYear(movie.release_date),
         title: movie.title,
         url: `https://www.themoviedb.org/movie/${movie.id}`,
+        rating: movie.vote_average,
         flatrate: getProviders(providers?.flatrate),
         ads: getProviders(providers?.ads),
         rent: getProviders(providers?.rent),
@@ -109,6 +110,7 @@ export const buildTV = (tv: any): TVItem => ({
     releaseYear: getReleaseYear(tv.first_air_date),
     title: tv.name,
     url: `https://www.themoviedb.org/tv/${tv.id}`,
+    rating: tv.vote_average,
     flatrate: getProviders(tv['watch/providers'].results.ES?.flatrate),
     seasons: tv.seasons.map(buildTVSeason),
 });
