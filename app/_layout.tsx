@@ -21,7 +21,7 @@ const schema = [
 
 export default function Layout() {
     return (
-        <RealmProvider schema={schema}>
+        <RealmProvider schema={schema} schemaVersion={1}>
             <Stack screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="index" />
                 <Stack.Screen name="(tabs)" />
