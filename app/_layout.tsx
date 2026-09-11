@@ -1,3 +1,4 @@
+import { Book, BookGenre } from '@/models/books';
 import { Game, GameGenre, GamePartial, GamePlatform } from '@/models/games';
 import { Movie, MovieGenre, MovieProvider } from '@/models/movies';
 import { TV, TVEpisode, TVGenre, TVProvider, TVSeason } from '@/models/tv';
@@ -5,6 +6,8 @@ import { RealmProvider } from '@realm/react';
 import { Stack } from 'expo-router';
 
 const schema = [
+    Book,
+    BookGenre,
     Game,
     GameGenre,
     GamePartial,

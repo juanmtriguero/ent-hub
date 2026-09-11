@@ -29,9 +29,15 @@ export default function Setting({ api, title, state }: Props) {
         case ApiAuth.OAuth2ClientCredentials:
             linkText = 'Get the Client Credentials';
             break;
+        case ApiAuth.None:
+            linkText = 'Know more about the API';
+            break;
     }
 
     useEffect(() => {
+        if (api.auth === ApiAuth.None) {
+            return;
+        }
         getCredentials(api).then(credentials => {
             if (credentials?.length) {
                 switch (api.auth) {
@@ -114,18 +120,20 @@ export default function Setting({ api, title, state }: Props) {
                             <TextInput value={clientId} onChangeText={setClientId} placeholder="Add the Client ID" style={styles.input} editable={!isLoading} />
                         </View>
                     ) : null }
-                    <View style={styles.inputContainer}>
-                        { api.auth === ApiAuth.ApiKey ? (
-                            <TextInput value={key} onChangeText={setKey} secureTextEntry placeholder="Add an API key" style={styles.input} editable={!isLoading} />
-                        ) : null }
-                        { api.auth === ApiAuth.OAuth2ClientCredentials ? (
-                            <TextInput value={clientSecret} onChangeText={setClientSecret} secureTextEntry placeholder="Add the Client Secret" style={styles.input} editable={!isLoading} />
-                        ) : null }
-                        <View>
-                            <Button title="Validate" onPress={validateCredentials} disabled={isEmptyCredentials || isValidCredentials || isLoading} />
-                            { isLoading ? <ActivityIndicator style={styles.spinner} /> : null }
+                    { api.auth !== ApiAuth.None ? (
+                        <View style={styles.inputContainer}>
+                            { api.auth === ApiAuth.ApiKey ? (
+                                <TextInput value={key} onChangeText={setKey} secureTextEntry placeholder="Add an API key" style={styles.input} editable={!isLoading} />
+                            ) : null }
+                            { api.auth === ApiAuth.OAuth2ClientCredentials ? (
+                                <TextInput value={clientSecret} onChangeText={setClientSecret} secureTextEntry placeholder="Add the Client Secret" style={styles.input} editable={!isLoading} />
+                            ) : null }
+                            <View>
+                                <Button title="Validate" onPress={validateCredentials} disabled={isEmptyCredentials || isValidCredentials || isLoading} />
+                                { isLoading ? <ActivityIndicator style={styles.spinner} /> : null }
+                            </View>
                         </View>
-                    </View>
+                    ) : null }
                     <View style={styles.linkContainer}>
                         <Link href={api.url} style={styles.link}>{linkText} </Link>
                         <SymbolView name="arrow.up.right.square" size={16} />

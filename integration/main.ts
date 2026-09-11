@@ -10,12 +10,13 @@ const OAUTH_TOKEN_SUFFIX = '_OAUTH_TOKEN';
 export enum ApiAuth {
     ApiKey,
     OAuth2ClientCredentials,
+    None,
 }
 
 export enum ApiCode {
     TheMovieDB = 'TMDB',
     InternetGameDB = 'IGDB',
-    Google = 'GOOGLE',
+    OpenLibrary = 'OPEN_LIBRARY',
     ComicVine = 'COMIC_VINE',
 };
 
@@ -38,6 +39,8 @@ export async function getCredentials(api: Api): Promise<string | null> {
                 clientId: await SecureStore.getItemAsync(`${api.code}${CLIENT_ID_SUFFIX}`),
                 clientSecret: await SecureStore.getItemAsync(`${api.code}${CLIENT_SECRET_SUFFIX}`),
             });
+        case ApiAuth.None:
+            return null;
     }
 }
 
