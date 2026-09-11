@@ -1,7 +1,7 @@
 import Setting from '@/components/Setting';
 import { comicVine } from '@/integration/comicVine';
-import { google } from '@/integration/google';
 import { igdb } from '@/integration/igdb';
+import { openLibrary } from '@/integration/openLibrary';
 import { tmdb } from '@/integration/tmdb';
 import { useBooksSettings, useComicsSettings, useGeneralSettings, useGamesSettings, useMoviesAndTVSettings } from '@/util/state';
 import { Redirect } from 'expo-router';
@@ -44,7 +44,7 @@ export default function Index() {
                 </View>
                 <View style={styles.settings}>
                     <Setting title="Movies and TV" state={moviesAndTVSettings} api={tmdb} />
-                    <Setting title="Books" state={booksSettings} api={google} />
+                    <Setting title="Books" state={booksSettings} api={openLibrary} />
                     <Setting title="Games" state={gamesSettings} api={igdb} />
                     <Setting title="Comics" state={comicsSettings} api={comicVine} />
                 </View>
