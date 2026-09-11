@@ -1,3 +1,4 @@
+import { BookFilterParams } from '@/components/BookFilter';
 import { Api, ApiAuth, ApiCode } from '@/integration/main';
 
 const BASE_URL = 'https://openlibrary.org/';
@@ -39,6 +40,33 @@ export async function searchBooks(page: number, params: any, signal: AbortSignal
         lang: 'es',
     });
     const { docs, numFound }: { docs: any[], numFound: number } = await get(PATH_SEARCH_BOOK, searchParams, signal);
+    return { numPages: Math.ceil(numFound / LIMIT), results: docs };
+}
+
+export async function getPopularBooks(page: number, params: BookFilterParams): Promise<{ numPages: number, results: any[] }> {
+    let query = 'language:spa';
+    if (params?.genres?.length) {
+        const genres = (await getBookGenres()).filter((genre: any) => params.genres?.includes(genre.key.replace('/tags/', '')));
+        if (genres.length) {
+            query += ` subject:("${genres.map((genre: any) => genre.name).join('" AND "')}")`;
+        }
+    }
+    const fields = [
+        'cover_i',
+        'editions',
+        'first_publish_year',
+        'key',
+        'title',
+    ];
+    const searchParams = new URLSearchParams({
+        q: query,
+        fields: fields.join(','),
+        sort: 'trending',
+        page: page.toString(),
+        limit: LIMIT.toString(),
+        lang: 'es',
+    });
+    const { docs, numFound }: { docs: any[], numFound: number } = await get(PATH_SEARCH_BOOK, searchParams);
     return { numPages: Math.ceil(numFound / LIMIT), results: docs };
 }
 
