@@ -7,7 +7,7 @@ import { PlatformColor } from 'react-native';
 
 const getPosterUrl = (book: any): string | undefined => book.editions?.length ? book.editions[0].image?.url : book.image?.url;
 const getAuthor = (authors: any[]): string => authors?.length ? authors.map(({ author }) => author.name).join(', ') : 'Unknown author';
-const getGenres = ({ Genre }: { Genre: any[] }): Genre[] => Genre.map(({ tag, tagSlug }) => ({ id: tagSlug, name: tag }));
+const getGenres = ({ Genre }: { Genre?: any[] }): Genre[] => Genre?.map(({ tag, tagSlug }) => ({ id: tagSlug, name: tag })) ?? [];
 
 export const getBookDetail = (id: string): Href => ({
     pathname: '/books/[book]',
