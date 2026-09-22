@@ -16,7 +16,7 @@ export enum ApiAuth {
 export enum ApiCode {
     TheMovieDB = 'TMDB',
     InternetGameDB = 'IGDB',
-    OpenLibrary = 'OPEN_LIBRARY',
+    Hardcover = 'HARDCOVER',
     ComicVine = 'COMIC_VINE',
 };
 
