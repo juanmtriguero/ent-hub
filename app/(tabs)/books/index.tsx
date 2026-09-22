@@ -1,5 +1,5 @@
 import Index, { FetchSection, QuerySection } from '@/components/Index';
-import { getPopularBooks, searchBooks } from '@/integration/openLibrary';
+import { getPopularBooks, searchBooks } from '@/integration/hardcover';
 import { Book, BookGenre } from '@/models/books';
 import { getBookDetail, getBookTile, bookStatusOptions } from '@/util/books';
 

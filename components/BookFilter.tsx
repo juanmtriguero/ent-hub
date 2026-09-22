@@ -1,5 +1,5 @@
 import GenreSelector from '@/components/GenreSelector';
-import { getBookGenres } from '@/integration/openLibrary';
+import { getBookGenres } from '@/integration/hardcover';
 import { BookGenre } from '@/models/books';
 import { getGenre } from '@/util/books';
 import { useEffect, useState } from 'react';

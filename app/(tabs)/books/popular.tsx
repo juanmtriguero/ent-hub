@@ -1,6 +1,6 @@
 import BookFilter, { BookFilterParams } from '@/components/BookFilter';
 import FetchList from '@/components/FetchList';
-import { getPopularBooks } from '@/integration/openLibrary';
+import { getPopularBooks } from '@/integration/hardcover';
 import { Book, BookGenre } from '@/models/books';
 import { getBookTile, bookStatusOptions } from '@/util/books';
 import { useState } from 'react';

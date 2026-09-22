@@ -1,5 +1,5 @@
 import Screen from '@/components/Screen';
-import { getBook } from '@/integration/openLibrary';
+import { getBook } from '@/integration/hardcover';
 import { Book, BookGenre } from '@/models/books';
 import { Item } from '@/models/interfaces';
 import { buildBook, getBookDetail, bookStatusOptions } from '@/util/books';
