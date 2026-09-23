@@ -34,6 +34,30 @@ const FULL_BOOK_FIELDS = `
     }
     cached_tags
     cached_similar_book_ids
+    canonical_id
+    featured_book_series {
+        series {
+            id
+            name
+            book_series(
+                where: {
+                    book: {
+                        canonical_id: { _is_null: true }
+                        is_partial_book: { _eq: false }
+                    }
+                    compilation: { _eq: false }
+                }
+                distinct_on: position
+                order_by: [
+                    { position: asc }
+                    { book: { users_count: desc } }
+                ]
+            ) {
+                position
+                book { ${PARTIAL_BOOK_FIELDS} }
+            }
+        }
+    }
 `;
 
 const LIMIT = 100;

@@ -129,6 +129,20 @@ export default function Screen<I extends Item, G extends Genre, S extends SavedI
         Alert.alert('Status', '', buttons);
     };
 
+    const series = (item: I | S) => {
+        if (isItem(item) && item.series) {
+            const { name, items } = item.series;
+            const partialItems = items.sort((a, b) => a.position - b.position).map(item => item.item);
+            return (
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>{name}</Text>
+                    <PartialList<G, S> partialItems={partialItems} mainSchema={schema} statusOptions={statusOptions} getDetail={getDetail} />
+                </View>
+            );
+        }
+        return null;
+    };
+
     const relatedItems = (item: I | S) => isItem(item) && item.related?.length ? (
         <View style={styles.section}>
             <Text style={styles.sectionTitle}>Related</Text>
@@ -166,6 +180,7 @@ export default function Screen<I extends Item, G extends Genre, S extends SavedI
                     {item.genres.map((genre) => <Text key={genre.id} style={styles.tag}>{genre.name}</Text>)}
                 </View>
                 {additionalContent(savedItem ?? item)}
+                {series(item)}
                 {relatedItems(item)}
             </View>
         </ScrollView>
