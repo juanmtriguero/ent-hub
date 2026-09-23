@@ -34,6 +34,7 @@ const FULL_BOOK_FIELDS = `
     }
     cached_tags
     cached_similar_book_ids
+    canonical_id
 `;
 
 const LIMIT = 100;

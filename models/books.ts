@@ -1,4 +1,4 @@
-import { Genre, SavedItem } from '@/models/interfaces';
+import { Genre, Item, SavedItem } from '@/models/interfaces';
 import { Realm } from '@realm/react';
 import { ExternalPathString } from 'expo-router';
 
@@ -16,6 +16,10 @@ export class BookGenre extends Realm.Object implements Genre {
     };
 }
 
+export interface BookItem extends Item {
+    canonicalId?: string;
+}
+
 export class Book extends Realm.Object implements SavedItem<BookGenre> {
     id!: string;
     status!: string;
@@ -30,6 +34,7 @@ export class Book extends Realm.Object implements SavedItem<BookGenre> {
     details?: string;
     posterUrl?: string;
     backdropUrl?: string;
+    canonicalId?: string;
 
     static schema: Realm.ObjectSchema = {
         name: 'Book',
@@ -48,6 +53,7 @@ export class Book extends Realm.Object implements SavedItem<BookGenre> {
             details: 'string?',
             posterUrl: 'string?',
             backdropUrl: 'string?',
+            canonicalId: 'string?',
         },
     };
 }

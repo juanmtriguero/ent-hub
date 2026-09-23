@@ -1,7 +1,8 @@
 import { Status } from '@/components/Screen';
 import { Tile } from '@/components/TileList';
 import { BOOK_URL_PREFIX } from '@/integration/hardcover';
-import { Genre, Item, PartialItem } from '@/models/interfaces';
+import { BookItem } from '@/models/books';
+import { Genre, PartialItem } from '@/models/interfaces';
 import { Href } from 'expo-router';
 import { PlatformColor } from 'react-native';
 
@@ -26,7 +27,7 @@ const getPartialBook = (book: any): PartialItem => ({
     title: book.editions?.length ? book.editions[0].title : book.title,
 });
 
-export const buildBook = (book: any): Item => ({
+export const buildBook = (book: any): BookItem => ({
     ...getPartialBook(book),
     backdropUrl: getPosterUrl(book),
     description: book.description,
@@ -36,6 +37,7 @@ export const buildBook = (book: any): Item => ({
     originalTitle: book.title,
     url: `${BOOK_URL_PREFIX}${book.slug}`,
     rating: book.rating * 2,
+    canonicalId: book.canonical_id?.toString(),
 });
 
 export const getGenre = (genre: any): Genre => ({
