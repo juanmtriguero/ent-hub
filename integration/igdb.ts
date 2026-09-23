@@ -135,6 +135,10 @@ export async function getLatestGames(page: number, params?: GameFilterParams): P
 
 export async function getGame(id: string): Promise<any> {
     const fields = [
+        'collections.name',
+        'collections.games.cover.image_id',
+        'collections.games.first_release_date',
+        'collections.games.name',
         'cover.image_id',
         'dlcs.cover.image_id',
         'dlcs.first_release_date',

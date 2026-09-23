@@ -2,7 +2,7 @@ import { Status } from '@/components/Screen';
 import { Tile } from '@/components/TileList';
 import { BACKDROP_SIZE, IMAGE_FORMAT, IMAGE_URL, LOGO_FORMAT, LOGO_SIZE, POSTER_SIZE } from '@/integration/igdb';
 import { GameItem, GamePlatformItem } from '@/models/games';
-import { Genre, PartialItem } from '@/models/interfaces';
+import { Genre, PartialItem, Series } from '@/models/interfaces';
 import { Href } from 'expo-router';
 import { PlatformColor } from 'react-native';
 
@@ -23,6 +23,14 @@ const getPlatformReleaseDate = (platform: any): Date | undefined => {
             return latestReleaseDate;
         }, latestDate);
     }, undefined);
+};
+const getSeries = (collections: any[]): Series | undefined => {
+    if (collections?.length) {
+        const { id, name, games } = collections[0];
+        const items = games.map((game: any, index: number) => ({ position: index + 1, item: getPartialGame(game) }));
+        return { id, name, items };
+    }
+    return undefined;
 };
 
 export const getGameDetail = (id: string): Href => ({
@@ -64,6 +72,7 @@ export const buildGame = (game: any): GameItem => ({
     remakes: game.remakes?.map(getPartialGame) ?? [],
     remasters: game.remasters?.map(getPartialGame) ?? [],
     standaloneExpansions: game.standalone_expansions?.map(getPartialGame) ?? [],
+    series: getSeries(game.collections),
 });
 
 export const buildPlatform = (platform: any): GamePlatformItem => ({

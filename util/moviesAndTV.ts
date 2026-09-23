@@ -20,9 +20,9 @@ const getProviders = (providers?: any[]): WatchProvider[] => (providers?.map(pro
     logoUrl: `${IMAGE_URL}${LOGO_SIZE}${provider.logo_path}`,
     name: provider.provider_name,
 })) ?? []);
-const getSeries = (series: any): Series | undefined => {
-    if (series) {
-        const { id, name, parts } = series;
+const getSeries = (collection: any): Series | undefined => {
+    if (collection) {
+        const { id, name, parts } = collection;
         const items = parts.map((part: any, index: number) => ({ position: index + 1, item: getPartialMovie(part) }));
         return { id, name, items };
     }
