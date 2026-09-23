@@ -12,6 +12,17 @@ export interface PartialItem {
     posterUrl?: string,
 }
 
+export interface SeriesItem {
+    position: number;
+    item: PartialItem;
+}
+
+export interface Series {
+    id: string;
+    name: string;
+    items: SeriesItem[];
+}
+
 export interface Item extends PartialItem {
     originalTitle: string;
     url: ExternalPathString;
@@ -21,9 +32,10 @@ export interface Item extends PartialItem {
     description?: string;
     details?: string;
     backdropUrl?: string;
+    series?: Series;
 }
 
-export interface SavedItem<T extends Genre> extends Omit<Item, 'genres' | 'related'> {
+export interface SavedItem<T extends Genre> extends Omit<Item, 'genres' | 'related' | 'series'> {
     status: string;
     timestamp: number;
     genres: Realm.List<T>;

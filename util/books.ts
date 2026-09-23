@@ -2,13 +2,21 @@ import { Status } from '@/components/Screen';
 import { Tile } from '@/components/TileList';
 import { BOOK_URL_PREFIX } from '@/integration/hardcover';
 import { BookItem } from '@/models/books';
-import { Genre, PartialItem } from '@/models/interfaces';
+import { Genre, PartialItem, Series } from '@/models/interfaces';
 import { Href } from 'expo-router';
 import { PlatformColor } from 'react-native';
 
 const getPosterUrl = (book: any): string | undefined => book.editions?.length ? book.editions[0].image?.url : book.image?.url;
 const getAuthor = (authors: any[]): string => authors?.length ? authors.map(({ author }) => author.name).join(', ') : 'Unknown author';
 const getGenres = ({ Genre }: { Genre?: any[] }): Genre[] => Genre?.map(({ tag, tagSlug }) => ({ id: tagSlug, name: tag })) ?? [];
+const getSeries = (series: any): Series | undefined => {
+    if (series) {
+        const { id, name, book_series } = series;
+        const items = book_series.map(({ position, book }: { position: number, book: any }) => ({ position, item: getPartialBook(book) }));
+        return { id, name, items };
+    }
+    return undefined;
+};
 
 export const getBookDetail = (id: string): Href => ({
     pathname: '/books/[book]',
@@ -38,6 +46,7 @@ export const buildBook = (book: any): BookItem => ({
     url: `${BOOK_URL_PREFIX}${book.slug}`,
     rating: book.rating * 2,
     canonicalId: book.canonical_id?.toString(),
+    series: getSeries(book.featured_book_series?.series),
 });
 
 export const getGenre = (genre: any): Genre => ({

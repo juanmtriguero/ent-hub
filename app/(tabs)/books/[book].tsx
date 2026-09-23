@@ -11,7 +11,6 @@ export default function BookScreen() {
 
     const additionalContent = (item: BookItem | Book) => (
         <BookDuplicate book={item} />
-        // TODO: Add Series
     );
 
     return (
