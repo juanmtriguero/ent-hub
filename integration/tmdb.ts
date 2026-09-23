@@ -39,6 +39,10 @@ async function authenticate(): Promise<boolean> {
 }
 
 async function get(path: string, params?: URLSearchParams, signal?: AbortSignal): Promise<any> {
+    if (!params) {
+        params = new URLSearchParams();
+    }
+    params.append('language', 'es-ES');
     const response = await fetch(`${BASE_URL}${path}?${params}`, {
         method: 'GET',
         headers: await getHeaders(),
@@ -56,7 +60,6 @@ async function get(path: string, params?: URLSearchParams, signal?: AbortSignal)
 
 export async function searchMovies(page: number, params: any, signal: AbortSignal): Promise<{ numPages: number, results: any[] }> {
     const searchParams = new URLSearchParams({
-        language: 'es-ES',
         page: page.toString(),
         query: params.text,
     });
@@ -66,7 +69,6 @@ export async function searchMovies(page: number, params: any, signal: AbortSigna
 
 export async function searchTV(page: number, params: any, signal: AbortSignal): Promise<{ numPages: number, results: any[] }> {
     const searchParams = new URLSearchParams({
-        language: 'es-ES',
         page: page.toString(),
         query: params.text,
     });
@@ -76,7 +78,6 @@ export async function searchTV(page: number, params: any, signal: AbortSignal): 
 
 export async function getPopularMovies(page: number, params: MovieFilterParams): Promise<{ numPages: number, results: any[] }> {
     const searchParams = new URLSearchParams({
-        language: 'es-ES',
         page: page.toString(),
         sort_by: 'popularity.desc',
         watch_region: 'ES',
@@ -96,7 +97,6 @@ export async function getPopularMovies(page: number, params: MovieFilterParams):
 
 export async function getPopularShows(page: number, params: TVFilterParams): Promise<{ numPages: number, results: any[] }> {
     const searchParams = new URLSearchParams({
-        language: 'es-ES',
         page: page.toString(),
         sort_by: 'popularity.desc',
         watch_region: 'ES',
@@ -114,7 +114,6 @@ export async function getPopularShows(page: number, params: TVFilterParams): Pro
 export async function getMovie(id: string): Promise<any> {
     const params = new URLSearchParams({
         append_to_response: [ PATH_WATCH_PROVIDERS, PATH_RECOMMENDATIONS ].join(','),
-        language: 'es-ES',
     });
     return await get(PATH_MOVIE_DETAILS + id, params);
 }
@@ -122,37 +121,26 @@ export async function getMovie(id: string): Promise<any> {
 export async function getTV(id: string): Promise<any> {
     const params = new URLSearchParams({
         append_to_response: [ PATH_WATCH_PROVIDERS, PATH_RECOMMENDATIONS ].join(','),
-        language: 'es-ES',
     });
     return await get(PATH_TV_DETAILS + id, params);
 }
 
 export async function getTVSeason(id: string, season: string): Promise<any> {
-    const params = new URLSearchParams({
-        language: 'es-ES',
-    });
-    return await get(`${PATH_TV_DETAILS}${id}${PATH_TV_SEASON}${season}`, params);
+    return await get(`${PATH_TV_DETAILS}${id}${PATH_TV_SEASON}${season}`);
 }
 
 export async function getMovieGenres(): Promise<any[]> {
-    const searchParams = new URLSearchParams({
-        language: 'es',
-    });
-    const { genres }: { genres: any[] } = await get(PATH_GENRE_MOVIE_LIST, searchParams);
+    const { genres }: { genres: any[] } = await get(PATH_GENRE_MOVIE_LIST);
     return genres;
 };
 
 export async function getTVGenres(): Promise<any[]> {
-    const searchParams = new URLSearchParams({
-        language: 'es',
-    });
-    const { genres }: { genres: any[] } = await get(PATH_GENRE_TV_LIST, searchParams);
+    const { genres }: { genres: any[] } = await get(PATH_GENRE_TV_LIST);
     return genres;
 };
 
 export async function getMovieProviders(): Promise<any[]> {
     const searchParams = new URLSearchParams({
-        language: 'es-ES',
         watch_region: 'ES',
     });
     const { results }: { results: any[] } = await get(PATH_WATCH_PROVIDERS_MOVIE, searchParams);
@@ -161,7 +149,6 @@ export async function getMovieProviders(): Promise<any[]> {
 
 export async function getTVProviders(): Promise<any[]> {
     const searchParams = new URLSearchParams({
-        language: 'es-ES',
         watch_region: 'ES',
     });
     const { results }: { results: any[] } = await get(PATH_WATCH_PROVIDERS_TV, searchParams);
