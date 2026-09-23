@@ -135,7 +135,7 @@ export default function Screen<I extends Item, G extends Genre, S extends SavedI
             const partialItems = items.sort((a, b) => a.position - b.position).map(item => item.item);
             return (
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>{name} series</Text>
+                    <Text style={styles.sectionTitle}>{name}</Text>
                     <PartialList<G, S> partialItems={partialItems} mainSchema={schema} statusOptions={statusOptions} getDetail={getDetail} />
                 </View>
             );

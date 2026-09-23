@@ -1,7 +1,7 @@
 import { Status } from '@/components/Screen';
 import { Tile } from '@/components/TileList';
 import { BACKDROP_SIZE, IMAGE_URL, LOGO_SIZE, POSTER_SIZE } from '@/integration/tmdb';
-import { Genre, PartialItem, WatchProvider } from '@/models/interfaces';
+import { Genre, PartialItem, Series, WatchProvider } from '@/models/interfaces';
 import { MovieItem } from '@/models/movies';
 import { TVItem, TVSeason } from '@/models/tv';
 import { formatDuration, intervalToDuration } from 'date-fns';
@@ -20,6 +20,14 @@ const getProviders = (providers?: any[]): WatchProvider[] => (providers?.map(pro
     logoUrl: `${IMAGE_URL}${LOGO_SIZE}${provider.logo_path}`,
     name: provider.provider_name,
 })) ?? []);
+const getSeries = (series: any): Series | undefined => {
+    if (series) {
+        const { id, name, parts } = series;
+        const items = parts.map((part: any, index: number) => ({ position: index + 1, item: getPartialMovie(part) }));
+        return { id, name, items };
+    }
+    return undefined;
+};
 
 export const getMovieDetail = (id: string): Href => ({
     pathname: '/movies/[movie]',
@@ -74,6 +82,7 @@ export const buildMovie = (movie: any): MovieItem => {
         ads: getProviders(providers?.ads),
         rent: getProviders(providers?.rent),
         buy: getProviders(providers?.buy),
+        series: getSeries(movie.collection),
     };
 };
 

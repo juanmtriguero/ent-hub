@@ -11,6 +11,7 @@ const PATH_DISCOVER_TV = 'discover/tv';
 const PATH_GENRE_MOVIE_LIST = 'genre/movie/list';
 const PATH_GENRE_TV_LIST = 'genre/tv/list';
 const PATH_MOVIE_DETAILS = 'movie/';
+const PATH_COLLECTION_DETAILS = 'collection/';
 const PATH_TV_DETAILS = 'tv/';
 const PATH_TV_SEASON = '/season/';
 const PATH_RECOMMENDATIONS = 'recommendations';
@@ -115,7 +116,11 @@ export async function getMovie(id: string): Promise<any> {
     const params = new URLSearchParams({
         append_to_response: [ PATH_WATCH_PROVIDERS, PATH_RECOMMENDATIONS ].join(','),
     });
-    return await get(PATH_MOVIE_DETAILS + id, params);
+    const movie = await get(PATH_MOVIE_DETAILS + id, params);
+    if (movie.belongs_to_collection) {
+        movie.collection = await get(PATH_COLLECTION_DETAILS + movie.belongs_to_collection.id);
+    }
+    return movie;
 }
 
 export async function getTV(id: string): Promise<any> {
