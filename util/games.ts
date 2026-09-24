@@ -1,6 +1,6 @@
 import { Status } from '@/components/Screen';
 import { Tile } from '@/components/TileList';
-import { BACKDROP_SIZE, IMAGE_FORMAT, IMAGE_URL, LOGO_FORMAT, LOGO_SIZE, POSTER_SIZE } from '@/integration/igdb';
+import { BACKDROP_SIZE, GameType, IMAGE_FORMAT, IMAGE_URL, LOGO_FORMAT, LOGO_SIZE, POSTER_SIZE } from '@/integration/igdb';
 import { GameItem, GamePlatformItem } from '@/models/games';
 import { Genre, PartialItem, Series } from '@/models/interfaces';
 import { Href } from 'expo-router';
@@ -24,10 +24,12 @@ const getPlatformReleaseDate = (platform: any): Date | undefined => {
         }, latestDate);
     }, undefined);
 };
-const getSeries = (collections: any[]): Series | undefined => {
+const isMainGame = (game: any): boolean => game.game_type === GameType.MainGame && !game.parent_game && !game.version_parent;
+const getSeries = (collections: any[], mainGameId: string): Series | undefined => {
     if (collections?.length) {
         const { id, name, games } = collections[0];
-        const items = games.map((game: any, index: number) => ({ position: index + 1, item: getPartialGame(game) }));
+        const items = games.filter((g: any) => g.id === mainGameId || isMainGame(g))
+            .map((g: any, index: number) => ({ position: index + 1, item: getPartialGame(g) }));
         return { id, name, items };
     }
     return undefined;
@@ -72,7 +74,7 @@ export const buildGame = (game: any): GameItem => ({
     remakes: game.remakes?.map(getPartialGame) ?? [],
     remasters: game.remasters?.map(getPartialGame) ?? [],
     standaloneExpansions: game.standalone_expansions?.map(getPartialGame) ?? [],
-    series: getSeries(game.collections),
+    series: getSeries(game.collections, game.id),
 });
 
 export const buildPlatform = (platform: any): GamePlatformItem => ({
