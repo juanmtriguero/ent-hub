@@ -72,7 +72,10 @@ export default function Screen<I extends Item, G extends Genre, S extends SavedI
         })
         .catch(error => {
             console.error(error);
-            setItem(savedItem);
+            if (savedItem) {
+                setItem(savedItem);
+                alert('There was an error loading the details, showing the saved version instead');
+            }
         })
         .finally(() => {
             setIsLoading(false);

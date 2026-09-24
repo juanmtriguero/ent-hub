@@ -16,7 +16,7 @@ export const POSTER_SIZE = 't_720p';
 export const BACKDROP_SIZE = 't_screenshot_huge';
 export const LOGO_SIZE = 't_logo_med'
 
-enum GameType {
+export enum GameType {
     MainGame,
     DLC,
     Expansion,
@@ -138,7 +138,10 @@ export async function getGame(id: string): Promise<any> {
         'collections.name',
         'collections.games.cover.image_id',
         'collections.games.first_release_date',
+        'collections.games.game_type',
         'collections.games.name',
+        'collections.games.parent_game',
+        'collections.games.version_parent',
         'cover.image_id',
         'dlcs.cover.image_id',
         'dlcs.first_release_date',
