@@ -1,17 +1,16 @@
 import PartialList from '@/components/PartialList';
 import { Genre, Item, SavedItem } from '@/models/interfaces';
-import { useRoute } from '@react-navigation/native';
 import { Realm, useQuery, useRealm } from '@realm/react';
 import { Image } from 'expo-image';
 import { Href, Link, useNavigation } from 'expo-router';
 import { SFSymbol, SymbolView } from 'expo-symbols';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, AlertButton, OpaqueColorValue, PlatformColor, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, Alert, AlertButton, NativeColorValue, PlatformColor, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 const posterPlaceholder = require('@/assets/images/poster.png');
 
 export type Status = {
-    color: OpaqueColorValue,
+    color: NativeColorValue,
     icon: SFSymbol,
     label: string,
     value: string,
@@ -26,14 +25,14 @@ type Props<I extends Item, G extends Genre, S extends SavedItem<G> & Realm.Objec
     statusOptions: Status[],
     getDetail: (id: string) => Href,
     deleteOrphans?: (realm: Realm) => void,
+    isIndex?: boolean,
 };
 
-export default function Screen<I extends Item, G extends Genre, S extends SavedItem<G> & Realm.Object>({ additionalContent, buildItem, fetchData, id, schema, statusOptions, getDetail, deleteOrphans }: Props<I, G, S>) {
+export default function Screen<I extends Item, G extends Genre, S extends SavedItem<G> & Realm.Object>({ additionalContent, buildItem, fetchData, id, schema, statusOptions, getDetail, deleteOrphans, isIndex }: Props<I, G, S>) {
 
     const navigation = useNavigation();
     const savedItem = useQuery(schema).filtered('id == $0', id)[0];
     const realm = useRealm();
-    const route = useRoute();
     const [ isLoading, setIsLoading ] = useState<boolean>(true);
     const [ item, setItem ] = useState<I | S | null>(null);
     const { height, width } = useWindowDimensions();
@@ -51,12 +50,12 @@ export default function Screen<I extends Item, G extends Genre, S extends SavedI
                 </Link>
             ) : null,
         };
-        if (route.name === 'index') {
+        if (isIndex) {
             navigation.getParent()?.setOptions(options);
         } else {
             navigation.setOptions(options);
         }
-    }, [ navigation, item ]);
+    }, [ navigation, item, isIndex ]);
 
     useEffect(() => {
         setIsLoading(true);

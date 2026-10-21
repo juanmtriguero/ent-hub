@@ -73,7 +73,7 @@ export default function TVScreen() {
     };
 
     return (
-        <Screen<TVItem, TVGenre, TV> additionalContent={additionalContent} buildItem={buildTV} fetchData={getTV} id={tv} schema={TV} statusOptions={tvStatusOptions} getDetail={getTVDetail} deleteOrphans={deleteOrphans} />
+        <Screen<TVItem, TVGenre, TV> additionalContent={additionalContent} buildItem={buildTV} fetchData={getTV} id={tv} schema={TV} statusOptions={tvStatusOptions} getDetail={getTVDetail} deleteOrphans={deleteOrphans} isIndex />
     );
 
 }
