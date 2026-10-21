@@ -1,6 +1,6 @@
 import { useBooksSettings, useComicsSettings, useGamesSettings, useMoviesAndTVSettings } from '@/util/state';
 import { Redirect } from 'expo-router';
-import { Icon, Label, NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 
 export default function TabsLayout() {
     const moviesAndTVEnabled = useMoviesAndTVSettings(state => state.enabled);
@@ -13,24 +13,24 @@ export default function TabsLayout() {
     return (
         <NativeTabs disableTransparentOnScrollEdge>
             <NativeTabs.Trigger name="movies" hidden={!moviesAndTVEnabled}>
-                <Label>Movies</Label>
-                <Icon sf="movieclapper" />
+                <NativeTabs.Trigger.Label>Movies</NativeTabs.Trigger.Label>
+                <NativeTabs.Trigger.Icon sf="movieclapper" />
             </NativeTabs.Trigger>
             <NativeTabs.Trigger name="tv" hidden={!moviesAndTVEnabled}>
-                <Label>TV</Label>
-                <Icon sf="tv" />
+                <NativeTabs.Trigger.Label>TV</NativeTabs.Trigger.Label>
+                <NativeTabs.Trigger.Icon sf="tv" />
             </NativeTabs.Trigger>
             <NativeTabs.Trigger name="books" hidden={!booksEnabled}>
-                <Label>Books</Label>
-                <Icon sf="book" />
+                <NativeTabs.Trigger.Label>Books</NativeTabs.Trigger.Label>
+                <NativeTabs.Trigger.Icon sf="book" />
             </NativeTabs.Trigger>
             <NativeTabs.Trigger name="games" hidden={!gamesEnabled}>
-                <Label>Games</Label>
-                <Icon sf="gamecontroller" />
+                <NativeTabs.Trigger.Label>Games</NativeTabs.Trigger.Label>
+                <NativeTabs.Trigger.Icon sf="gamecontroller" />
             </NativeTabs.Trigger>
             <NativeTabs.Trigger name="comics" hidden={!comicsEnabled}>
-                <Label>Comics</Label>
-                <Icon sf="magazine" />
+                <NativeTabs.Trigger.Label>Comics</NativeTabs.Trigger.Label>
+                <NativeTabs.Trigger.Icon sf="magazine" />
             </NativeTabs.Trigger>
         </NativeTabs>
     );
